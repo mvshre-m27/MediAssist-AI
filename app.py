@@ -425,6 +425,8 @@ def show_profile(user):
 # =========================================
 # 7. MAIN DASHBOARD
 # =========================================
+def go_to_medicines():
+    st.session_state["page"] = "Medicines"
 
 def show_dashboard():
 
@@ -449,10 +451,12 @@ def show_dashboard():
         [
             "Home",
             "Medicines",
+            "Dose Tracking",
             "Food Suggestions",
             "Profile",
             "Settings"
-        ]
+        ],
+        key="page"
     )
 
     st.sidebar.divider()
@@ -486,18 +490,63 @@ def show_dashboard():
 
         st.divider()
 
+
         st.subheader("Your Overview")
 
+        from datetime import date
+        from adherence_history import (
+            get_adherence_data,
+            calculate_adherence
+        )
+
+        today = date.today().isoformat()
+
+        # Fetch active medicines and today's scheduled doses
+        with get_connection() as conn:
+
+            active_medicines = conn.execute("""
+                SELECT COUNT(*)
+                FROM medicines
+                WHERE user_id = ?
+                  AND is_active = 1
+                  AND start_date <= ?
+                  AND (end_date IS NULL OR end_date >= ?)
+            """, (user["id"], today, today)).fetchone()[0]
+
+            today_doses = conn.execute("""
+                SELECT COUNT(*)
+                FROM dose_schedules ds
+                JOIN medicines m ON ds.medicine_id = m.id
+                WHERE m.user_id = ?
+                  AND m.is_active = 1
+                  AND m.start_date <= ?
+                  AND (m.end_date IS NULL OR m.end_date >= ?)
+            """, (user["id"], today, today)).fetchone()[0]
+
+        # Calculate adherence for the last 7 days
+        records = get_adherence_data(user["id"], days=7)
+
+        total, taken, missed, unconfirmed, adherence = (
+            calculate_adherence(records)
+        )
+
+        adherence_text = (
+            f"{adherence:.1f}%"
+            if total > 0 else "—"
+        )
+
+        # Display dashboard metrics
         col1, col2, col3 = st.columns(3)
 
         with col1:
-            st.metric("Active Medicines", "—")
+            st.metric("Active Medicines", active_medicines)
 
         with col2:
-            st.metric("Today's Doses", "—")
+            st.metric("Today's Doses", today_doses)
 
         with col3:
-            st.metric("Adherence Status", "—")
+            st.metric("Adherence Status", adherence_text)
+
 
         st.divider()
 
@@ -512,11 +561,14 @@ def show_dashboard():
                 st.subheader("💊 Medicine Management")
 
                 st.write(
-                    "Manage regular and temporary medicines, "
-                    "medication schedules, and stock."
+                    "Manage your regular and temporary medicines, "
+                    "medication schedules, and available stock."
                 )
 
-                st.caption("Medicine module integration pending.")
+                st.button(
+                    "Manage Medicines",
+                    on_click=go_to_medicines
+                )
 
         with col2:
 
@@ -535,10 +587,47 @@ def show_dashboard():
 
         st.subheader("Medication Activity")
 
-        st.info(
-            "Your recent medication activity and dose updates "
-            "will appear here once the medicine module is integrated."
-        )
+        with get_connection() as conn:
+            activities = conn.execute("""
+                SELECT
+                    m.medicine_name,
+                    ds.dose_time,
+                    dr.scheduled_for,
+                    dr.status
+                FROM dose_records dr
+                JOIN dose_schedules ds
+                    ON dr.schedule_id = ds.id
+                JOIN medicines m
+                    ON ds.medicine_id = m.id
+                WHERE m.user_id = ?
+                ORDER BY dr.scheduled_for DESC, ds.dose_time DESC
+                LIMIT 5
+            """, (user["id"],)).fetchall()
+
+        if not activities:
+            st.info("No medication activity recorded yet.")
+        else:
+            for activity in activities:
+                col1, col2 = st.columns([3, 1])
+
+                with col1:
+                    st.write(f"**{activity['medicine_name']}**")
+                    st.caption(
+                        f"{activity['scheduled_for']} · "
+                        f"{activity['dose_time']}"
+                )
+
+                with col2:
+                    status = activity["status"].capitalize()
+
+                    if status == "Taken":
+                        st.success(status)
+                    elif status == "Missed":
+                        st.error(status)
+                    else:
+                        st.warning(status)
+                        
+                st.divider()
 
     # =====================================
     # MEDICINES PAGE
@@ -546,16 +635,17 @@ def show_dashboard():
 
     elif page == "Medicines":
 
-        st.title("💊 Medicine Management")
+        from medicines import show_medicines
+        show_medicines(user["id"])
 
-        st.write(
-            "Manage your regular and temporary medications."
-        )
+    # =====================================
+    # Dose Tracking PAGE
+    # =====================================
 
-        st.info(
-            "The medicine management module will be integrated here."
-        )
+    elif page == "Dose Tracking":
 
+        from dose_tracking import show_dose_tracking
+        show_dose_tracking(user["id"])
     # =====================================
     # FOOD SUGGESTIONS PAGE
     # =====================================
