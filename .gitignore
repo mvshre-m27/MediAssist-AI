@@ -218,3 +218,7 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+# MediAssist local data and secrets
+data/
+.env
+.streamlit/secrets.toml
