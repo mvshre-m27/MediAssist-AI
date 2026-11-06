@@ -4,6 +4,11 @@ import streamlit as st
 from auth import create_user, verify_user
 from database import get_connection
 
+from medicines import show_medicines
+from dose_tracking import show_dose_tracking
+from reminders import show_reminders
+from adherence_history import show_adherence_history
+
 
 # =========================================
 # 1. PAGE CONFIGURATION
@@ -116,7 +121,6 @@ def save_profile_data(
 
     with get_connection() as conn:
 
-        # Save personal information
         conn.execute("""
             INSERT INTO user_profiles (
                 user_id, full_name, age
@@ -133,7 +137,6 @@ def save_profile_data(
             age
         ))
 
-        # Save food preferences
         conn.execute("""
             INSERT INTO food_preferences (
                 user_id,
@@ -383,7 +386,6 @@ def show_profile(user):
 
             if saved:
 
-                # Validate age
                 age_value = None
 
                 if age_input.strip():
@@ -392,7 +394,9 @@ def show_profile(user):
                         age_value = int(age_input)
 
                         if age_value < 1 or age_value > 120:
-                            st.error("Please enter a valid age between 1 and 120.")
+                            st.error(
+                                "Please enter a valid age between 1 and 120."
+                            )
                             return
 
                     except ValueError:
@@ -411,7 +415,9 @@ def show_profile(user):
                         preference_input.strip()
                     )
 
-                    st.success("Your profile has been saved successfully!")
+                    st.success(
+                        "Your profile has been saved successfully!"
+                    )
 
                 except Exception as e:
 
@@ -449,6 +455,9 @@ def show_dashboard():
         [
             "Home",
             "Medicines",
+            "Dose Tracking",
+            "Reminders",
+            "Adherence History",
             "Food Suggestions",
             "Profile",
             "Settings"
@@ -516,7 +525,9 @@ def show_dashboard():
                     "medication schedules, and stock."
                 )
 
-                st.caption("Medicine module integration pending.")
+                st.caption(
+                    "Use the Medicines page to manage your medicines."
+                )
 
         with col2:
 
@@ -529,7 +540,9 @@ def show_dashboard():
                     "preferences and dietary restrictions."
                 )
 
-                st.caption("Food recommendation integration pending.")
+                st.caption(
+                    "Food recommendation integration pending."
+                )
 
         st.divider()
 
@@ -537,7 +550,7 @@ def show_dashboard():
 
         st.info(
             "Your recent medication activity and dose updates "
-            "will appear here once the medicine module is integrated."
+            "will appear here once the dashboard summary is connected."
         )
 
     # =====================================
@@ -546,15 +559,31 @@ def show_dashboard():
 
     elif page == "Medicines":
 
-        st.title("💊 Medicine Management")
+        show_medicines(user["id"])
 
-        st.write(
-            "Manage your regular and temporary medications."
-        )
+    # =====================================
+    # DOSE TRACKING PAGE
+    # =====================================
 
-        st.info(
-            "The medicine management module will be integrated here."
-        )
+    elif page == "Dose Tracking":
+
+        show_dose_tracking(user["id"])
+
+    # =====================================
+    # REMINDERS PAGE
+    # =====================================
+
+    elif page == "Reminders":
+
+        show_reminders(user["id"])
+
+    # =====================================
+    # ADHERENCE HISTORY PAGE
+    # =====================================
+
+    elif page == "Adherence History":
+
+        show_adherence_history(user["id"])
 
     # =====================================
     # FOOD SUGGESTIONS PAGE
