@@ -1,0 +1,69 @@
+{
+    "selected_model": "Random_Forest",
+    "feature_columns": [
+        "AGE",
+        "ANNUALCONTRIBUTION",
+        "ANNUALCLAIMAMOUNT",
+        "UNITSTOTAL",
+        "GENDER_M",
+        "SCHEMETYPE_MEDIUM",
+        "SCHEMETYPE_PREMIUM",
+        "DIAGNOSIS_HYPERTENSION",
+        "COVERTYPE_STANDARD",
+        "COMORBIDITY_NO_COMORBIDITY",
+        "COMPLICATIONDEVELOPMENT_NO_COMPLICATION"
+    ],
+    "models_comparison": {
+        "Logistic_Regression": {
+            "accuracy": 0.6186,
+            "precision": 0.6972,
+            "recall": 0.6413,
+            "f1_score": 0.6681,
+            "roc_auc": 0.6586,
+            "confusion_matrix": [
+                [
+                    1131,
+                    803
+                ],
+                [
+                    1034,
+                    1849
+                ]
+            ]
+        },
+        "Decision_Tree": {
+            "accuracy": 0.8059,
+            "precision": 0.9195,
+            "recall": 0.7405,
+            "f1_score": 0.8204,
+            "roc_auc": 0.8893,
+            "confusion_matrix": [
+                [
+                    1747,
+                    187
+                ],
+                [
+                    748,
+                    2135
+                ]
+            ]
+        },
+        "Random_Forest": {
+            "accuracy": 0.8103,
+            "precision": 0.9286,
+            "recall": 0.7399,
+            "f1_score": 0.8236,
+            "roc_auc": 0.9006,
+            "confusion_matrix": [
+                [
+                    1770,
+                    164
+                ],
+                [
+                    750,
+                    2133
+                ]
+            ]
+        }
+    }
+}

@@ -1,5 +1,6 @@
 
 import streamlit as st
+from datetime import date
 
 from auth import create_user, verify_user
 from database import get_connection
@@ -7,7 +8,9 @@ from database import get_connection
 from medicines import show_medicines
 from dose_tracking import show_dose_tracking
 from reminders import show_reminders
-from adherence_history import show_adherence_history
+from adherence_history import show_adherence_history, get_adherence_data, calculate_adherence
+from adherence_risk import show_adherence_risk_page
+from food_suggestions import show_food_suggestions_page
 
 
 # =========================================
@@ -86,8 +89,61 @@ div[data-testid="stMetric"] {
 
 
 # =========================================
-# 4. PROFILE DATABASE FUNCTIONS
+# 4. PROFILE & DASHBOARD DATABASE FUNCTIONS
 # =========================================
+
+def get_home_dashboard_data(user_id):
+    """Fetch live metrics and recent dose events for the Home dashboard."""
+    today = date.today().isoformat()
+    with get_connection() as conn:
+        active_meds = conn.execute("""
+            SELECT COUNT(*) as count
+            FROM medicines
+            WHERE user_id = ? AND is_active = 1
+        """, (user_id,)).fetchone()["count"]
+
+        today_doses = conn.execute("""
+            SELECT COUNT(ds.id) as count
+            FROM dose_schedules ds
+            JOIN medicines m ON ds.medicine_id = m.id
+            WHERE m.user_id = ?
+              AND m.is_active = 1
+              AND m.start_date <= ?
+              AND (m.end_date IS NULL OR m.end_date >= ?)
+        """, (user_id, today, today)).fetchone()["count"]
+
+        recent_activity = conn.execute("""
+            SELECT
+                dr.scheduled_for,
+                COALESCE(dr.status, 'unconfirmed') AS status,
+                dr.taken_at,
+                ds.dose_time,
+                m.medicine_name,
+                m.dosage
+            FROM dose_records dr
+            JOIN dose_schedules ds ON dr.schedule_id = ds.id
+            JOIN medicines m ON ds.medicine_id = m.id
+            WHERE m.user_id = ?
+            ORDER BY dr.scheduled_for DESC, ds.dose_time DESC
+            LIMIT 5
+        """, (user_id,)).fetchall()
+
+    records = get_adherence_data(user_id, days=7)
+    adherence_pct = "No history"
+    if records:
+        total, taken, missed, unconfirmed, adherence = calculate_adherence(records)
+        if (taken + missed) > 0:
+            adherence_pct = f"{adherence:.1f}%"
+        else:
+            adherence_pct = "Unconfirmed"
+
+    return {
+        "active_meds": active_meds,
+        "today_doses": today_doses,
+        "adherence_pct": adherence_pct,
+        "recent_activity": [dict(r) for r in recent_activity]
+    }
+
 
 def get_profile_data(user_id):
 
@@ -429,7 +485,124 @@ def show_profile(user):
 
 
 # =========================================
-# 7. MAIN DASHBOARD
+# 7. SETTINGS PAGE
+# =========================================
+
+def show_settings(user_id):
+    st.title("⚙️ Application Settings")
+    st.write("Manage your notification preferences, intervention safeguards, and caregiver contacts.")
+
+    with get_connection() as conn:
+        pref = conn.execute("""
+            SELECT gentle_reminders_enabled, caregiver_alerts_enabled, alert_threshold
+            FROM intervention_preferences
+            WHERE user_id = ?
+        """, (user_id,)).fetchone()
+
+        caregivers = conn.execute("""
+            SELECT id, caregiver_name, relationship, contact_method, contact_value, consent_given, is_enabled
+            FROM caregiver_contacts
+            WHERE user_id = ?
+            ORDER BY created_at DESC
+        """, (user_id,)).fetchall()
+
+        logs = conn.execute("""
+            SELECT intervention_type, delivery_status, message, created_at
+            FROM intervention_logs
+            WHERE user_id = ?
+            ORDER BY created_at DESC
+            LIMIT 10
+        """, (user_id,)).fetchall()
+
+    # 1. Intervention Preferences
+    st.subheader("🔔 Supportive Adherence Interventions")
+    st.caption("Control when and how MediAssist provides proactive adherence check-ins.")
+
+    gentle_default = bool(pref["gentle_reminders_enabled"]) if pref else False
+    caregiver_default = bool(pref["caregiver_alerts_enabled"]) if pref else False
+    threshold_default = pref["alert_threshold"] if pref else "high"
+
+    with st.form("intervention_pref_form"):
+        gentle_val = st.toggle("Enable Gentle In-App Reminders when Adherence Risk is Elevated", value=gentle_default)
+        caregiver_val = st.toggle("Enable Optional Caregiver Alert Notifications", value=caregiver_default)
+        threshold_options = ["high", "medium"]
+        threshold_idx = 0 if threshold_default == "high" else 1
+        threshold_val = st.selectbox(
+            "Risk Threshold to Trigger Interventions",
+            threshold_options,
+            index=threshold_idx,
+            format_func=lambda x: "High Risk Only (Recommended)" if x == "high" else "Medium or High Risk"
+        )
+
+        saved_pref = st.form_submit_button("Save Notification Settings", use_container_width=True)
+        if saved_pref:
+            with get_connection() as conn:
+                conn.execute("""
+                    INSERT INTO intervention_preferences (user_id, gentle_reminders_enabled, caregiver_alerts_enabled, alert_threshold)
+                    VALUES (?, ?, ?, ?)
+                    ON CONFLICT(user_id) DO UPDATE SET
+                        gentle_reminders_enabled = excluded.gentle_reminders_enabled,
+                        caregiver_alerts_enabled = excluded.caregiver_alerts_enabled,
+                        alert_threshold = excluded.alert_threshold,
+                        updated_at = CURRENT_TIMESTAMP
+                """, (user_id, int(gentle_val), int(caregiver_val), threshold_val))
+            st.success("Intervention settings saved successfully!")
+            st.rerun()
+
+    st.divider()
+
+    # 2. Caregiver Contact Form
+    st.subheader("👥 Caregiver Contacts")
+    st.caption("A trusted family member or caregiver who can support your medication routine.")
+
+    if caregivers:
+        for cg in caregivers:
+            status_text = "Active" if cg["is_enabled"] else "Disabled"
+            consent_text = "Consent Verified" if cg["consent_given"] else "Consent Pending"
+            with st.container(border=True):
+                col1, col2 = st.columns([3, 1])
+                with col1:
+                    st.markdown(f"**{cg['caregiver_name']}** ({cg['relationship'] or 'Caregiver'})")
+                    st.caption(f"Contact: {cg['contact_method'].upper()} — `{cg['contact_value']}` | {consent_text}")
+                with col2:
+                    st.write(f"Status: **{status_text}**")
+    else:
+        st.info("No caregiver contact added yet.")
+
+    with st.expander("➕ Add New Caregiver Contact"):
+        with st.form("caregiver_form"):
+            cg_name = st.text_input("Caregiver Name")
+            cg_rel = st.text_input("Relationship", placeholder="e.g. Spouse, Adult Child, Guardian")
+            cg_method = st.selectbox("Preferred Contact Method", ["email", "phone"])
+            cg_val = st.text_input("Contact Info (Email or Phone Number)")
+            cg_consent = st.checkbox("I confirm that the caregiver has consented to receive medication safety notifications.")
+
+            submitted_cg = st.form_submit_button("Save Caregiver Contact", use_container_width=True)
+            if submitted_cg:
+                if not cg_name.strip() or not cg_val.strip():
+                    st.error("Please provide both name and contact information.")
+                else:
+                    with get_connection() as conn:
+                        conn.execute("""
+                            INSERT INTO caregiver_contacts (user_id, caregiver_name, relationship, contact_method, contact_value, consent_given, is_enabled)
+                            VALUES (?, ?, ?, ?, ?, ?, ?)
+                        """, (user_id, cg_name.strip(), cg_rel.strip(), cg_method, cg_val.strip(), int(cg_consent), 1))
+                    st.success("Caregiver contact added!")
+                    st.rerun()
+
+    st.divider()
+
+    # 3. Audit Logs
+    st.subheader("📜 Intervention Delivery Logs")
+    if logs:
+        for log in logs:
+            st.text(f"[{log['created_at']}] ({log['delivery_status'].upper()}) {log['intervention_type']}: {log['message']}")
+    else:
+        st.caption("No intervention events logged yet.")
+
+
+# =========================================
+# 8. MAIN DASHBOARD
 # =========================================
 
 def show_dashboard():
@@ -458,6 +631,7 @@ def show_dashboard():
             "Dose Tracking",
             "Reminders",
             "Adherence History",
+            "Adherence Risk Prediction",
             "Food Suggestions",
             "Profile",
             "Settings"
@@ -495,63 +669,81 @@ def show_dashboard():
 
         st.divider()
 
+        dash_data = get_home_dashboard_data(user["id"])
+
         st.subheader("Your Overview")
 
         col1, col2, col3 = st.columns(3)
 
         with col1:
-            st.metric("Active Medicines", "—")
+            st.metric("Active Medicines", f"{dash_data['active_meds']}")
 
         with col2:
-            st.metric("Today's Doses", "—")
+            st.metric("Today's Doses", f"{dash_data['today_doses']}")
 
         with col3:
-            st.metric("Adherence Status", "—")
+            st.metric("7-Day Adherence Status", f"{dash_data['adherence_pct']}")
 
         st.divider()
 
         st.subheader("Quick Access")
 
-        col1, col2 = st.columns(2)
+        col1, col2, col3 = st.columns(3)
 
         with col1:
-
             with st.container(border=True):
-
-                st.subheader("💊 Medicine Management")
-
+                st.subheader("💊 Medicines")
                 st.write(
                     "Manage regular and temporary medicines, "
-                    "medication schedules, and stock."
+                    "schedules, and remaining stock."
                 )
-
-                st.caption(
-                    "Use the Medicines page to manage your medicines."
-                )
+                st.caption("Track & configure daily dose times.")
 
         with col2:
-
             with st.container(border=True):
-
-                st.subheader("🥗 Food Suggestions")
-
+                st.subheader("🎯 Risk Prediction")
                 st.write(
-                    "Explore food suggestions based on your "
-                    "preferences and dietary restrictions."
+                    "Run our trained Machine Learning pipeline to "
+                    "assess medication non-adherence risk."
                 )
+                st.caption("Powered by Random Forest (ROC-AUC: 0.90).")
 
-                st.caption(
-                    "Food recommendation integration pending."
+        with col3:
+            with st.container(border=True):
+                st.subheader("🥗 Food Suggestions")
+                st.write(
+                    "Explore clinical food recommendations based on "
+                    "your dietary preferences and health needs."
                 )
+                st.caption("DASH & Low-GI aligned nutrition.")
 
         st.divider()
 
-        st.subheader("Medication Activity")
+        st.subheader("Recent Medication Activity")
 
-        st.info(
-            "Your recent medication activity and dose updates "
-            "will appear here once the dashboard summary is connected."
-        )
+        recent_acts = dash_data["recent_activity"]
+        if recent_acts:
+            for act in recent_acts:
+                status_color = "#2e7d32" if act["status"] == "taken" else ("#d32f2f" if act["status"] == "missed" else "#ed6c02")
+                st.markdown(
+                    f"""
+                    <div style='background: white; border: 1px solid #dcebe3; border-radius: 8px; padding: 10px 16px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;'>
+                        <div>
+                            <b>{act['medicine_name']}</b> ({act['dosage'] or 'No dosage specified'}) &nbsp;|&nbsp;
+                            <span style='color: #666;'>Scheduled: {act['scheduled_for']} at {act['dose_time']}</span>
+                        </div>
+                        <span style='background-color: {status_color}; color: white; padding: 2px 10px; border-radius: 12px; font-size: 12px; text-transform: uppercase; font-weight: bold;'>
+                            {act['status']}
+                        </span>
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+        else:
+            st.info(
+                "No recent medication activity recorded yet. "
+                "Confirm or mark doses under **Dose Tracking** to see real-time updates here."
+            )
 
     # =====================================
     # MEDICINES PAGE
@@ -586,21 +778,20 @@ def show_dashboard():
         show_adherence_history(user["id"])
 
     # =====================================
+    # ADHERENCE RISK PREDICTION PAGE (ML)
+    # =====================================
+
+    elif page == "Adherence Risk Prediction":
+
+        show_adherence_risk_page(user["id"])
+
+    # =====================================
     # FOOD SUGGESTIONS PAGE
     # =====================================
 
     elif page == "Food Suggestions":
 
-        st.title("🥗 Food Suggestions")
-
-        st.write(
-            "Explore food suggestions based on your dietary "
-            "preferences and restrictions."
-        )
-
-        st.info(
-            "The food recommendation module will be integrated here."
-        )
+        show_food_suggestions_page(user["id"])
 
     # =====================================
     # PROFILE PAGE
@@ -610,20 +801,9 @@ def show_dashboard():
 
         show_profile(user)
 
-    # =====================================
-    # SETTINGS PAGE
-    # =====================================
-
     elif page == "Settings":
 
-        st.title("⚙️ Settings")
-
-        st.write("Manage your application preferences.")
-
-        st.info(
-            "Notification preferences and optional caregiver "
-            "settings will be connected here."
-        )
+        show_settings(user["id"])
 
 
 # =========================================
