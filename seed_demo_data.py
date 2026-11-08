@@ -11,7 +11,7 @@ Creates a clean demonstration profile with realistic chronic care data:
 
 from datetime import date, datetime, timedelta
 import random
-from database import get_connection, init_db
+from database import get_connection, init_db, save_user_comorbidities
 from auth import create_user, verify_user
 
 DEMO_USERNAME = "demo_patient"
@@ -137,6 +137,9 @@ def seed_demo():
         """, (s3_id, today.isoformat(), f"{today.isoformat()} 09:05:00"))
 
         # s2_id and s4_id left unconfirmed for tonight's doses!
+
+    # 7. Seed Diagnosed Comorbidities
+    save_user_comorbidities(user_id, ["diabetes", "hypertension", "dyslipidemia"])
 
     print("Successfully seeded demo data:")
     print("  User       : demo_patient")

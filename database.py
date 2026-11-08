@@ -295,6 +295,24 @@ def init_db():
         """)
 
         # ------------------------------------------
+        # TABLE 11: USER COMORBIDITIES
+        # Stores diagnosed chronic medical conditions
+        # ------------------------------------------
+
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS user_comorbidities (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER NOT NULL,
+                condition_key TEXT NOT NULL,
+                condition_name TEXT NOT NULL,
+                diagnosed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE (user_id, condition_key),
+                FOREIGN KEY (user_id)
+                    REFERENCES users(id) ON DELETE CASCADE
+            )
+        """)
+
+        # ------------------------------------------
         # INDEXES FOR FASTER DATA RETRIEVAL
         # ------------------------------------------
 
@@ -323,11 +341,61 @@ def init_db():
             ON intervention_logs(user_id)
         """)
 
+        conn.execute("""
+            CREATE INDEX IF NOT EXISTS idx_comorbidities_user
+            ON user_comorbidities(user_id)
+        """)
+
     print("MediAssist database initialized successfully!")
 
 
 # ==================================================
-# 4. GET ALL TABLE NAMES
+# 4. COMORBIDITY MANAGEMENT FUNCTIONS
+# ==================================================
+
+KNOWN_COMORBIDITY_LABELS = {
+    "diabetes": "Type 2 Diabetes Mellitus",
+    "hypertension": "Essential Hypertension",
+    "ckd": "Chronic Kidney Disease (CKD / Renal Impairment)",
+    "heart_disease": "Coronary Artery Disease / Heart Failure",
+    "dyslipidemia": "Dyslipidemia & High Cholesterol",
+    "gout": "Hyperuricemia & Gout",
+    "gerd": "Acid Reflux / GERD / Gastric Ulcer",
+    "asthma": "Bronchial Asthma / COPD",
+    "liver_disease": "Fatty Liver (NAFLD) / Hepatic Impairment",
+    "osteoporosis": "Osteopenia / Osteoporosis"
+}
+
+
+def get_user_comorbidities(user_id):
+    """Fetch diagnosed comorbidity records for a user."""
+    with get_connection() as conn:
+        rows = conn.execute("""
+            SELECT condition_key, condition_name
+            FROM user_comorbidities
+            WHERE user_id = ?
+            ORDER BY condition_name ASC
+        """, (user_id,)).fetchall()
+        return [dict(r) for r in rows]
+
+
+def save_user_comorbidities(user_id, condition_keys):
+    """Save selected chronic comorbidities for a user."""
+    with get_connection() as conn:
+        conn.execute("DELETE FROM user_comorbidities WHERE user_id = ?", (user_id,))
+        for key in condition_keys:
+            if not key or not str(key).strip():
+                continue
+            k = str(key).strip().lower()
+            name = KNOWN_COMORBIDITY_LABELS.get(k, k.replace("_", " ").title())
+            conn.execute("""
+                INSERT OR IGNORE INTO user_comorbidities (user_id, condition_key, condition_name)
+                VALUES (?, ?, ?)
+            """, (user_id, k, name))
+
+
+# ==================================================
+# 5. GET ALL TABLE NAMES
 # ==================================================
 
 def get_table_names():

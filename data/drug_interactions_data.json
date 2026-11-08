@@ -1,0 +1,602 @@
+[
+  {
+    "id": "ddi_001",
+    "drug_a": "amlodipine",
+    "drug_b": "clarithromycin",
+    "severity": "Severe",
+    "title": "Severe Hypotension & Acute Kidney Injury",
+    "mechanism": "Clarithromycin is a potent CYP3A4 inhibitor that markedly decreases Amlodipine metabolism, causing excessive systemic accumulation.",
+    "clinical_effects": "Profound, refractory hypotension, severe peripheral edema, and hypoperfusion-induced acute kidney injury.",
+    "recommendation": "Avoid combination. Choose an alternative antibiotic (e.g. Azithromycin) that does not inhibit CYP3A4."
+  },
+  {
+    "id": "ddi_002",
+    "drug_a": "atorvastatin",
+    "drug_b": "clarithromycin",
+    "severity": "Severe",
+    "title": "Severe Statin Toxicity & Rhabdomyolysis",
+    "mechanism": "Clarithromycin potently inhibits CYP3A4, causing up to an 8-fold increase in Atorvastatin serum concentrations.",
+    "clinical_effects": "Severe acute myopathy, muscle breakdown (rhabdomyolysis), and myoglobinuric acute renal failure.",
+    "recommendation": "Contraindicated. Suspend Atorvastatin temporarily during clarithromycin course, or prescribe Rosuvastatin or Azithromycin."
+  },
+  {
+    "id": "ddi_003",
+    "drug_a": "atorvastatin",
+    "drug_b": "gemfibrozil",
+    "severity": "Severe",
+    "title": "Rhabdomyolysis & Myopathy",
+    "mechanism": "Gemfibrozil strongly inhibits glucuronidation and OATP1B1 hepatic uptake of Atorvastatin, multiplying systemic statin exposure.",
+    "clinical_effects": "Severe skeletal muscle breakdown, dark urine, acute kidney failure.",
+    "recommendation": "Contraindicated. If fibrate therapy is required with a statin, Fenofibrate is the safer, guideline-recommended fibrate."
+  },
+  {
+    "id": "ddi_004",
+    "drug_a": "telmisartan",
+    "drug_b": "spironolactone",
+    "severity": "Severe",
+    "title": "Life-Threatening Hyperkalemia",
+    "mechanism": "Additive potassium retention: Telmisartan blocks angiotensin II aldosterone stimulation, while Spironolactone directly antagonizes aldosterone in the distal tubule.",
+    "clinical_effects": "Severe hyperkalemia (>5.5 - 6.5 mEq/L), fatal cardiac arrhythmias, asystole, muscle flaccidity.",
+    "recommendation": "Major clinical caution. If combined in heart failure / resistant hypertension, monitor serum potassium and creatinine at baseline, 1 week, and monthly."
+  },
+  {
+    "id": "ddi_005",
+    "drug_a": "ramipril",
+    "drug_b": "spironolactone",
+    "severity": "Severe",
+    "title": "Life-Threatening Hyperkalemia",
+    "mechanism": "Dual suppression of the renin-angiotensin-aldosterone axis prevents renal potassium excretion.",
+    "clinical_effects": "Rapidly fatal cardiac arrhythmias, sine wave ECG pattern, sudden cardiac arrest.",
+    "recommendation": "Strict monitoring of serum potassium required. Do not use potassium salt substitutes or supplements."
+  },
+  {
+    "id": "ddi_006",
+    "drug_a": "losartan",
+    "drug_b": "spironolactone",
+    "severity": "Severe",
+    "title": "Severe Hyperkalemia Risk",
+    "mechanism": "Synergistic potassium retention by combined ARB and mineralocorticoid receptor blockade.",
+    "clinical_effects": "Cardiac conduction delays, severe bradycardia, hyperkalemic paralysis.",
+    "recommendation": "Requires frequent electrolyte surveillance. Restrict dietary potassium supplementation."
+  },
+  {
+    "id": "ddi_007",
+    "drug_a": "aspirin",
+    "drug_b": "warfarin",
+    "severity": "Severe",
+    "title": "Major Hemorrhagic Bleeding Risk",
+    "mechanism": "Dual antiplatelet (Aspirin COX-1 inhibition) and anticoagulant (Warfarin clotting factor inhibition) activity destroys both primary and secondary hemostasis.",
+    "clinical_effects": "Major upper GI hemorrhage, intracranial hemorrhage, hematuria, extensive bruising.",
+    "recommendation": "Avoid combination unless strictly mandated by specific cardiology protocols (e.g. mechanical heart valves). Co-prescribe a PPI (Pantoprazole)."
+  },
+  {
+    "id": "ddi_008",
+    "drug_a": "clopidogrel",
+    "drug_b": "warfarin",
+    "severity": "Severe",
+    "title": "Severe Gastrointestinal & Systemic Hemorrhage",
+    "mechanism": "Potent P2Y12 platelet aggregation blockade combined with systemic hypoprothrombinemia.",
+    "clinical_effects": "Exponential increase in major fatal and non-fatal bleeding events.",
+    "recommendation": "Strict clinical oversight required. Maintain INR in the lower target range and prescribe gastroprotective PPI therapy."
+  },
+  {
+    "id": "ddi_009",
+    "drug_a": "aspirin",
+    "drug_b": "ibuprofen",
+    "severity": "Severe",
+    "title": "Loss of Cardioprotection & Gastric Bleeding",
+    "mechanism": "Ibuprofen competitively blocks the access channel of COX-1, preventing low-dose Aspirin from irreversibly acetylating Ser-529. Also causes additive mucosal toxicity.",
+    "clinical_effects": "Aspirin loses its anti-thrombotic cardioprotective effect (increased heart attack risk); 4x increase in bleeding stomach ulcers.",
+    "recommendation": "Avoid concomitant NSAIDs. If an analgesic is required with Aspirin, Paracetamol is strongly preferred."
+  },
+  {
+    "id": "ddi_010",
+    "drug_a": "aspirin",
+    "drug_b": "diclofenac",
+    "severity": "Severe",
+    "title": "Severe Gastrointestinal Ulceration & Bleeding",
+    "mechanism": "Synergistic depletion of gastroprotective prostaglandins (PGE2, PGI2) in gastric mucosa with systemic platelet inhibition.",
+    "clinical_effects": "Erosive hemorrhagic gastritis, perforated peptic ulcers, melena.",
+    "recommendation": "Avoid combination. Use Paracetamol for pain relief or add a proton pump inhibitor (Pantoprazole)."
+  },
+  {
+    "id": "ddi_011",
+    "drug_a": "digoxin",
+    "drug_b": "amiodarone",
+    "severity": "Severe",
+    "title": "Fatal Digitalis Toxicity & Arrhythmias",
+    "mechanism": "Amiodarone inhibits P-glycoprotein renal and biliary transport of Digoxin, doubling serum Digoxin concentrations within days.",
+    "clinical_effects": "Lethal ventricular arrhythmias, complete heart block, nausea, yellow-green visual halos.",
+    "recommendation": "When initiating Amiodarone, REDUCE Digoxin dose by 50% immediately and monitor serum Digoxin levels."
+  },
+  {
+    "id": "ddi_012",
+    "drug_a": "digoxin",
+    "drug_b": "verapamil",
+    "severity": "Severe",
+    "title": "Profound Bradycardia, AV Block & Digoxin Toxicity",
+    "mechanism": "Verapamil inhibits P-glycoprotein clearance of Digoxin (+60-90% blood levels) and exerts additive inhibitory effects on AV nodal conduction.",
+    "clinical_effects": "High-degree AV block, severe sinus bradycardia, digitalis toxic arrhythmias.",
+    "recommendation": "Reduce Digoxin dosage by 30-50% upon starting Verapamil. Perform serial ECG monitoring."
+  },
+  {
+    "id": "ddi_013",
+    "drug_a": "digoxin",
+    "drug_b": "diltiazem",
+    "severity": "Severe",
+    "title": "AV Nodal Depression & Digitalis Toxicity",
+    "mechanism": "Moderate P-gp inhibition increases Digoxin levels by 20-40%; synergistic suppression of AV node conduction.",
+    "clinical_effects": "Symptomatic bradycardia, syncope, AV dissociation.",
+    "recommendation": "Monitor heart rate, ECG, and serum digoxin levels. Adjust dose as indicated."
+  },
+  {
+    "id": "ddi_014",
+    "drug_a": "metoprolol",
+    "drug_b": "diltiazem",
+    "severity": "Severe",
+    "title": "Severe Bradycardia, Heart Block & Cardiac Failure",
+    "mechanism": "Additive negative inotropic (contractility) and chronotropic (heart rate) depression on SA and AV nodes.",
+    "clinical_effects": "Profound bradycardia, hypotension, complete heart block, acute decompensation of heart failure.",
+    "recommendation": "Avoid combination where possible. If co-prescribed for rate control, close clinical and ECG supervision is mandatory."
+  },
+  {
+    "id": "ddi_015",
+    "drug_a": "metoprolol",
+    "drug_b": "verapamil",
+    "severity": "Severe",
+    "title": "Cardiogenic Shock & Severe Sinus Arrest",
+    "mechanism": "Profound synergistic depression of cardiac contractility and conduction velocity.",
+    "clinical_effects": "Severe hypotension, cardiogenic shock, asystole.",
+    "recommendation": "Contraindicated. Do not combine oral/IV Verapamil with Beta-blockers."
+  },
+  {
+    "id": "ddi_016",
+    "drug_a": "carvedilol",
+    "drug_b": "diltiazem",
+    "severity": "Severe",
+    "title": "Refractory Bradycardia & Heart Block",
+    "mechanism": "Dual sympathetic and non-DHP calcium channel blockade suppresses cardiac pacemakers.",
+    "clinical_effects": "Extreme fatigue, syncope, high-grade AV block.",
+    "recommendation": "Caution advised. Frequent heart rate and blood pressure checks required."
+  },
+  {
+    "id": "ddi_017",
+    "drug_a": "glimepiride",
+    "drug_b": "fluconazole",
+    "severity": "Severe",
+    "title": "Prolonged & Dangerous Hypoglycemia",
+    "mechanism": "Fluconazole potently inhibits CYP2C9, the primary metabolic pathway for Glimepiride clearance, causing massive drug accumulation.",
+    "clinical_effects": "Severe, persistent hypoglycemia, confusion, seizures, hypoglycemic coma.",
+    "recommendation": "Avoid combination or substantially reduce Glimepiride dose. Monitor blood glucose frequently."
+  },
+  {
+    "id": "ddi_018",
+    "drug_a": "gliclazide",
+    "drug_b": "fluconazole",
+    "severity": "Severe",
+    "title": "Severe Refractory Hypoglycemia",
+    "mechanism": "CYP2C9 inhibition by Fluconazole delays Gliclazide elimination, extending its half-life dramatically.",
+    "clinical_effects": "Prolonged hypoglycemic episodes requiring intravenous dextrose infusion.",
+    "recommendation": "Reduce Gliclazide dosage by 50% or more while taking Fluconazole. Intensify blood glucose testing."
+  },
+  {
+    "id": "ddi_019",
+    "drug_a": "glipizide",
+    "drug_b": "fluconazole",
+    "severity": "Severe",
+    "title": "Severe Prolonged Hypoglycemia",
+    "mechanism": "Inhibition of CYP2C9 triples the AUC of Glipizide.",
+    "clinical_effects": "Neuroglycopenia, loss of consciousness, hypothermia.",
+    "recommendation": "Use alternative antifungal or reduce Glipizide dosage with close glycemic surveillance."
+  },
+  {
+    "id": "ddi_020",
+    "drug_a": "warfarin",
+    "drug_b": "fluconazole",
+    "severity": "Severe",
+    "title": "Skyrocketing INR & Fatal Hemorrhage",
+    "mechanism": "Fluconazole strongly inhibits CYP2C9 metabolism of the more potent S-warfarin enantiomer.",
+    "clinical_effects": "Massive elevation of INR (often >10.0), severe spontaneous internal bleeding.",
+    "recommendation": "If Fluconazole must be given, preemptively reduce Warfarin dose by 50% and test INR every 48 hours."
+  },
+  {
+    "id": "ddi_021",
+    "drug_a": "warfarin",
+    "drug_b": "metronidazole",
+    "severity": "Severe",
+    "title": "Extreme Hypoprothrombinemia & Major Bleeding",
+    "mechanism": "Metronidazole selectively suppresses S-warfarin ring oxidation via CYP2C9.",
+    "clinical_effects": "Rapidly soaring INR, gross hematuria, gastrointestinal bleeding.",
+    "recommendation": "Reduce Warfarin dose by 30-50% during Metronidazole therapy. Check INR within 3 days."
+  },
+  {
+    "id": "ddi_022",
+    "drug_a": "warfarin",
+    "drug_b": "amiodarone",
+    "severity": "Severe",
+    "title": "Severe Anticoagulant Potentiation",
+    "mechanism": "Amiodarone inhibits both CYP2C9 and CYP3A4, severely impairing Warfarin clearance.",
+    "clinical_effects": "Marked INR elevation, bleeding diathesis.",
+    "recommendation": "Anticipate a 35-50% reduction in Warfarin requirements. Monitor INR weekly for 1-2 months."
+  },
+  {
+    "id": "ddi_023",
+    "drug_a": "escitalopram",
+    "drug_b": "tramadol",
+    "severity": "Severe",
+    "title": "Serotonin Syndrome & Seizure Risk",
+    "mechanism": "Additive serotonergic enhancement (Escitalopram 5-HT reuptake inhibition + Tramadol 5-HT release & reuptake inhibition) plus dual lowering of seizure threshold.",
+    "clinical_effects": "Serotonin syndrome: hyperthermia, neuromuscular rigidity, myoclonus, autonomic instability, generalized seizures.",
+    "recommendation": "Avoid co-administration. Choose a non-serotonergic analgesic (Paracetamol) or monitor for tremors/agitation."
+  },
+  {
+    "id": "ddi_024",
+    "drug_a": "metformin",
+    "drug_b": "alcohol",
+    "severity": "Severe",
+    "title": "Fatal Lactic Acidosis",
+    "mechanism": "Alcohol metabolism increases the NADH/NAD+ ratio, diverting pyruvate to lactate; combined with Metformin's inhibition of hepatic gluconeogenesis from lactate.",
+    "clinical_effects": "Metabolic lactic acidosis (tachypnea, abdominal pain, shock, high mortality).",
+    "recommendation": "Patients taking Metformin must avoid binge drinking or chronic alcohol excess."
+  },
+  {
+    "id": "ddi_025",
+    "drug_a": "paracetamol",
+    "drug_b": "alcohol",
+    "severity": "Severe",
+    "title": "Acute Toxic Hepatic Necrosis",
+    "mechanism": "Chronic ethanol consumption induces CYP2E1, shunting Paracetamol into excessive toxic NAPQI while depleting protective glutathione stores.",
+    "clinical_effects": "Acute fulminant liver failure, hepatic encephalopathy, jaundice.",
+    "recommendation": "Do not consume alcohol while taking Paracetamol. Never exceed 2-3 g/day in individuals who drink."
+  },
+  {
+    "id": "ddi_026",
+    "drug_a": "clopidogrel",
+    "drug_b": "omeprazole",
+    "severity": "Major",
+    "title": "Reduced Antiplatelet Efficacy (Stent Thrombosis Risk)",
+    "mechanism": "Omeprazole inhibits CYP2C19, preventing the metabolic bioactivation of the prodrug Clopidogrel into its active antiplatelet thiol metabolite.",
+    "clinical_effects": "Loss of antiplatelet protection, increased risk of ischemic stroke, stent thrombosis, recurrent MI.",
+    "recommendation": "Switch to Pantoprazole, which does not significantly inhibit CYP2C19, or Famotidine."
+  },
+  {
+    "id": "ddi_027",
+    "drug_a": "clopidogrel",
+    "drug_b": "esomeprazole",
+    "severity": "Major",
+    "title": "Decreased Clopidogrel Bioactivation",
+    "mechanism": "Competitive inhibition of CYP2C19 by Esomeprazole attenuates Clopidogrel platelet inhibition.",
+    "clinical_effects": "Blunted anti-aggregatory response, recurrent cardiovascular ischemic events.",
+    "recommendation": "Use Pantoprazole as the gastroprotective agent of choice with Clopidogrel."
+  },
+  {
+    "id": "ddi_028",
+    "drug_a": "ramipril",
+    "drug_b": "ibuprofen",
+    "severity": "Major",
+    "title": "Renal Failure & Loss of Blood Pressure Control",
+    "mechanism": "NSAIDs inhibit renal prostaglandins causing afferent arteriolar constriction; ACEIs inhibit efferent arteriolar constriction, causing a dramatic collapse in glomerular filtration pressure.",
+    "clinical_effects": "Acute kidney injury (AKI), fluid retention, rebound hypertension.",
+    "recommendation": "Avoid chronic NSAIDs in patients taking ACE inhibitors or ARBs. Use Paracetamol for pain."
+  },
+  {
+    "id": "ddi_029",
+    "drug_a": "telmisartan",
+    "drug_b": "ibuprofen",
+    "severity": "Major",
+    "title": "Acute Kidney Injury & Blunted Antihypertensive Action",
+    "mechanism": "Dual interference with renal hemodynamics (afferent NSAID constriction + efferent ARB dilation).",
+    "clinical_effects": "Elevated serum creatinine, hyperkalemia, peripheral edema, loss of BP control.",
+    "recommendation": "Monitor renal function and BP. Limit NSAID usage to lowest dose and shortest duration."
+  },
+  {
+    "id": "ddi_030",
+    "drug_a": "losartan",
+    "drug_b": "diclofenac",
+    "severity": "Major",
+    "title": "Renal Impairment & Diminished Antihypertensive Effect",
+    "mechanism": "Prostaglandin synthesis inhibition by Diclofenac blunts Losartan's natriuretic and vasodilatory response.",
+    "clinical_effects": "Sharp rise in blood pressure and acute deterioration of GFR, especially in elderly.",
+    "recommendation": "Use topical analgesics or Paracetamol instead of oral NSAIDs."
+  },
+  {
+    "id": "ddi_031",
+    "drug_a": "furosemide",
+    "drug_b": "ibuprofen",
+    "severity": "Major",
+    "title": "Antagonism of Diuretic & Antihypertensive Efficacy",
+    "mechanism": "NSAIDs inhibit renal PGE2 and PGI2 synthesis, preventing Furosemide-mediated vasodilation and natriuresis.",
+    "clinical_effects": "Fluid retention, worsening peripheral edema, exacerbation of congestive heart failure.",
+    "recommendation": "Avoid NSAIDs in patients requiring loop diuretics for volume management."
+  },
+  {
+    "id": "ddi_032",
+    "drug_a": "ramipril",
+    "drug_b": "furosemide",
+    "severity": "Major",
+    "title": "First-Dose Hypotension & Acute Renal Impairment",
+    "mechanism": "Diuretic-induced volume depletion makes the renin-angiotensin system crucial for BP maintenance; adding ACEI precipitously drops pressure.",
+    "clinical_effects": "Profound orthostatic hypotension, syncope, transient prerenal azotemia.",
+    "recommendation": "Temporarily reduce or hold diuretic for 24-48 hours before starting ACEI, or start ACEI at lowest possible dose at bedtime."
+  },
+  {
+    "id": "ddi_033",
+    "drug_a": "dapagliflozin",
+    "drug_b": "furosemide",
+    "severity": "Major",
+    "title": "Severe Volume Depletion & Orthostatic Hypotension",
+    "mechanism": "Additive osmotic diuresis (SGLT2 glucose excretion) and loop diuresis (Na-K-2Cl blockade).",
+    "clinical_effects": "Severe dehydration, orthostatic syncope, hemoconcentration, acute prerenal azotemia.",
+    "recommendation": "Assess patient volume status. A modest reduction in the loop diuretic dose may be prudent upon initiating SGLT2i."
+  },
+  {
+    "id": "ddi_034",
+    "drug_a": "empagliflozin",
+    "drug_b": "furosemide",
+    "severity": "Major",
+    "title": "Volume Depletion & Hypotension Risk",
+    "mechanism": "Compounded urinary fluid losses from dual mechanism diuresis.",
+    "clinical_effects": "Dizziness, lightheadedness upon standing, elevated BUN/creatinine ratio.",
+    "recommendation": "Ensure adequate fluid intake; monitor weight and orthostatic blood pressure."
+  },
+  {
+    "id": "ddi_035",
+    "drug_a": "glimepiride",
+    "drug_b": "metoprolol",
+    "severity": "Major",
+    "title": "Masking of Hypoglycemia Symptoms",
+    "mechanism": "Beta-blockers inhibit sympathetic adrenergic warning signs of hypoglycemia (tachycardia, palpitations, tremors), leaving only sweating intact.",
+    "clinical_effects": "Hypoglycemia unawareness; prolonged neuroglycopenic brain injury.",
+    "recommendation": "Educate diabetic patients that diaphoresis (sweating) remains the primary warning sign of low blood sugar."
+  },
+  {
+    "id": "ddi_036",
+    "drug_a": "gliclazide",
+    "drug_b": "atenolol",
+    "severity": "Major",
+    "title": "Blunted Hypoglycemic Awareness & Delayed Recovery",
+    "mechanism": "Beta-1 blockade masks sympathetic tachycardia; non-selective components impair glycogenolysis.",
+    "clinical_effects": "Failure to recognize hypoglycemia early; delayed endogenous glucose rebound.",
+    "recommendation": "Instruct patient to perform scheduled self-monitoring of blood glucose (SMBG)."
+  },
+  {
+    "id": "ddi_037",
+    "drug_a": "insulin_glargine",
+    "drug_b": "metoprolol",
+    "severity": "Major",
+    "title": "Masking of Hypoglycemia & Delayed Glycemic Recovery",
+    "mechanism": "Beta-blockade inhibits hepatic and muscle glycogenolysis and masks adrenergic signs.",
+    "clinical_effects": "Severe unannounced nocturnal or daytime hypoglycemia.",
+    "recommendation": "Encourage continuous glucose monitoring (CGM) or frequent blood glucose checks."
+  },
+  {
+    "id": "ddi_038",
+    "drug_a": "metformin",
+    "drug_b": "furosemide",
+    "severity": "Major",
+    "title": "Increased Metformin Exposure & Lactic Acidosis Risk",
+    "mechanism": "Furosemide increases Metformin plasma Cmax and AUC by ~22% without altering renal clearance, while dehydration increases lactic acidosis vulnerability.",
+    "clinical_effects": "Enhanced Metformin exposure, potential for acute prerenal dysfunction and metabolic acidosis.",
+    "recommendation": "Maintain proper hydration. Monitor kidney function (eGFR) periodically."
+  },
+  {
+    "id": "ddi_039",
+    "drug_a": "levothyroxine",
+    "drug_b": "calcium_vitamin_d3",
+    "severity": "Major",
+    "title": "Severe Chelation & Thyroid Hormone Malabsorption",
+    "mechanism": "Divalent calcium ions bind Levothyroxine in the acidic gastric environment, forming an insoluble, unabsorbable chelate complex.",
+    "clinical_effects": "Marked reduction in Levothyroxine absorption (up to 40-50%), elevated TSH, uncontrolled hypothyroidism.",
+    "recommendation": "SEPARATE DOSING: Keep a strict interval of AT LEAST 4 HOURS between Levothyroxine and Calcium supplements."
+  },
+  {
+    "id": "ddi_040",
+    "drug_a": "levothyroxine",
+    "drug_b": "ferrous_ascorbate",
+    "severity": "Major",
+    "title": "Insoluble Chelate Formation & Loss of Thyroid Control",
+    "mechanism": "Ferric/ferrous iron forms an insoluble chelation complex with Levothyroxine in the gut lumen.",
+    "clinical_effects": "Elevated serum TSH, fatigue, weight gain, failure of thyroid replacement therapy.",
+    "recommendation": "SEPARATE DOSING: Administer Iron at least 4 hours AFTER Levothyroxine."
+  },
+  {
+    "id": "ddi_041",
+    "drug_a": "levothyroxine",
+    "drug_b": "pantoprazole",
+    "severity": "Major",
+    "title": "Reduced Levothyroxine Absorption via Elevated Gastric pH",
+    "mechanism": "Levothyroxine dissolution requires gastric acid. Long-term PPI acid suppression reduces thyroxine dissolution and absorption.",
+    "clinical_effects": "Increased Levothyroxine dosage requirement, erratic thyroid hormone levels.",
+    "recommendation": "Take Levothyroxine on a strict empty stomach with plain water. Monitor TSH if starting or stopping a PPI."
+  },
+  {
+    "id": "ddi_042",
+    "drug_a": "ciprofloxacin",
+    "drug_b": "calcium_vitamin_d3",
+    "severity": "Major",
+    "title": "Fluoroquinolone Chelation & Antimicrobial Failure",
+    "mechanism": "Calcium ions chelate the 4-keto and 3-carboxyl groups of Ciprofloxacin, reducing oral absorption by up to 85-90%.",
+    "clinical_effects": "Sub-therapeutic antibiotic concentrations, clinical treatment failure, emergence of bacterial resistance.",
+    "recommendation": "SEPARATE BY 2-4 HOURS: Take Ciprofloxacin 2 hours before or 4 hours after calcium supplements or dairy."
+  },
+  {
+    "id": "ddi_043",
+    "drug_a": "ciprofloxacin",
+    "drug_b": "ferrous_ascorbate",
+    "severity": "Major",
+    "title": "Iron Chelation & Reduced Ciprofloxacin Bioavailability",
+    "mechanism": "Iron forms an insoluble coordination polymer with Ciprofloxacin in the gastrointestinal tract.",
+    "clinical_effects": "Major decrease in fluoroquinolone systemic absorption and therapeutic failure.",
+    "recommendation": "Take Ciprofloxacin at least 2 hours before or 6 hours after iron supplements."
+  },
+  {
+    "id": "ddi_044",
+    "drug_a": "sucralfate",
+    "drug_b": "ciprofloxacin",
+    "severity": "Major",
+    "title": "Antibiotic Adsorption & Massive Bioavailability Loss",
+    "mechanism": "Aluminum ions in Sucralfate bind Ciprofloxacin into an unabsorbable complex.",
+    "clinical_effects": "Near total elimination of Ciprofloxacin systemic absorption (>90% reduction).",
+    "recommendation": "Take Ciprofloxacin at least 2 hours BEFORE Sucralfate."
+  },
+  {
+    "id": "ddi_045",
+    "drug_a": "sucralfate",
+    "drug_b": "levothyroxine",
+    "severity": "Major",
+    "title": "Thyroid Hormone Binding in Gut",
+    "mechanism": "Sucralfate binds thyroxine molecules directly, preventing enteral uptake.",
+    "clinical_effects": "Hypothyroidism exacerbation.",
+    "recommendation": "Space Sucralfate administration at least 4 hours away from Levothyroxine."
+  },
+  {
+    "id": "ddi_046",
+    "drug_a": "escitalopram",
+    "drug_b": "aspirin",
+    "severity": "Major",
+    "title": "Synergistic Upper Gastrointestinal Bleeding Risk",
+    "mechanism": "SSRIs deplete platelet serotonin (needed for aggregation), while Aspirin blocks thromboxane A2 and causes gastric mucosal injury.",
+    "clinical_effects": "3- to 5-fold increase in gastrointestinal hemorrhages and hematemesis.",
+    "recommendation": "Consider co-prescribing a gastroprotective PPI (Pantoprazole), especially in patients >60 years."
+  },
+  {
+    "id": "ddi_047",
+    "drug_a": "escitalopram",
+    "drug_b": "ibuprofen",
+    "severity": "Major",
+    "title": "Increased Gastrointestinal Bleeding",
+    "mechanism": "Additive impairment of platelet hemostasis and gastric mucosal defense.",
+    "clinical_effects": "Significant elevation in bleeding risk, melena, peptic ulceration.",
+    "recommendation": "Use Paracetamol as first-line analgesic. If NSAIDs are essential, add gastroprotection."
+  },
+  {
+    "id": "ddi_048",
+    "drug_a": "allopurinol",
+    "drug_b": "ramipril",
+    "severity": "Major",
+    "title": "Hypersensitivity Reactions & Stevens-Johnson Risk",
+    "mechanism": "Co-administration increases the risk of severe hypersensitivity syndrome, especially in patients with impaired renal function.",
+    "clinical_effects": "Fever, exfoliative dermatitis, Stevens-Johnson syndrome, leukocytosis.",
+    "recommendation": "Discontinue immediately at the first sign of skin rash. Monitor renal function."
+  },
+  {
+    "id": "ddi_049",
+    "drug_a": "spironolactone",
+    "drug_b": "aspirin",
+    "severity": "Major",
+    "title": "Blunted Diuretic & Natriuretic Action",
+    "mechanism": "Aspirin competitively inhibits the active tubular secretion of canrenone (active Spironolactone metabolite).",
+    "clinical_effects": "Reduced natriuresis, fluid retention, worsening edema in ascites/heart failure.",
+    "recommendation": "Monitor response to Spironolactone; keep Aspirin at lowest cardioprotective dose (75-100 mg)."
+  },
+  {
+    "id": "ddi_050",
+    "drug_a": "pregabalin",
+    "drug_b": "tramadol",
+    "severity": "Major",
+    "title": "Additive CNS & Respiratory Depression",
+    "mechanism": "Compounded central nervous system depression from dual GABAergic modulation and opioid receptor agonism.",
+    "clinical_effects": "Severe sedation, profound somnolence, dizziness, ataxia, respiratory depression.",
+    "recommendation": "Start with lowest doses. Advise patient not to drive or operate machinery."
+  },
+  {
+    "id": "ddi_051",
+    "drug_a": "amlodipine",
+    "drug_b": "atorvastatin",
+    "severity": "Moderate",
+    "title": "Mild Increase in Statin Exposure",
+    "mechanism": "Amlodipine is a weak CYP3A4 inhibitor and can mildly increase Atorvastatin AUC by ~15-20%.",
+    "clinical_effects": "Usually well-tolerated (frequently prescribed together), but increases myalgia risk at higher statin doses.",
+    "recommendation": "Clinical synergy for cardiovascular prevention. Advise patient to report unusual muscle pain or dark urine."
+  },
+  {
+    "id": "ddi_052",
+    "drug_a": "metformin",
+    "drug_b": "glimepiride",
+    "severity": "Moderate",
+    "title": "Additive Hypoglycemia Risk",
+    "mechanism": "Complementary glucose-lowering (reduced hepatic gluconeogenesis + enhanced insulin secretion).",
+    "clinical_effects": "Enhanced glycemic control, with higher risk of mild hypoglycemia if meals are delayed.",
+    "recommendation": "Standard clinical combination. Ensure patient maintains regular meal timings."
+  },
+  {
+    "id": "ddi_053",
+    "drug_a": "metformin",
+    "drug_b": "vildagliptin",
+    "severity": "Moderate",
+    "title": "Potentiated Glycemic Control (Favorable Synergy)",
+    "mechanism": "Complementary insulin sensitization and incretin GLP-1/GIP preservation.",
+    "clinical_effects": "Excellent HbA1c reduction with minimal hypoglycemia risk.",
+    "recommendation": "Evidence-based guideline-recommended combination in Type 2 Diabetes."
+  },
+  {
+    "id": "ddi_054",
+    "drug_a": "metformin",
+    "drug_b": "dapagliflozin",
+    "severity": "Moderate",
+    "title": "Cardiorenal & Glycemic Synergy",
+    "mechanism": "Complementary mechanisms: non-insulin-dependent renal glucose excretion + hepatic gluconeogenesis suppression.",
+    "clinical_effects": "Superior glycemic efficacy, weight reduction, and blood pressure lowering.",
+    "recommendation": "Standard guideline combination. Ensure adequate daily water intake."
+  },
+  {
+    "id": "ddi_055",
+    "drug_a": "amlodipine",
+    "drug_b": "telmisartan",
+    "severity": "Moderate",
+    "title": "Synergistic Blood Pressure Reduction (Favorable Synergy)",
+    "mechanism": "Complementary vasodilation (arteriolar calcium blockade + renin-angiotensin inhibition). Telmisartan also mitigates Amlodipine-induced peripheral edema.",
+    "clinical_effects": "Pronounced antihypertensive efficacy with reduced rate of ankle swelling.",
+    "recommendation": "Highly effective fixed-dose combination. Monitor for excessive orthostatic hypotension during initial titration."
+  },
+  {
+    "id": "ddi_056",
+    "drug_a": "atenolol",
+    "drug_b": "chlorthalidone",
+    "severity": "Moderate",
+    "title": "Enhanced Antihypertensive Response",
+    "mechanism": "Beta-blocker suppresses compensatory renin rise induced by the thiazide-like diuretic.",
+    "clinical_effects": "Additive blood pressure reduction; mild potential for glucose or uric acid elevation.",
+    "recommendation": "Effective synergy. Periodically monitor blood glucose, uric acid, and potassium."
+  },
+  {
+    "id": "ddi_057",
+    "drug_a": "ferrous_ascorbate",
+    "drug_b": "calcium_vitamin_d3",
+    "severity": "Moderate",
+    "title": "Competitive Intestinal Absorption",
+    "mechanism": "Calcium and iron compete for the divalent metal transporter 1 (DMT1) in the duodenal enterocyte.",
+    "clinical_effects": "Reduced iron absorption and slower resolution of iron-deficiency anemia.",
+    "recommendation": "Separate administration by at least 2 hours (e.g. Iron in morning, Calcium at lunch/dinner)."
+  },
+  {
+    "id": "ddi_058",
+    "drug_a": "atorvastatin",
+    "drug_b": "fenofibrate",
+    "severity": "Moderate",
+    "title": "Increased Myopathy Risk (Monitor CK)",
+    "mechanism": "Additive muscle toxicity from dual lipid-modulating agents.",
+    "clinical_effects": "Myalgia, elevated creatine kinase (CK), rare rhabdomyolysis.",
+    "recommendation": "Fenofibrate is much safer than Gemfibrozil with statins, but patients should still report any unexplained muscle tenderness."
+  },
+  {
+    "id": "ddi_059",
+    "drug_a": "pantoprazole",
+    "drug_b": "calcium_vitamin_d3",
+    "severity": "Moderate",
+    "title": "Decreased Calcium Carbonate Dissolution",
+    "mechanism": "Calcium carbonate requires acidic pH for ionization and uptake; sustained hypochlorhydria from PPIs impairs absorption.",
+    "clinical_effects": "Decreased fractional calcium absorption in long-term therapy (>1-2 years).",
+    "recommendation": "Take Calcium carbonate WITH meals (food stimulates acid), or switch to Calcium Citrate which does not require acid."
+  },
+  {
+    "id": "ddi_060",
+    "drug_a": "rosuvastatin",
+    "drug_b": "pantoprazole",
+    "severity": "Minor",
+    "title": "Minimal Pharmacokinetic Interaction",
+    "mechanism": "Unlike Atorvastatin, Rosuvastatin is minimally metabolized by CYP enzymes (primarily CYP2C9).",
+    "clinical_effects": "Generally well-tolerated with negligible clinical interaction.",
+    "recommendation": "Safe combination. Take medications at their regular scheduled times."
+  }
+]

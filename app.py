@@ -3,7 +3,12 @@ import streamlit as st
 from datetime import date
 
 from auth import create_user, verify_user
-from database import get_connection
+from database import (
+    get_connection,
+    get_user_comorbidities,
+    save_user_comorbidities,
+    KNOWN_COMORBIDITY_LABELS
+)
 
 from medicines import show_medicines
 from dose_tracking import show_dose_tracking
@@ -11,6 +16,8 @@ from reminders import show_reminders
 from adherence_history import show_adherence_history, get_adherence_data, calculate_adherence
 from adherence_risk import show_adherence_risk_page
 from food_suggestions import show_food_suggestions_page
+from ddi_checker import show_ddi_checker_page
+import ddi_engine as ddi
 
 
 # =========================================
@@ -409,6 +416,22 @@ def show_profile(user):
 
             st.divider()
 
+            st.subheader("🏥 Diagnosed Chronic Health Conditions & Comorbidities")
+            st.caption("Select your diagnosed medical conditions so MediAssist can tailor dietary harmonization and check for drug-disease contraindications.")
+
+            existing_comorbs = get_user_comorbidities(user["id"])
+            existing_keys = [c["condition_key"] for c in existing_comorbs]
+
+            condition_options = list(KNOWN_COMORBIDITY_LABELS.keys())
+            selected_conditions = st.multiselect(
+                "Diagnosed Conditions:",
+                options=condition_options,
+                default=[k for k in existing_keys if k in condition_options],
+                format_func=lambda x: KNOWN_COMORBIDITY_LABELS.get(x, x.title())
+            )
+
+            st.divider()
+
             st.subheader("Food Preferences")
 
             diet_input = st.selectbox(
@@ -471,8 +494,10 @@ def show_profile(user):
                         preference_input.strip()
                     )
 
+                    save_user_comorbidities(user["id"], selected_conditions)
+
                     st.success(
-                        "Your profile has been saved successfully!"
+                        "Your profile and medical conditions have been saved successfully!"
                     )
 
                 except Exception as e:
@@ -628,6 +653,7 @@ def show_dashboard():
         [
             "Home",
             "Medicines",
+            "Drug-Drug Interactions",
             "Dose Tracking",
             "Reminders",
             "Adherence History",
@@ -685,6 +711,22 @@ def show_dashboard():
             st.metric("7-Day Adherence Status", f"{dash_data['adherence_pct']}")
 
         st.divider()
+
+        # Regimen DDI Safety Banner on Dashboard
+        reg_ddi = ddi.check_patient_regimen_interactions(user["id"])
+        if reg_ddi["has_interactions"]:
+            s_c = reg_ddi["severe_count"]
+            m_c = reg_ddi["major_count"]
+            if s_c > 0:
+                st.error(
+                    f"⚠️ **Clinical Medication Safety Alert:** Identified **{s_c} Severe (Contraindicated)** interaction(s) in your active prescriptions. "
+                    f"Please navigate to the **Drug-Drug Interactions** tab in the sidebar to review the full clinical report."
+                )
+            elif m_c > 0:
+                st.warning(
+                    f"⚠️ **Polypharmacy Notice:** Identified **{m_c} Major** interaction(s) in your active prescriptions. "
+                    f"Check the **Drug-Drug Interactions** tab to review timing and monitoring guidance."
+                )
 
         st.subheader("Quick Access")
 
@@ -752,6 +794,14 @@ def show_dashboard():
     elif page == "Medicines":
 
         show_medicines(user["id"])
+
+    # =====================================
+    # DRUG-DRUG INTERACTIONS PAGE
+    # =====================================
+
+    elif page == "Drug-Drug Interactions":
+
+        show_ddi_checker_page(user["id"])
 
     # =====================================
     # DOSE TRACKING PAGE

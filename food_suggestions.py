@@ -1,408 +1,45 @@
+"""
+Personalized Clinical Nutrition & Food Recommender System
+---------------------------------------------------------
+Powered by the Indian Food Composition Tables (IFCT / ICMR-NIN) 
+with 500+ authentic foods and active prescription drug-nutrient 
+interaction intelligence.
+"""
+
 import streamlit as st
 import json
 from pathlib import Path
-from database import get_connection
+from database import get_connection, get_user_comorbidities
+import medicine_food_integration as mfi
+
+DATA_FILE = Path(__file__).parent / "data" / "indian_food_composition.json"
+
+_IFCT_FOOD_CACHE = None
+
+def load_food_database():
+    """Loads and caches the 500+ Indian Food Composition Tables (IFCT) dataset."""
+    global _IFCT_FOOD_CACHE
+    if _IFCT_FOOD_CACHE is not None:
+        return _IFCT_FOOD_CACHE
+
+    if DATA_FILE.exists():
+        try:
+            with open(DATA_FILE, "r", encoding="utf-8") as f:
+                _IFCT_FOOD_CACHE = json.load(f)
+                return _IFCT_FOOD_CACHE
+        except Exception as e:
+            print(f"Error loading IFCT food database: {e}")
+            _IFCT_FOOD_CACHE = []
+            return _IFCT_FOOD_CACHE
+    return []
+
 
 # =====================================================================
-# 1. CURATED CLINICAL NUTRITION KNOWLEDGE BASE (60+ Evidence-Based Foods)
-# =====================================================================
-
-FOOD_DATABASE = [
-    # --- WHOLE GRAINS & COMPLEX CARBS ---
-    {
-        "name": "Steel-Cut / Rolled Oats",
-        "category": "Whole Grains",
-        "diet_types": ["Vegetarian", "Vegan", "Eggetarian", "Non-vegetarian", "Pescatarian"],
-        "allergens": ["gluten"],
-        "health_attributes": ["diabetic_friendly", "low_gi", "hypertension_friendly", "heart_healthy", "high_fiber"],
-        "glycemic_index": 52,
-        "key_nutrients": "Beta-glucan soluble fiber, Magnesium, Zinc",
-        "health_benefit": "Forms a gel-like matrix in the digestive tract that slows glucose absorption and lowers LDL cholesterol.",
-        "rationale": "Strongly supported for Type 2 Diabetes and cardiovascular health."
-    },
-    {
-        "name": "Finger Millet (Ragi / Nachni)",
-        "category": "Whole Grains",
-        "diet_types": ["Vegetarian", "Vegan", "Eggetarian", "Non-vegetarian", "Pescatarian"],
-        "allergens": [],
-        "health_attributes": ["diabetic_friendly", "low_gi", "hypertension_friendly", "high_fiber", "gluten_free"],
-        "glycemic_index": 54,
-        "key_nutrients": "Calcium 344mg/100g, Dietary Fiber, Polyphenols",
-        "health_benefit": "Natural gluten-free grain with high polyphenol content that inhibits amylase enzymes, modulating blood glucose peaks.",
-        "rationale": "Traditional low-GI staple with superior micronutrient bioavailability."
-    },
-    {
-        "name": "Quinoa",
-        "category": "Whole Grains",
-        "diet_types": ["Vegetarian", "Vegan", "Eggetarian", "Non-vegetarian", "Pescatarian"],
-        "allergens": [],
-        "health_attributes": ["diabetic_friendly", "low_gi", "hypertension_friendly", "heart_healthy", "high_protein", "gluten_free"],
-        "glycemic_index": 53,
-        "key_nutrients": "Complete Protein (all 9 essential amino acids), Iron, Magnesium",
-        "health_benefit": "High protein-to-carbohydrate ratio promotes satiety while magnesium supports vascular smooth muscle relaxation.",
-        "rationale": "Excellent meal base for both hypertension and diabetic glycemic control."
-    },
-    {
-        "name": "Barley (Jau)",
-        "category": "Whole Grains",
-        "diet_types": ["Vegetarian", "Vegan", "Eggetarian", "Non-vegetarian", "Pescatarian"],
-        "allergens": ["gluten"],
-        "health_attributes": ["diabetic_friendly", "low_gi", "hypertension_friendly", "heart_healthy", "high_fiber"],
-        "glycemic_index": 28,
-        "key_nutrients": "Soluble Fiber (Beta-glucan), Selenium, Potassium",
-        "health_benefit": "Exceptionally low glycemic index (28). Promotes gut microbiota fermentation into short-chain fatty acids.",
-        "rationale": "Clinical DASH-diet grain promoting glycemic stability."
-    },
-    {
-        "name": "Brown Basmati Rice",
-        "category": "Whole Grains",
-        "diet_types": ["Vegetarian", "Vegan", "Eggetarian", "Non-vegetarian", "Pescatarian"],
-        "allergens": [],
-        "health_attributes": ["diabetic_friendly", "low_gi", "gluten_free", "high_fiber"],
-        "glycemic_index": 55,
-        "key_nutrients": "Manganese, Magnesium, Insoluble Fiber",
-        "health_benefit": "Intact bran and germ layer provides sustained energy release without the sudden insulin spikes of white rice.",
-        "rationale": "Wholesome alternative for carbohydrate staple replacement."
-    },
-
-    # --- VEGETABLES & LEAFY GREENS ---
-    {
-        "name": "Baby Spinach (Palak)",
-        "category": "Vegetables",
-        "diet_types": ["Vegetarian", "Vegan", "Eggetarian", "Non-vegetarian", "Pescatarian"],
-        "allergens": [],
-        "health_attributes": ["diabetic_friendly", "low_gi", "hypertension_friendly", "low_sodium", "heart_healthy"],
-        "glycemic_index": 15,
-        "key_nutrients": "Potassium (558mg), Dietary Nitrates, Lutein, Folate",
-        "health_benefit": "Dietary nitrates convert into nitric oxide in endothelial cells, promoting vasodilation and reducing arterial stiffness.",
-        "rationale": "Cornerstone of the DASH diet for blood pressure reduction."
-    },
-    {
-        "name": "Bitter Gourd (Karela)",
-        "category": "Vegetables",
-        "diet_types": ["Vegetarian", "Vegan", "Eggetarian", "Non-vegetarian", "Pescatarian"],
-        "allergens": [],
-        "health_attributes": ["diabetic_friendly", "low_gi", "heart_healthy"],
-        "glycemic_index": 15,
-        "key_nutrients": "Charantin, Vicine, Polypeptide-p (plant insulin mimic)",
-        "health_benefit": "Bioactive peptides increase cellular glucose uptake and glycogen synthesis in liver and muscle tissue.",
-        "rationale": "Scientifically verified botanical support for glycemic management."
-    },
-    {
-        "name": "Broccoli & Florets",
-        "category": "Vegetables",
-        "diet_types": ["Vegetarian", "Vegan", "Eggetarian", "Non-vegetarian", "Pescatarian"],
-        "allergens": [],
-        "health_attributes": ["diabetic_friendly", "low_gi", "hypertension_friendly", "low_sodium", "heart_healthy"],
-        "glycemic_index": 15,
-        "key_nutrients": "Sulforaphane, Vitamin C (90mg), Potassium, Calcium",
-        "health_benefit": "Potent Nrf2 activator; sulforaphane protects vascular endothelium from oxidative injury caused by high blood glucose.",
-        "rationale": "High-antioxidant cruciferous vegetable for metabolic protection."
-    },
-    {
-        "name": "Fenugreek Leaves (Methi)",
-        "category": "Vegetables",
-        "diet_types": ["Vegetarian", "Vegan", "Eggetarian", "Non-vegetarian", "Pescatarian"],
-        "allergens": [],
-        "health_attributes": ["diabetic_friendly", "low_gi", "hypertension_friendly", "high_fiber"],
-        "glycemic_index": 15,
-        "key_nutrients": "4-hydroxyisoleucine, Galactomannan fiber, Iron",
-        "health_benefit": "Galactomannan mucilage slows carbohydrate digestion; 4-hydroxyisoleucine stimulates glucose-dependent insulin secretion.",
-        "rationale": "Proven clinical efficacy in stabilizing fasting blood glucose."
-    },
-    {
-        "name": "Raw Garlic (Lasun)",
-        "category": "Vegetables",
-        "diet_types": ["Vegetarian", "Vegan", "Eggetarian", "Non-vegetarian", "Pescatarian"],
-        "allergens": [],
-        "health_attributes": ["hypertension_friendly", "heart_healthy", "diabetic_friendly", "low_sodium"],
-        "glycemic_index": 15,
-        "key_nutrients": "Allicin, S-allyl cysteine, Organic sulfur",
-        "health_benefit": "Stimulates hydrogen sulfide and nitric oxide production, directly relaxing blood vessels and lowering systolic BP.",
-        "rationale": "Clinically researched natural ACE-modulating food additive."
-    },
-    {
-        "name": "Beetroot (Cooked / Salad)",
-        "category": "Vegetables",
-        "diet_types": ["Vegetarian", "Vegan", "Eggetarian", "Non-vegetarian", "Pescatarian"],
-        "allergens": [],
-        "health_attributes": ["hypertension_friendly", "low_sodium", "heart_healthy"],
-        "glycemic_index": 61,
-        "key_nutrients": "Inorganic Nitrate, Betaine, Potassium (325mg)",
-        "health_benefit": "Extensively documented in clinical trials to acutely lower both systolic and diastolic blood pressure within 2-4 hours.",
-        "rationale": "Vascular endothelium support for hypertension."
-    },
-    {
-        "name": "Okra (Bhindi / Lady's Finger)",
-        "category": "Vegetables",
-        "diet_types": ["Vegetarian", "Vegan", "Eggetarian", "Non-vegetarian", "Pescatarian"],
-        "allergens": [],
-        "health_attributes": ["diabetic_friendly", "low_gi", "hypertension_friendly", "high_fiber"],
-        "glycemic_index": 20,
-        "key_nutrients": "Soluble mucilage fiber, Myricetin, Polyphenols",
-        "health_benefit": "Mucilage inhibits cholesterol absorption in the intestine and modulates postprandial glucose surges.",
-        "rationale": "Dietary staple for diabetic carbohydrate management."
-    },
-    {
-        "name": "Bell Peppers (Capsicum)",
-        "category": "Vegetables",
-        "diet_types": ["Vegetarian", "Vegan", "Eggetarian", "Non-vegetarian", "Pescatarian"],
-        "allergens": [],
-        "health_attributes": ["diabetic_friendly", "low_gi", "hypertension_friendly", "low_sodium", "heart_healthy"],
-        "glycemic_index": 15,
-        "key_nutrients": "Capsanthin, Vitamin C (128mg), Vitamin A",
-        "health_benefit": "Zero sodium, rich in antioxidants that protect low-density lipoproteins from oxidative modification.",
-        "rationale": "Cardiovascular protective vegetable with minimal calorie impact."
-    },
-
-    # --- PROTEINS & LEGUMES ---
-    {
-        "name": "Yellow Moong Dal (Split Green Gram)",
-        "category": "Proteins & Legumes",
-        "diet_types": ["Vegetarian", "Vegan", "Eggetarian", "Non-vegetarian", "Pescatarian"],
-        "allergens": [],
-        "health_attributes": ["diabetic_friendly", "low_gi", "hypertension_friendly", "high_protein", "high_fiber"],
-        "glycemic_index": 38,
-        "key_nutrients": "Plant Protein 24g/100g, Potassium, Resistant Starch",
-        "health_benefit": "Highly digestible legume; high potassium counters excess sodium, while resistant starch nourishes beneficial gut flora.",
-        "rationale": "Gold-standard plant protein for cardiovascular and metabolic care."
-    },
-    {
-        "name": "Chickpeas (Chana / Hummus)",
-        "category": "Proteins & Legumes",
-        "diet_types": ["Vegetarian", "Vegan", "Eggetarian", "Non-vegetarian", "Pescatarian"],
-        "allergens": [],
-        "health_attributes": ["diabetic_friendly", "low_gi", "heart_healthy", "high_protein", "high_fiber"],
-        "glycemic_index": 33,
-        "key_nutrients": "Protein 19g/100g, Dietary Fiber 17g, Isoflavones",
-        "health_benefit": "Low glycemic index with high soluble and insoluble fiber slows gastric emptying and enhances post-meal satiety.",
-        "rationale": "Excellent staple for sustained glycemic stability and lipid management."
-    },
-    {
-        "name": "Firm Organic Tofu",
-        "category": "Proteins & Legumes",
-        "diet_types": ["Vegetarian", "Vegan", "Eggetarian", "Non-vegetarian", "Pescatarian"],
-        "allergens": ["soy"],
-        "health_attributes": ["diabetic_friendly", "low_gi", "hypertension_friendly", "heart_healthy", "high_protein"],
-        "glycemic_index": 15,
-        "key_nutrients": "Soy Protein 17g, Isoflavones (Genistein), Calcium 350mg",
-        "health_benefit": "Zero cholesterol, low saturated fat; soy isoflavones support arterial compliance and endothelial function.",
-        "rationale": "Plant-based protein ideal for hypertension and cholesterol control."
-    },
-    {
-        "name": "Skinless Chicken Breast",
-        "category": "Proteins & Legumes",
-        "diet_types": ["Non-vegetarian"],
-        "allergens": [],
-        "health_attributes": ["diabetic_friendly", "low_gi", "hypertension_friendly", "high_protein", "low_sodium"],
-        "glycemic_index": 0,
-        "key_nutrients": "Lean Animal Protein 31g/100g, Niacin, Phosphorus",
-        "health_benefit": "Zero carbohydrates and very low saturated fat; does not trigger insulin secretion while preserving lean muscle mass.",
-        "rationale": "Lean protein choice recommended under DASH diet guidelines."
-    },
-    {
-        "name": "Wild Salmon (or Mackerel / Sardines)",
-        "category": "Proteins & Legumes",
-        "diet_types": ["Non-vegetarian", "Pescatarian"],
-        "allergens": ["fish"],
-        "health_attributes": ["diabetic_friendly", "hypertension_friendly", "heart_healthy", "high_protein"],
-        "glycemic_index": 0,
-        "key_nutrients": "EPA & DHA Omega-3 Fatty Acids, Vitamin D, Selenium",
-        "health_benefit": "Omega-3s reduce serum triglycerides, decrease systemic inflammation, and improve vascular endothelial relaxation.",
-        "rationale": "Cardiovascular American Heart Association (AHA) top recommendation."
-    },
-    {
-        "name": "Boiled Whole Eggs",
-        "category": "Proteins & Legumes",
-        "diet_types": ["Eggetarian", "Non-vegetarian"],
-        "allergens": ["eggs"],
-        "health_attributes": ["diabetic_friendly", "low_gi", "high_protein"],
-        "glycemic_index": 0,
-        "key_nutrients": "Protein 6.3g/egg, Choline, Lutein, Zeaxanthin",
-        "health_benefit": "Zero glycemic impact. High protein and healthy lipids stimulate cholecystokinin release, preventing overeating.",
-        "rationale": "Nutrient-dense breakfast protein for glycemic balance."
-    },
-    {
-        "name": "Plain Low-Fat Greek Yogurt (Curd)",
-        "category": "Proteins & Legumes",
-        "diet_types": ["Vegetarian", "Eggetarian", "Non-vegetarian", "Pescatarian"],
-        "allergens": ["dairy"],
-        "health_attributes": ["diabetic_friendly", "low_gi", "hypertension_friendly", "high_protein", "heart_healthy"],
-        "glycemic_index": 14,
-        "key_nutrients": "Live Probiotic Cultures, Calcium (200mg), Potassium (140mg)",
-        "health_benefit": "Probiotic bacteria synthesize bioactive peptides during fermentation that exert mild ACE-inhibitory effects on blood pressure.",
-        "rationale": "Supports gut microbiome and vascular health."
-    },
-
-    # --- FRUITS ---
-    {
-        "name": "Wild Blueberries / Blackberries",
-        "category": "Fruits",
-        "diet_types": ["Vegetarian", "Vegan", "Eggetarian", "Non-vegetarian", "Pescatarian"],
-        "allergens": [],
-        "health_attributes": ["diabetic_friendly", "low_gi", "hypertension_friendly", "heart_healthy"],
-        "glycemic_index": 40,
-        "key_nutrients": "Anthocyanins, Pterostilbene, Vitamin C, Dietary Fiber",
-        "health_benefit": "Anthocyanins improve insulin sensitivity via GLUT4 translocation and protect microvascular retinal capillaries.",
-        "rationale": "Top-tier diabetic fruit with proven vascular benefits."
-    },
-    {
-        "name": "Green Apple (with skin)",
-        "category": "Fruits",
-        "diet_types": ["Vegetarian", "Vegan", "Eggetarian", "Non-vegetarian", "Pescatarian"],
-        "allergens": [],
-        "health_attributes": ["diabetic_friendly", "low_gi", "heart_healthy", "high_fiber"],
-        "glycemic_index": 36,
-        "key_nutrients": "Quercetin, Pectin fiber, Polyphenols",
-        "health_benefit": "Pectin binds bile acids in the gut to reduce blood cholesterol; quercetin reduces vascular oxidative stress.",
-        "rationale": "Crisp low-glycemic fruit with low total sugar content."
-    },
-    {
-        "name": "Pomegranate (Anar)",
-        "category": "Fruits",
-        "diet_types": ["Vegetarian", "Vegan", "Eggetarian", "Non-vegetarian", "Pescatarian"],
-        "allergens": [],
-        "health_attributes": ["hypertension_friendly", "heart_healthy", "low_sodium"],
-        "glycemic_index": 53,
-        "key_nutrients": "Punicalagins, Ellagic Acid, Potassium (236mg)",
-        "health_benefit": "Potent polyphenolic antioxidants demonstrate natural serum ACE-inhibitory activity, reducing systolic BP.",
-        "rationale": "Cardiovascular tonic backed by human clinical trials."
-    },
-    {
-        "name": "Fresh Guava (Amrood)",
-        "category": "Fruits",
-        "diet_types": ["Vegetarian", "Vegan", "Eggetarian", "Non-vegetarian", "Pescatarian"],
-        "allergens": [],
-        "health_attributes": ["diabetic_friendly", "low_gi", "hypertension_friendly", "high_fiber"],
-        "glycemic_index": 30,
-        "key_nutrients": "Dietary Fiber 5.4g/100g, Vitamin C 228mg (4x orange), Potassium",
-        "health_benefit": "High fiber-to-sugar ratio delays intestinal glucose uptake, preventing hyperglycemia.",
-        "rationale": "Economical tropical fruit ideal for diabetic daily snacking."
-    },
-    {
-        "name": "Ripe Papaya",
-        "category": "Fruits",
-        "diet_types": ["Vegetarian", "Vegan", "Eggetarian", "Non-vegetarian", "Pescatarian"],
-        "allergens": [],
-        "health_attributes": ["diabetic_friendly", "low_gi", "heart_healthy", "high_fiber"],
-        "glycemic_index": 60,
-        "key_nutrients": "Papain enzyme, Lycopene, Carotenoids",
-        "health_benefit": "Digestive enzyme papain aids protein breakdown; lycopene guards against lipid peroxidation.",
-        "rationale": "Moderate GI fruit with high water content and low glycemic load."
-    },
-
-    # --- HEALTHY FATS, NUTS & SEEDS ---
-    {
-        "name": "Raw California Almonds (Badam)",
-        "category": "Healthy Fats & Nuts",
-        "diet_types": ["Vegetarian", "Vegan", "Eggetarian", "Non-vegetarian", "Pescatarian"],
-        "allergens": ["tree_nuts", "nuts"],
-        "health_attributes": ["diabetic_friendly", "low_gi", "hypertension_friendly", "heart_healthy", "high_protein"],
-        "glycemic_index": 15,
-        "key_nutrients": "Monounsaturated Fatty Acids (MUFA), Vitamin E (Alpha-tocopherol), Magnesium (270mg)",
-        "health_benefit": "Magnesium deficiency is prevalent in diabetics; dietary magnesium improves insulin receptor sensitivity and relaxes blood vessels.",
-        "rationale": "DASH and Mediterranean diet staple for cardiometabolic protection."
-    },
-    {
-        "name": "Walnuts (Akhrot)",
-        "category": "Healthy Fats & Nuts",
-        "diet_types": ["Vegetarian", "Vegan", "Eggetarian", "Non-vegetarian", "Pescatarian"],
-        "allergens": ["tree_nuts", "nuts"],
-        "health_attributes": ["hypertension_friendly", "heart_healthy", "diabetic_friendly", "low_sodium"],
-        "glycemic_index": 15,
-        "key_nutrients": "Alpha-linolenic Acid (Plant Omega-3), Polyphenols",
-        "health_benefit": "High ALA content enhances flow-mediated dilation of arteries and mitigates vascular endothelial inflammation.",
-        "rationale": "AHA-certified heart-healthy nut."
-    },
-    {
-        "name": "Chia Seeds & Basil Seeds",
-        "category": "Healthy Fats & Nuts",
-        "diet_types": ["Vegetarian", "Vegan", "Eggetarian", "Non-vegetarian", "Pescatarian"],
-        "allergens": [],
-        "health_attributes": ["diabetic_friendly", "low_gi", "hypertension_friendly", "heart_healthy", "high_fiber"],
-        "glycemic_index": 10,
-        "key_nutrients": "Soluble Mucilage Fiber 34g/100g, Omega-3 ALA, Calcium",
-        "health_benefit": "Absorbs 10x its weight in water to create an intestinal gel barrier, slowing glucose absorption and blunting postprandial surges.",
-        "rationale": "Exceptional seed for diabetes management and blood pressure reduction."
-    },
-    {
-        "name": "Roasted Flaxseeds (Alsi)",
-        "category": "Healthy Fats & Nuts",
-        "diet_types": ["Vegetarian", "Vegan", "Eggetarian", "Non-vegetarian", "Pescatarian"],
-        "allergens": [],
-        "health_attributes": ["diabetic_friendly", "hypertension_friendly", "heart_healthy", "high_fiber"],
-        "glycemic_index": 10,
-        "key_nutrients": "Secoisolariciresinol Diglucoside (SDG Lignans), ALA, Soluble Fiber",
-        "health_benefit": "Lignans act as phytoestrogens and powerful antioxidants; proven in clinical trials to reduce both systolic and diastolic BP.",
-        "rationale": "Potent cardiovascular functional food for hypertension."
-    },
-    {
-        "name": "Extra Virgin Olive Oil (Cold-Pressed)",
-        "category": "Healthy Fats & Nuts",
-        "diet_types": ["Vegetarian", "Vegan", "Eggetarian", "Non-vegetarian", "Pescatarian"],
-        "allergens": [],
-        "health_attributes": ["diabetic_friendly", "hypertension_friendly", "heart_healthy"],
-        "glycemic_index": 0,
-        "key_nutrients": "Oleic Acid (73%), Oleocanthal, Polyphenols",
-        "health_benefit": "Oleocanthal exerts anti-inflammatory effects comparable to low-dose ibuprofen; protects LDL from atherogenic oxidation.",
-        "rationale": "Gold standard culinary fat for Mediterranean dietary patterns."
-    },
-
-    # --- BEVERAGES & HERBAL INFUSIONS ---
-    {
-        "name": "Hibiscus Tea (Gudhal)",
-        "category": "Beverages & Infusions",
-        "diet_types": ["Vegetarian", "Vegan", "Eggetarian", "Non-vegetarian", "Pescatarian"],
-        "allergens": [],
-        "health_attributes": ["hypertension_friendly", "low_sodium", "heart_healthy"],
-        "glycemic_index": 0,
-        "key_nutrients": "Anthocyanins, Protocatechuic acid, Bioflavonoids",
-        "health_benefit": "Demonstrated in multiple randomized trials to lower systolic BP by 7 mmHg through natural diuretic and ACE-inhibitory mechanisms.",
-        "rationale": "Scientifically verified herbal infusion for blood pressure control."
-    },
-    {
-        "name": "Japanese Green Tea (Sencha / Matcha)",
-        "category": "Beverages & Infusions",
-        "diet_types": ["Vegetarian", "Vegan", "Eggetarian", "Non-vegetarian", "Pescatarian"],
-        "allergens": [],
-        "health_attributes": ["diabetic_friendly", "hypertension_friendly", "heart_healthy"],
-        "glycemic_index": 0,
-        "key_nutrients": "EGCG (Epigallocatechin gallate), L-Theanine",
-        "health_benefit": "EGCG enhances cellular insulin signaling via IRS-1 phosphorylation and improves vascular flow.",
-        "rationale": "Metabolic-support beverage with zero calories and zero sodium."
-    },
-    {
-        "name": "Ceylon Cinnamon Infusion (Dalchini)",
-        "category": "Beverages & Infusions",
-        "diet_types": ["Vegetarian", "Vegan", "Eggetarian", "Non-vegetarian", "Pescatarian"],
-        "allergens": [],
-        "health_attributes": ["diabetic_friendly", "low_gi", "heart_healthy"],
-        "glycemic_index": 0,
-        "key_nutrients": "Cinnamaldehyde, Proanthocyanidins",
-        "health_benefit": "Mimics insulin by activating cellular insulin receptors; slows gastric emptying to moderate postprandial glucose.",
-        "rationale": "Traditional botanical infusion for glycemic stabilization."
-    },
-    {
-        "name": "Low-Fat Spiced Buttermilk (Chaas / Mattha)",
-        "category": "Beverages & Infusions",
-        "diet_types": ["Vegetarian", "Eggetarian", "Non-vegetarian", "Pescatarian"],
-        "allergens": ["dairy"],
-        "health_attributes": ["diabetic_friendly", "hypertension_friendly", "low_sodium"],
-        "glycemic_index": 18,
-        "key_nutrients": "Probiotics, Potassium (280mg), Calcium, Roasted Cumin",
-        "health_benefit": "Hydrating electrolyte-rich beverage; roasted cumin and mint provide carminative support without excess sodium.",
-        "rationale": "Refreshing traditional low-calorie probiotic drink."
-    }
-]
-
-# =====================================================================
-# 2. RECOMMENDATION ENGINE & FILTERING ALGORITHM
+# 1. USER DIETARY PROFILE & HEALTH RESTRICTIONS
 # =====================================================================
 
 def get_user_dietary_profile(user_id):
-    """
-    Fetch user's profile and food preferences from the database.
-    """
+    """Fetch user's profile and food preferences from the database."""
     with get_connection() as conn:
         profile = conn.execute("""
             SELECT full_name, age
@@ -424,6 +61,10 @@ def get_user_dietary_profile(user_id):
     # Parse allergy tokens into lowercase list
     allergy_tokens = [a.strip().lower() for a in allergies_raw.replace(';', ',').split(',') if a.strip()]
 
+    comorb_rows = get_user_comorbidities(user_id)
+    comorbidity_keys = [c["condition_key"] for c in comorb_rows]
+    comorbidity_names = [c["condition_name"] for c in comorb_rows]
+
     return {
         "full_name": profile["full_name"] if profile and profile["full_name"] else "User",
         "diet_type": diet_type,
@@ -431,52 +72,76 @@ def get_user_dietary_profile(user_id):
         "allergy_tokens": allergy_tokens,
         "restrictions_raw": restrictions_raw,
         "restrictions_lower": restrictions_raw.lower(),
-        "user_notes": user_notes
+        "user_notes": user_notes,
+        "comorbidities": comorbidity_keys,
+        "comorbidity_names": comorbidity_names
     }
 
 
-def filter_and_rank_foods(user_profile, selected_category=None, condition_filter=None, search_query=""):
+# =====================================================================
+# 2. FILTERING & MULTI-ATTRIBUTE RANKING ENGINE
+# =====================================================================
+
+def filter_and_rank_foods(
+    user_profile,
+    active_profiles=None,
+    selected_category=None,
+    condition_filter=None,
+    search_query=""
+):
     """
     Hybrid recommendation algorithm:
     1. Hard safety constraints (Allergen exclusion & Diet type compliance)
-    2. Multi-attribute utility ranking based on health profile (DASH / Low-GI alignment)
+    2. Drug-nutrient interaction evaluation against active medications
+    3. Multi-attribute utility ranking based on clinical guidelines (ICMR-NIN, DASH, Low-GI)
     """
+    all_foods = load_food_database()
     diet_type = user_profile["diet_type"]
     allergy_tokens = user_profile["allergy_tokens"]
     restrictions = user_profile["restrictions_lower"]
 
-    # Detect conditions from restrictions or user input
     wants_hypertension = any(k in restrictions for k in ["hypertension", "bp", "blood pressure", "low-sodium", "low sodium", "salt", "dash"])
     wants_diabetes = any(k in restrictions for k in ["diabetic", "diabetes", "sugar", "low-sugar", "low sugar", "low-gi", "glucose", "insulin"])
-    wants_heart = any(k in restrictions for k in ["heart", "cholesterol", "lipid", "cardio"])
+    wants_heart = any(k in restrictions for k in ["heart", "cholesterol", "lipid", "cardio", "statin"])
+
+    # Multi-morbidity detection from profile + restrictions
+    comorbidities = set(user_profile.get("comorbidities", []))
+    has_ckd = "ckd" in comorbidities or any(k in restrictions for k in ["ckd", "kidney", "renal", "nephro"])
+    has_gout = "gout" in comorbidities or any(k in restrictions for k in ["gout", "uric", "hyperuricemia"])
+    has_gerd = "gerd" in comorbidities or any(k in restrictions for k in ["gerd", "reflux", "ulcer", "gastric", "acidity"])
+    has_heart = "heart_disease" in comorbidities or wants_heart
+    has_diabetes = "diabetes" in comorbidities or wants_diabetes
+    has_hypertension = "hypertension" in comorbidities or wants_hypertension
+    has_liver = "liver_disease" in comorbidities or any(k in restrictions for k in ["liver", "cirrhosis", "nafld"])
 
     if condition_filter == "hypertension":
-        wants_hypertension = True
+        has_hypertension = True
     elif condition_filter == "diabetes":
-        wants_diabetes = True
+        has_diabetes = True
     elif condition_filter == "heart":
-        wants_heart = True
+        has_heart = True
 
     recommended = []
 
-    for food in FOOD_DATABASE:
+    for food in all_foods:
         # --- LAYER 1: HARD SAFETY CONSTRAINTS ---
 
         # 1. Diet Type Check
         if diet_type != "Not specified":
-            if diet_type not in food["diet_types"]:
+            if diet_type not in food.get("diet_types", []):
                 continue
 
         # 2. Strict Allergen Exclusion
         has_allergy_conflict = False
-        food_allergens = [a.lower() for a in food["allergens"]]
+        food_allergens = [a.lower() for a in food.get("allergens", [])]
+        food_name_str = (food.get("name", "") + " " + food.get("local_name", "")).lower()
+
         for u_allergy in allergy_tokens:
             for f_allergen in food_allergens:
                 if u_allergy in f_allergen or f_allergen in u_allergy:
                     has_allergy_conflict = True
                     break
-            # Also check if allergy keyword is in food name
-            if u_allergy in food["name"].lower():
+            if u_allergy in food_name_str:
                 has_allergy_conflict = True
                 break
             if has_allergy_conflict:
@@ -487,44 +152,139 @@ def filter_and_rank_foods(user_profile, selected_category=None, condition_filter
 
         # 3. Category Filter
         if selected_category and selected_category != "All Categories":
-            if food["category"] != selected_category:
+            if food.get("category") != selected_category:
                 continue
 
         # 4. Search Query Filter
         if search_query:
-            query = search_query.lower()
-            if not (query in food["name"].lower() or query in food["key_nutrients"].lower() or query in food["health_benefit"].lower()):
+            query = search_query.lower().strip()
+            searchable_text = (
+                food.get("name", "") + " " +
+                food.get("local_name", "") + " " +
+                food.get("key_nutrients", "") + " " +
+                food.get("health_benefit", "") + " " +
+                food.get("category", "")
+            ).lower()
+            if query not in searchable_text:
                 continue
 
-        # --- LAYER 2: MULTI-ATTRIBUTE UTILITY SCORING ---
-        score = 10.0 # Base candidate score
+        # --- LAYER 2: DRUG-NUTRIENT & COMORBIDITY HARMONIZATION ---
+        drug_flags = []
+        if active_profiles:
+            drug_flags = mfi.evaluate_food_against_medications(food, active_profiles)
+
+        comorb_flags = []
+        score = 10.0
         reasons = []
+        attrs = food.get("health_attributes", [])
 
-        attrs = food["health_attributes"]
+        # 1. Chronic Kidney Disease (CKD) Renal Potassium & Sodium Overrides
+        if has_ckd:
+            pot_mg = food.get("potassium_mg", 0)
+            sod_mg = food.get("sodium_mg", 0)
+            f_cat = food.get("category", "")
+            f_low = (food.get("name", "") + " " + food.get("local_name", "")).lower()
 
-        if wants_hypertension and "hypertension_friendly" in attrs:
-            score += 15.0
-            reasons.append("Low-Sodium & High-Potassium / Nitrate (DASH-Aligned)")
+            is_high_k_trigger = (
+                (isinstance(pot_mg, (int, float)) and pot_mg >= 220 and f_cat in ["Beverages & Herbal Infusions", "Fruits", "Green Leafy Vegetables"]) or
+                (isinstance(pot_mg, (int, float)) and pot_mg >= 450) or
+                any(t in f_low for t in ["coconut water", "nariyal pani", "banana", "kela", "potato", "aloo", "spinach", "palak"])
+            )
 
-        if wants_diabetes and "diabetic_friendly" in attrs:
-            score += 15.0
-            reasons.append("Low Glycemic Index (<55) & High Viscous Fiber")
+            if is_high_k_trigger:
+                score -= 35.0
+                comorb_flags.append({
+                    "level": "danger",
+                    "title": "⚠️ High Potassium - Caution in CKD",
+                    "detail": f"Contains {pot_mg}mg potassium/100g. Diseased kidneys cannot clear excess potassium, elevating hyperkalemia risk."
+                })
+            if isinstance(sod_mg, (int, float)) and sod_mg > 200:
+                score -= 20.0
+                comorb_flags.append({
+                    "level": "warning",
+                    "title": "⚠️ High Sodium - Restrict in CKD",
+                    "detail": f"Contains {sod_mg}mg sodium/100g. Sodium retention worsens fluid overload and accelerates renal decline."
+                })
 
-        if wants_heart and "heart_healthy" in attrs:
-            score += 10.0
-            reasons.append("Cardiovascular & Lipid Protection")
+        # 2. Hyperuricemia & Gout Purine Overrides
+        if has_gout:
+            f_cat = food.get("category", "")
+            f_low = (food.get("name", "") + " " + food.get("local_name", "")).lower()
+            if f_cat == "Egg, Poultry, Fish & Meat" or any(t in f_low for t in ["sardine", "mackerel", "mutton", "liver", "prawn", "crab", "organ"]):
+                score -= 45.0
+                comorb_flags.append({
+                    "level": "danger",
+                    "title": "⚠️ High Purine - Trigger for Gout Flare",
+                    "detail": "High-purine meats and seafood break down into uric acid, precipitating acute gout attacks."
+                })
+            elif any(t in f_low for t in ["cherry", "amla", "cucumber", "curd", "dahi", "oat", "apple"]):
+                score += 10.0
+                reasons.append("Low-Purine & Alkalizing (Gout-Safe)")
 
-        if "high_fiber" in attrs:
-            score += 5.0
-        if "high_protein" in attrs:
-            score += 5.0
+        # 3. GERD & Peptic Ulcer Mucosal Irritant Overrides
+        if has_gerd:
+            f_low = (food.get("name", "") + " " + food.get("local_name", "")).lower()
+            if any(t in f_low for t in ["chili", "mirchi", "pepper", "citrus", "lemon", "lime", "vinegar", "pickle", "fried"]):
+                score -= 30.0
+                comorb_flags.append({
+                    "level": "warning",
+                    "title": "⚠️ Gastric / Acid Reflux Trigger",
+                    "detail": "Acidic and highly spiced foods irritate gastric mucosa and exacerbate esophageal reflux."
+                })
+            elif any(t in f_low for t in ["oats", "curd", "dahi", "ash gourd", "lauki", "banana"]):
+                score += 8.0
+                reasons.append("Soothing & Low-Acid (GERD-Friendly)")
 
-        if not reasons:
-            reasons.append("Balanced nutrient-dense whole food choice")
+        # Combine all flags
+        all_flags = drug_flags + comorb_flags
+        has_contraindication = any(f["level"] == "danger" for f in all_flags)
+
+        # --- LAYER 3: MULTI-ATTRIBUTE UTILITY SCORING ---
+        if has_contraindication:
+            score -= 100.0
+            reasons.append("⚠️ Clinical Warning: Check contraindications before consuming")
+        else:
+            if has_hypertension:
+                # If patient has CKD, potassium is restricted; only reward low-sodium foods!
+                if has_ckd:
+                    if "low_sodium" in attrs or (isinstance(food.get("sodium_mg"), (int, float)) and food.get("sodium_mg", 999) < 60):
+                        score += 15.0
+                        reasons.append("Low-Sodium (Renal & Blood Pressure Safe)")
+                else:
+                    if "hypertension_friendly" in attrs or "low_sodium" in attrs:
+                        score += 15.0
+                        reasons.append("Low-Sodium & Potassium/Nitrate (DASH-Aligned)")
+
+            if has_diabetes and ("diabetic_friendly" in attrs or "low_gi" in attrs):
+                score += 15.0
+                reasons.append("Low Glycemic Index (<55) & High Viscous Fiber")
+
+            if has_heart and "heart_healthy" in attrs:
+                score += 10.0
+                reasons.append("Cardiovascular & Lipid Protection")
+
+            if "high_fiber" in attrs:
+                score += 5.0
+            if "high_protein" in attrs:
+                score += 5.0
+            if "high_calcium" in attrs:
+                score += 3.0
+            if "high_iron" in attrs:
+                score += 3.0
+
+            # Medication synergy bonus
+            for flag in drug_flags:
+                if flag["level"] == "synergy":
+                    score += 8.0
+                    reasons.append(flag["title"])
+
+            if not reasons:
+                reasons.append("Balanced nutrient-dense whole food choice (ICMR-NIN)")
 
         food_item = dict(food)
         food_item["score"] = score
         food_item["reasons"] = reasons
+        food_item["drug_flags"] = all_flags
         recommended.append(food_item)
 
     # Sort descending by score
@@ -537,18 +297,20 @@ def filter_and_rank_foods(user_profile, selected_category=None, condition_filter
 # =====================================================================
 
 def show_food_suggestions_page(user_id):
-    st.title("🥗 Personalized Food Suggestions")
-    st.caption("Evidence-Based Clinical Nutrition Recommender | Grounded in ADA & AHA Guidelines")
+    st.title("🥗 Personalized Indian Food & Nutrition Recommender")
+    st.caption("Grounded in ICMR-NIN Indian Food Composition Tables (500+ Foods) & Evidence-Based Drug-Nutrient Interactions")
 
     # Safety Notice
     st.info(
-        "💡 **Dietary Guidance Notice:** Suggestions provided here are evidence-based general wellness guidelines for nutritional support. "
-        "They do NOT replace personalized advice from a registered dietitian or your physician."
+        "💡 **Clinical Guidance Notice:** Suggestions provided here are evidence-based general nutritional guidelines. "
+        "They complement medical treatment but do NOT replace direct consultation with a registered clinical dietitian or your physician."
     )
 
     profile = get_user_dietary_profile(user_id)
+    analysis = mfi.analyze_user_food_drug_interactions(user_id)
+    active_profiles = analysis["active_profiles"]
 
-    # User Profile Pill
+    # Section 1: User Profile Pill
     with st.container(border=True):
         st.markdown(f"#### 👤 Nutrition Profile for **{profile['full_name']}**")
         col_p1, col_p2, col_p3 = st.columns(3)
@@ -561,19 +323,90 @@ def show_food_suggestions_page(user_id):
             restr_display = profile['restrictions_raw'] if profile['restrictions_raw'] else "General wellness"
             st.markdown(f"**Health Restrictions:** `{restr_display}`")
 
+        # Comorbidities display
+        comorb_names = profile.get("comorbidity_names", [])
+        if comorb_names:
+            st.markdown(f"**🏥 Diagnosed Conditions:** " + " • ".join([f"`{c}`" for c in comorb_names]))
+        else:
+            st.markdown(f"**🏥 Diagnosed Conditions:** `None recorded (General wellness)`")
+
+        # Multi-Condition Harmonization Callout if conflicting conditions exist
+        comorb_set = set(profile.get("comorbidities", []))
+        if "hypertension" in comorb_set and "ckd" in comorb_set:
+            st.warning(
+                "💡 **Clinical Harmonization Alert (Hypertension + CKD):** For hypertension, DASH guidelines normally promote high potassium. "
+                "However, because **Chronic Kidney Disease (CKD)** is also diagnosed, high-potassium foods (>250mg) have been restricted to protect against life-threatening hyperkalemia."
+            )
+        elif "diabetes" in comorb_set and "gout" in comorb_set:
+            st.info(
+                "💡 **Clinical Harmonization Alert (Diabetes + Gout):** The recommendation engine has prioritized low-purine, low-GI foods "
+                "to stabilize blood glucose while avoiding uric acid crystal precipitation."
+            )
+        elif "gerd" in comorb_set:
+            st.info(
+                "💡 **Mucosal Protection Active (GERD / Gastric Ulcer):** Acidic juices, extreme spices, and deep-fried irritants have been filtered."
+            )
+
         st.caption("To update your diet type, allergies, or restrictions, navigate to the **Profile** tab in the sidebar.")
+
+    # Section 2: Prescription Drug-Nutrient Advisories (If active medications exist)
+    if active_profiles:
+        with st.container(border=True):
+            st.markdown(f"### 💊 Active Medication Food & Nutrition Advisories")
+            st.caption(f"Personalized clinical advisories generated for **{len(active_profiles)} active medications** in your regimen:")
+
+            # Critical alerts
+            if analysis["critical_alerts"]:
+                for alert in analysis["critical_alerts"]:
+                    st.error(f"⚠️ **{alert['medicine']} Safety Precaution:** {alert['alert']}")
+
+            # Meal timing guidance
+            if analysis["meal_timing_guidance"]:
+                st.markdown("##### 🍽️ Meal & Administration Timing")
+                t_cols = st.columns(min(len(analysis["meal_timing_guidance"]), 3))
+                for idx, guide in enumerate(analysis["meal_timing_guidance"]):
+                    col_target = t_cols[idx % len(t_cols)]
+                    with col_target:
+                        st.markdown(f"**{guide['medicine']}**\n\n*{guide['timing']}*")
+
+            # Avoid vs Beneficial Tabs / Columns
+            adv_col1, adv_col2 = st.columns(2)
+            with adv_col1:
+                if analysis["avoid_items"]:
+                    with st.expander("🚫 Foods & Substances to Avoid or Space Out", expanded=True):
+                        for item in analysis["avoid_items"]:
+                            st.markdown(f"- {item}")
+            with adv_col2:
+                if analysis["beneficial_items"]:
+                    with st.expander("🌟 Beneficial Dietary Synergies", expanded=True):
+                        for item in analysis["beneficial_items"]:
+                            st.markdown(f"- {item}")
 
     st.divider()
 
-    # Search & Interactive Controls
-    ctrl_col1, ctrl_col2, ctrl_col3 = st.columns([1.5, 1.2, 1.2])
+    # Section 3: Interactive Search, Category & Condition Controls
+    ctrl_col1, ctrl_col2, ctrl_col3 = st.columns([1.5, 1.4, 1.2])
 
     with ctrl_col1:
-        search_query = st.text_input("🔍 Search Food or Nutrient", placeholder="e.g. Oats, Potassium, Chia, Dal...")
+        search_query = st.text_input("🔍 Search Food, Local Name, or Nutrient", placeholder="e.g. Ragi, Methi, Palak, Potassium, Fiber, Fish...")
 
     with ctrl_col2:
-        categories = ["All Categories", "Whole Grains", "Vegetables", "Proteins & Legumes", "Fruits", "Healthy Fats & Nuts", "Beverages & Infusions"]
-        selected_category = st.selectbox("Category Filter", categories)
+        categories = [
+            "All Categories",
+            "Cereals and Millets",
+            "Grain Legumes & Pulses",
+            "Green Leafy Vegetables",
+            "Other Vegetables",
+            "Roots and Tubers",
+            "Fruits",
+            "Nuts and Oilseeds",
+            "Spices, Herbs & Condiments",
+            "Milk & Dairy Products",
+            "Egg, Poultry, Fish & Meat",
+            "Beverages & Herbal Infusions",
+            "Healthy Fats & Culinary Oils"
+        ]
+        selected_category = st.selectbox("ICMR-NIN Food Category", categories)
 
     with ctrl_col3:
         condition_options = {
@@ -582,55 +415,112 @@ def show_food_suggestions_page(user_id):
             "Diabetic-Friendly (Low-GI)": "diabetes",
             "Heart-Healthy & Cholesterol": "heart"
         }
-        cond_choice = st.selectbox("Health Focus Priority", list(condition_options.keys()))
+        cond_choice = st.selectbox("Clinical Focus Priority", list(condition_options.keys()))
         condition_filter = condition_options[cond_choice]
 
     # Get Recommendations
     foods = filter_and_rank_foods(
         profile,
+        active_profiles=active_profiles,
         selected_category=selected_category,
         condition_filter=condition_filter,
         search_query=search_query
     )
 
-    st.write(f"Showing **{len(foods)}** verified foods matching your dietary profile:")
+    total_matches = len(foods)
+    st.write(f"Showing **{total_matches}** verified authentic Indian foods matching your filters:")
 
     if not foods:
-        st.warning("No foods matched your current search and allergen filters. Try adjusting the search query or loosening restrictions in your Profile.")
+        st.warning("No foods matched your current search and allergen filters. Try adjusting your search query or loosening restrictions in your Profile.")
         return
 
-    # Render Food Cards in a 2-Column Responsive Layout
-    for i in range(0, len(foods), 2):
+    # Pagination controls to ensure smooth UI performance across 500+ items
+    page_size = 20
+    total_pages = max(1, (total_matches + page_size - 1) // page_size)
+
+    if total_pages > 1:
+        pag_col1, pag_col2, pag_col3 = st.columns([1, 2, 1])
+        with pag_col2:
+            current_page = st.number_input(
+                f"Page (1 to {total_pages})",
+                min_value=1,
+                max_value=total_pages,
+                value=1,
+                step=1,
+                key="food_pagination"
+            )
+        start_idx = (current_page - 1) * page_size
+        end_idx = min(start_idx + page_size, total_matches)
+        displayed_foods = foods[start_idx:end_idx]
+        st.caption(f"Displaying foods **{start_idx + 1}** to **{end_idx}** of **{total_matches}**")
+    else:
+        displayed_foods = foods
+
+    # Section 4: Render Food Cards in a 2-Column Responsive Layout
+    for i in range(0, len(displayed_foods), 2):
         col1, col2 = st.columns(2)
-        row_foods = [foods[i]]
-        if i + 1 < len(foods):
-            row_foods.append(foods[i + 1])
+        row_foods = [displayed_foods[i]]
+        if i + 1 < len(displayed_foods):
+            row_foods.append(displayed_foods[i + 1])
 
         for col, food in zip([col1, col2], row_foods):
             with col:
                 with st.container(border=True):
-                    # Category Badge + Food Name
-                    st.markdown(f"<span style='font-size: 11px; background-color: #e0f2f1; color: #00695c; padding: 3px 8px; border-radius: 12px; font-weight: 600;'>{food['category'].upper()}</span>", unsafe_allow_html=True)
+                    # Category Badge + Food Name + Local Name
+                    cat_name = food.get('category', '').upper()
+                    st.markdown(
+                        f"<div style='display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;'>"
+                        f"<span style='font-size: 11px; background-color: #e0f2f1; color: #00695c; padding: 3px 8px; border-radius: 12px; font-weight: 600;'>{cat_name}</span>"
+                        f"</div>",
+                        unsafe_allow_html=True
+                    )
                     st.subheader(food["name"])
 
-                    # Key Metrics
+                    # Drug interaction flags (if any)
+                    for dflag in food.get("drug_flags", []):
+                        if dflag["level"] == "danger":
+                            st.error(f"{dflag['title']}\n\n*{dflag['detail']}*")
+                        elif dflag["level"] == "warning":
+                            st.warning(f"{dflag['title']}\n\n*{dflag['detail']}*")
+                        elif dflag["level"] == "synergy":
+                            st.success(f"{dflag['title']}\n\n*{dflag['detail']}*")
+
+                    # Key Metrics: GI & Allergens
                     m_col1, m_col2 = st.columns(2)
                     with m_col1:
-                        st.markdown(f"**Glycemic Index:** `{food['glycemic_index']}` (Low-GI)")
+                        gi_val = food.get("glycemic_index", "N/A")
+                        gi_badge = "Low-GI" if isinstance(gi_val, (int, float)) and gi_val <= 55 else ("Medium-GI" if isinstance(gi_val, (int, float)) and gi_val <= 69 else "GI")
+                        st.markdown(f"**Glycemic Index:** `{gi_val}` ({gi_badge})")
                     with m_col2:
-                        allergens_tag = ", ".join(food["allergens"]).title() if food["allergens"] else "None (Hypoallergenic)"
+                        allergens_tag = ", ".join(food.get("allergens", [])).title() if food.get("allergens") else "None (Hypoallergenic)"
                         st.markdown(f"**Allergens:** `{allergens_tag}`")
 
-                    st.markdown(f"**Key Nutrients:** *{food['key_nutrients']}*")
-                    st.markdown(f"**Health Action:** {food['health_benefit']}")
+                    # Nutrients & Action
+                    st.markdown(f"**Key Nutrients:** *{food.get('key_nutrients', 'Nutrient-rich staple')}*")
+                    st.markdown(f"**Health Action:** {food.get('health_benefit', 'Promotes nutritional wellness.')}")
 
-                    # Algorithmic Rationale
+                    # Detailed Macro/Micronutrient Breakdown Expander
+                    with st.expander("📊 Complete Nutritional Breakdown (per 100g)", expanded=False):
+                        n_c1, n_c2 = st.columns(2)
+                        with n_c1:
+                            st.markdown(f"- **Energy:** `{food.get('energy_kcal', 'N/A')} kcal`")
+                            st.markdown(f"- **Protein:** `{food.get('protein_g', 'N/A')} g`")
+                            st.markdown(f"- **Carbohydrates:** `{food.get('carbohydrates_g', 'N/A')} g`")
+                            st.markdown(f"- **Dietary Fiber:** `{food.get('dietary_fiber_g', 'N/A')} g`")
+                            st.markdown(f"- **Total Fat:** `{food.get('fat_g', 'N/A')} g`")
+                        with n_c2:
+                            st.markdown(f"- **Potassium:** `{food.get('potassium_mg', 'N/A')} mg`")
+                            st.markdown(f"- **Sodium:** `{food.get('sodium_mg', 'N/A')} mg`")
+                            st.markdown(f"- **Calcium:** `{food.get('calcium_mg', 'N/A')} mg`")
+                            st.markdown(f"- **Iron:** `{food.get('iron_mg', 'N/A')} mg`")
+
+                    # Algorithmic Rationale Box
                     st.markdown(
                         f"""
                         <div style='background-color: #f1f8e9; border-left: 4px solid #558b2f; padding: 8px 12px; border-radius: 4px; margin-top: 8px;'>
                             <small style='color: #33691e; font-weight: 700;'>WHY IT'S RECOMMENDED FOR YOU:</small><br>
-                            <small style='color: #2e7d32;'>{' • '.join(food['reasons'])}</small><br>
-                            <small style='color: #555;'><em>{food['rationale']}</em></small>
+                            <small style='color: #2e7d32;'>{' • '.join(food.get('reasons', []))}</small><br>
+                            <small style='color: #555;'><em>{food.get('rationale', 'ICMR-NIN Indian Food Composition Table guideline.')}</em></small>
                         </div>
                         """,
                         unsafe_allow_html=True

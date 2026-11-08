@@ -1,7 +1,9 @@
-﻿
+
 import streamlit as st
 from datetime import date, time, timedelta
 from database import get_connection
+import medicine_food_integration as mfi
+import ddi_engine as ddi
 
 
 # ============================================================
@@ -327,8 +329,28 @@ def show_medicines(user_id):
 
         st.subheader("Add a New Medicine")
 
+        # Quick preset selection
+        quick_med_options = ["-- Type custom name or pick common medication --"] + mfi.get_all_known_medicine_names()
+        selected_preset = st.selectbox(
+            "Quick-Select Common Medication (Optional)",
+            quick_med_options,
+            key="add_quick_preset"
+        )
+
+        preset_name = ""
+        preset_dosage = ""
+        preset_inst = ""
+
+        if selected_preset and not selected_preset.startswith("--"):
+            matched_p = mfi.match_medicine_profile(selected_preset)
+            if matched_p:
+                preset_name = matched_p["name"]
+                preset_dosage = matched_p.get("default_dosage", "")
+                preset_inst = matched_p.get("meal_timing", "")
+
         medicine_name = st.text_input(
             "Medicine Name",
+            value=preset_name,
             key="add_name"
         )
 
@@ -340,13 +362,77 @@ def show_medicines(user_id):
 
         dosage = st.text_input(
             "Dosage (e.g. 1 tablet, 5 ml)",
+            value=preset_dosage,
             key="add_dosage"
         )
 
         instructions = st.text_area(
             "Instructions (optional)",
+            value=preset_inst,
             key="add_instructions"
         )
+
+        # Interactive Food-Drug Advisory preview
+        if medicine_name and medicine_name.strip():
+            matched_profile = mfi.match_medicine_profile(medicine_name)
+            if matched_profile:
+                with st.container(border=True):
+                    st.markdown(f"**🥗 Clinical Food & Dietary Advisory for `{matched_profile['name']}`**")
+                    st.caption(f"**Therapeutic Class:** {matched_profile.get('category', 'Standard Medication')}")
+                    if matched_profile.get("meal_timing"):
+                        st.info(f"🍽️ **Meal Timing:** {matched_profile['meal_timing']}")
+                    if matched_profile.get("critical_alert"):
+                        st.warning(f"⚠️ **Precaution:** {matched_profile['critical_alert']}")
+                    avoid = matched_profile.get("food_interactions", {}).get("avoid", [])
+                    if avoid:
+                        st.markdown(f"🚫 **Avoid/Caution:** {', '.join(avoid)}")
+                    beneficial = matched_profile.get("food_interactions", {}).get("beneficial", [])
+                    if beneficial:
+                        st.markdown(f"🌟 **Dietary Synergies:** {', '.join(beneficial)}")
+
+            # Proactive Drug-Drug Interaction Check against user's existing prescriptions
+            ddi_alerts = ddi.check_new_drug_against_regimen(user_id, medicine_name)
+            if ddi_alerts:
+                with st.container(border=True):
+                    st.markdown("##### ⚠️ Drug-Drug Interaction Warning with Your Current Regimen")
+                    for d_alert in ddi_alerts:
+                        sev = d_alert["severity"]
+                        if sev == "Severe":
+                            st.error(
+                                f"🔴 **CONTRAINDICATION with {d_alert['existing_medicine']}**: {d_alert['title']}\n\n"
+                                f"**Consequence:** {d_alert['clinical_effects']}\n\n"
+                                f"**Recommendation:** {d_alert['recommendation']}"
+                            )
+                        elif sev == "Major":
+                            st.warning(
+                                f"🟠 **MAJOR PRECAUTION with {d_alert['existing_medicine']}**: {d_alert['title']}\n\n"
+                                f"**Consequence:** {d_alert['clinical_effects']}\n\n"
+                                f"**Recommendation:** {d_alert['recommendation']}"
+                            )
+                        else:
+                            st.info(f"🟡 **Notice with {d_alert['existing_medicine']}**: {d_alert['title']}")
+
+            # Proactive Drug-Disease Contraindication Check
+            ddei_alerts = ddi.check_new_drug_against_diseases(user_id, medicine_name)
+            if ddei_alerts:
+                with st.container(border=True):
+                    st.markdown("##### ⚠️ Drug-Disease Contraindication Warning")
+                    for ddei in ddei_alerts:
+                        d_sev = ddei["severity"]
+                        if d_sev == "Severe":
+                            st.error(
+                                f"🔴 **CONTRAINDICATION with your condition ({ddei['disease_name']})**: {ddei['title']}\n\n"
+                                f"**Impact:** {ddei['clinical_effects']}\n\n"
+                                f"**Guidance:** {ddei['action_plan']}"
+                            )
+                        elif d_sev == "Major":
+                            st.warning(
+                                f"🟠 **MAJOR CAUTION with your condition ({ddei['disease_name']})**: {ddei['title']}\n\n"
+                                f"**Impact:** {ddei['clinical_effects']}\n\n"
+                                f"**Guidance:** {ddei['action_plan']}"
+                            )
+                        else:
+                            st.info(f"🟡 **Notice for ({ddei['disease_name']})**: {ddei['title']}")
 
         st.write("### Schedule")
 
@@ -463,6 +549,22 @@ def show_medicines(user_id):
 
         medicines = get_medicines(user_id)
 
+        # Regimen Drug-Drug Interaction Scan summary banner
+        regimen_ddi = ddi.check_patient_regimen_interactions(user_id)
+        if regimen_ddi["has_interactions"]:
+            s_c = regimen_ddi["severe_count"]
+            m_c = regimen_ddi["major_count"]
+            if s_c > 0:
+                st.error(
+                    f"⚠️ **Clinical Medication Alert:** Identified **{s_c} Severe** interaction(s) in your active prescriptions. "
+                    f"Visit the **Drug Interaction Checker** in the sidebar to review the full interaction mechanism and doctor guidance."
+                )
+            elif m_c > 0:
+                st.warning(
+                    f"⚠️ **Polypharmacy Precaution:** Identified **{m_c} Major** interaction(s) in your active prescriptions. "
+                    f"Review dose timing and precautions under the **Drug Interaction Checker** tab."
+                )
+
         if not medicines:
 
             st.info("No medicines added yet.")
@@ -528,6 +630,27 @@ def show_medicines(user_id):
                         st.warning(
                             "Stock is low. Consider checking your refill."
                         )
+
+                    # Food & Nutrition Guidance Expander
+                    med_profile = mfi.match_medicine_profile(medicine["medicine_name"])
+                    if med_profile:
+                        with st.expander("🥗 Food & Nutrition Guidance for this Medicine", expanded=False):
+                            st.caption(f"**Therapeutic Class:** {med_profile.get('category', 'Standard Medication')}")
+                            if med_profile.get("meal_timing"):
+                                st.markdown(f"🍽️ **Meal Timing:** {med_profile['meal_timing']}")
+                            if med_profile.get("critical_alert"):
+                                st.warning(f"⚠️ **Precaution:** {med_profile['critical_alert']}")
+                            avoid = med_profile.get("food_interactions", {}).get("avoid", [])
+                            if avoid:
+                                st.markdown(f"🚫 **Foods/Substances to Avoid:** {', '.join(avoid)}")
+                            beneficial = med_profile.get("food_interactions", {}).get("beneficial", [])
+                            if beneficial:
+                                st.markdown(f"🌟 **Dietary Synergies:** {', '.join(beneficial)}")
+                            if med_profile.get("clinical_summary"):
+                                st.caption(f"ℹ️ *Pharmacology Note:* {med_profile['clinical_summary']}")
+                    else:
+                        with st.expander("🥗 Food & Nutrition Guidance", expanded=False):
+                            st.caption("Take as directed with water. Keep a consistent meal routine and consult your doctor or dietitian regarding specific food precautions.")
 
                     edit_col, delete_col = st.columns(2)
 

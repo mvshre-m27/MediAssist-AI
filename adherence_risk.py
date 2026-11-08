@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 from datetime import datetime
-from database import get_connection
+from database import get_connection, get_user_comorbidities
 from adherence_history import get_adherence_data, calculate_adherence
 import sys
 from pathlib import Path
@@ -13,6 +13,7 @@ if str(ML_DIR) not in sys.path:
 
 from predict_risk import (
     predict_adherence_risk,
+    simulate_counterfactual,
     save_assessment_to_db,
     get_latest_user_assessment
 )
@@ -49,12 +50,18 @@ def get_user_regimen_summary(user_id):
     daily_doses = schedules["daily_doses"] if schedules and schedules["daily_doses"] else 0
     estimated_units = max(daily_doses * 30, 30) if daily_doses > 0 else 60
 
+    comorbs = get_user_comorbidities(user_id)
+    comorb_keys = [c["condition_key"] for c in comorbs]
+    comorb_names = [c["condition_name"] for c in comorbs]
+
     return {
         "name": name,
         "age": age,
         "med_count": med_count,
         "daily_doses": daily_doses,
-        "estimated_units": estimated_units
+        "estimated_units": estimated_units,
+        "comorbidities": comorb_keys,
+        "comorbidity_names": comorb_names
     }
 
 
@@ -72,7 +79,7 @@ def get_all_user_assessments(user_id):
 
 def show_adherence_risk_page(user_id):
     st.title("🎯 Medication Adherence Risk Assessment")
-    st.caption("Powered by Machine Learning (Random Forest Pipeline, ROC-AUC: 0.9006, Mendeley Adherence Cohort)")
+    st.caption("Explainable AI (XAI) & Random Forest Pipeline (ROC-AUC: 0.9006, Mendeley Adherence Cohort, 24,084 Patients)")
 
     # Medical & Prototype Disclaimer
     st.warning(
@@ -90,7 +97,6 @@ def show_adherence_risk_page(user_id):
     with col_b:
         st.metric("Daily Doses Scheduled", f"{regimen['daily_doses']} doses/day")
     with col_c:
-        # Check historical adherence from past 15 days
         past_records = get_adherence_data(user_id, days=15)
         if past_records:
             total, taken, missed, unconfirmed, adherence = calculate_adherence(past_records)
@@ -120,15 +126,29 @@ def show_adherence_risk_page(user_id):
                 help="Age is a significant factor in regimen complexity and cognitive routine maintenance."
             )
 
+            # Intelligent clinical defaults from user's recorded comorbidities
+            comorbs = set(regimen.get("comorbidities", []))
+            if "hypertension" in comorbs and "diabetes" in comorbs:
+                cond_idx = 2
+            elif "diabetes" in comorbs:
+                cond_idx = 1
+            else:
+                cond_idx = 0
+
+            has_other_comorb = any(c in comorbs for c in ["ckd", "heart_disease", "gout", "gerd", "asthma", "liver_disease", "dyslipidemia", "osteoporosis"])
+            comorb_idx = 1 if has_other_comorb or len(comorbs) >= 2 else 0
+
             primary_condition = st.selectbox(
                 "Primary Chronic Condition",
                 ["Hypertension (High Blood Pressure)", "Type 2 Diabetes", "Both Hypertension & Diabetes"],
+                index=cond_idx,
                 help="Mendeley research shows adherence dynamics differ between asymptomatic conditions (Hypertension) and symptomatic meal-linked conditions (Diabetes)."
             )
 
             comorbidity_status = st.selectbox(
                 "Other Chronic Comorbidities?",
-                ["No additional chronic comorbidities", "Yes, has other comorbidities (Cardiovascular, Kidney, etc.)"]
+                ["No additional chronic comorbidities", "Yes, has other comorbidities (Cardiovascular, Kidney, etc.)"],
+                index=comorb_idx
             )
 
         with col2:
@@ -179,6 +199,7 @@ def show_adherence_risk_page(user_id):
 
         with st.spinner("Analyzing regimen complexity and adherence patterns..."):
             result = predict_adherence_risk(feature_dict)
+            feature_dict["_computed_prob"] = result["non_adherence_probability"]
 
             # Persist to SQLite
             assessment_id = save_assessment_to_db(
@@ -187,38 +208,224 @@ def show_adherence_risk_page(user_id):
                 risk_score=result["non_adherence_probability"]
             )
 
-        st.success(f"Assessment complete! Logged as Assessment #{assessment_id}")
+            # Store in session state for interactive counterfactuals
+            st.session_state["adherence_assessment_result"] = result
+            st.session_state["adherence_assessment_features"] = feature_dict
+            st.session_state["adherence_assessment_id"] = assessment_id
 
-        # 3. Prediction Presentation
-        res_col1, res_col2 = st.columns([1, 2])
+    # 3. Display Assessment Results & Explainable AI (XAI)
+    if "adherence_assessment_result" in st.session_state:
+        result = st.session_state["adherence_assessment_result"]
+        base_features = st.session_state["adherence_assessment_features"]
+        assessment_id = st.session_state.get("adherence_assessment_id")
+
+        if assessment_id:
+            st.success(f"Assessment complete! Logged as Assessment #{assessment_id}")
+
+        st.markdown("### 📊 Assessment Findings & Risk Stratification")
+
+        res_col1, res_col2 = st.columns([1, 1])
 
         with res_col1:
             st.markdown(
                 f"""
-                <div style="background-color: white; border: 2px solid {result['risk_color']}; border-radius: 12px; padding: 20px; text-align: center;">
-                    <div style="font-size: 14px; color: #666; text-transform: uppercase; font-weight: 600;">Predicted Risk Tier</div>
-                    <div style="font-size: 32px; font-weight: 800; color: {result['risk_color']}; margin: 8px 0;">
+                <div style="background-color: white; border: 2px solid {result['risk_color']}; border-radius: 12px; padding: 22px; text-align: center; box-shadow: 0 2px 6px rgba(0,0,0,0.05);">
+                    <div style="font-size: 13px; color: #666; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">Predicted Adherence Status</div>
+                    <div style="font-size: 34px; font-weight: 800; color: {result['risk_color']}; margin: 8px 0;">
                         {result['risk_label']}
                     </div>
-                    <div style="font-size: 14px; color: #444;">Non-Adherence Probability: <b>{result['non_adherence_probability']}%</b></div>
-                    <div style="font-size: 13px; color: #777; margin-top: 4px;">Adherence Likelihood: <b>{result['adherence_probability']}%</b></div>
+                    <div style="font-size: 16px; color: #333; margin-bottom: 6px;">
+                        Non-Adherence Risk Probability: <b>{result['non_adherence_probability']}%</b>
+                    </div>
+                    <div style="font-size: 14px; color: #2e7d32; font-weight: 600;">
+                        Estimated Adherence Likelihood: <b>{result['adherence_probability']}%</b>
+                    </div>
                 </div>
                 """,
                 unsafe_allow_html=True
             )
 
         with res_col2:
-            st.subheader("🔍 Contributing Clinical Factors")
-            for factor in result["contributing_factors"]:
-                st.markdown(f"- {factor}")
+            cohort = result["cohort_stats"]
+            st.markdown(
+                f"""
+                <div style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 12px; padding: 22px;">
+                    <div style="font-size: 13px; color: #495057; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">👥 Cohort Population Benchmark</div>
+                    <div style="font-size: 20px; font-weight: 700; color: #0d6efd; margin: 8px 0;">
+                        Top {cohort['adherence_standing_pct']}% Adherence Standing
+                    </div>
+                    <div style="font-size: 13px; color: #555; line-height: 1.5;">
+                        Compared against <b>24,084 chronic patients</b> in the multi-center clinical cohort:
+                    </div>
+                    <ul style="font-size: 13px; color: #444; margin-top: 6px; padding-left: 18px;">
+                        <li>Patient Non-Adherence Risk: <b>{result['non_adherence_probability']}%</b></li>
+                        <li>Cohort Median Risk: <b>{cohort['cohort_median']}%</b> | Cohort Mean: <b>{cohort['cohort_mean']}%</b></li>
+                        <li><b>Outperforms {cohort['adherence_standing_pct']}%</b> of cohort patients in routine adherence stability.</li>
+                    </ul>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
 
         st.divider()
 
-        st.subheader("💡 Recommended Supportive Action Plan")
-        for tip in result["supportive_advice"]:
-            st.info(f"👉 {tip}")
+        # 4. Explainable AI: Directional Local Feature Attribution Breakdown
+        st.subheader("🔬 Explainable AI: Factor Attribution & Risk Impact Breakdown")
+        st.caption(
+            "Mathematical and clinical decomposition of why the Random Forest model assigned this probability. "
+            "Directional impacts reflect changes relative to population reference baselines."
+        )
 
-    # 4. Assessment History Log
+        protect_col, risk_col = st.columns(2)
+        protect_factors = [f for f in result["factor_attributions"] if f["direction"] == "protective"]
+        risk_factors = [f for f in result["factor_attributions"] if f["direction"] == "risk_factor"]
+
+        with protect_col:
+            st.markdown("#### 🟢 Protective Factors (Sustaining Adherence)")
+            if protect_factors:
+                for item in protect_factors:
+                    st.markdown(
+                        f"""
+                        <div style="background-color: #f1f8e9; border-left: 4px solid #43a047; border-radius: 6px; padding: 12px 14px; margin-bottom: 12px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="font-weight: 700; color: #2e7d32; font-size: 14px;">{item['feature']}</span>
+                                <span style="background-color: #c8e6c9; color: #1b5e20; font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 12px;">
+                                    {item['delta_label']}
+                                </span>
+                            </div>
+                            <div style="font-size: 12px; color: #555; margin-top: 4px;"><b>Metric:</b> {item['metric']}</div>
+                            <div style="font-size: 12px; color: #333; margin-top: 6px; line-height: 1.4;">{item['rationale']}</div>
+                        </div>
+                        """,
+                        unsafe_allow_html=True
+                    )
+            else:
+                st.info("No dominant protective factors identified in current profile.")
+
+        with risk_col:
+            st.markdown("#### 🔴 Risk Escalators (Vulnerability Factors)")
+            if risk_factors:
+                for item in risk_factors:
+                    st.markdown(
+                        f"""
+                        <div style="background-color: #fbe9e7; border-left: 4px solid #e53935; border-radius: 6px; padding: 12px 14px; margin-bottom: 12px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="font-weight: 700; color: #c62828; font-size: 14px;">{item['feature']}</span>
+                                <span style="background-color: #ffcdd2; color: #b71c1c; font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 12px;">
+                                    {item['delta_label']}
+                                </span>
+                            </div>
+                            <div style="font-size: 12px; color: #555; margin-top: 4px;"><b>Metric:</b> {item['metric']}</div>
+                            <div style="font-size: 12px; color: #333; margin-top: 6px; line-height: 1.4;">{item['rationale']}</div>
+                        </div>
+                        """,
+                        unsafe_allow_html=True
+                    )
+            else:
+                st.success("No critical risk escalators detected! The patient's regimen exhibits stable low-friction characteristics.")
+
+        # Multi-Morbidity Clinical Regimen Context
+        c_names = regimen.get("comorbidity_names", [])
+        if c_names:
+            st.info(
+                f"🩺 **Multi-Condition Complexity Context:** Managing **{len(c_names)} diagnosed chronic conditions** ({', '.join(c_names)}). "
+                "Co-occurring conditions divide cognitive attention, multiply daily doses, and necessitate coordinated refill management."
+            )
+
+        st.divider()
+
+        # 5. Global Model Feature Importance (Model Transparency)
+        with st.expander("🌐 Global Model Transparency: How the Random Forest Algorithm Weighs Factors", expanded=False):
+            st.write(
+                "Trained across 24,084 chronic patients, the Random Forest model evaluates nonlinear interactions across "
+                "regimen volume, clinical history, and demographic features. Here are the model's global feature weights:"
+            )
+
+            imp_df = pd.DataFrame(result["global_feature_importances"])
+            imp_df = imp_df.rename(columns={
+                "feature": "Clinical Dimension",
+                "importance": "Global Weight (%)",
+                "clinical_role": "Clinical Rationale"
+            })
+            st.dataframe(imp_df, use_container_width=True, hide_index=True)
+
+            st.caption(
+                "📌 **Clinical Note:** Medication Refill Volume (UNITSTOTAL, 55.2%) and Healthcare Claims (30.9%) "
+                "constitute over 86% of total predictive power. In epidemiological research, active prescription refills "
+                "are the single most reliable objective surrogate for true medication possession."
+            )
+
+        st.divider()
+
+        # 6. Interactive "What-If" Counterfactual Sensitivity Simulator
+        st.subheader("🧪 Interactive Counterfactual Sensitivity Simulator ('What-If' Analysis)")
+        st.caption("Simulate how hypothetical shifts in medication supply, complications, or disease management would alter the predicted non-adherence risk:")
+
+        sim_option = st.radio(
+            "Select a Counterfactual Scenario to Test:",
+            [
+                "Baseline (Current Profile)",
+                "Scenario A: Prescription Refill Lapse (Units drop by 75% due to pharmacy delay)",
+                "Scenario B: Disease Complication Shock (Development of secondary clinical complications)",
+                "Scenario C: Single-Condition Regimen (Elimination of polypharmacy friction)",
+                "Scenario D: Meal-Anchored Diabetes Only (Blood glucose timing feedback)"
+            ],
+            index=0,
+            horizontal=False
+        )
+
+        modifications = {}
+        scenario_description = ""
+
+        if "Scenario A" in sim_option:
+            # Drop monthly units to 15 pills/month
+            modifications = {"units_total": 15}
+            scenario_description = "Refill lapse simulated: Prescription refill volume drops from regular refills to 15 pills/month (e.g. prescription abandonment or missed pickup)."
+        elif "Scenario B" in sim_option:
+            # Complications present
+            modifications = {"no_complication": 0}
+            scenario_description = "Complication emergence simulated: Patient develops secondary microvascular/cardiovascular complications that impair daily self-care stamina."
+        elif "Scenario C" in sim_option:
+            # No comorbidity
+            modifications = {"no_comorbidity": 1}
+            scenario_description = "Regimen simplification simulated: Multi-morbidity friction is eliminated; patient manages a single consolidated chronic regimen."
+        elif "Scenario D" in sim_option:
+            # Diabetes only (hypertension = 0)
+            modifications = {"diagnosis_hypertension": 0}
+            scenario_description = "Condition anchor simulated: Medication regimen shifts from asymptomatic hypertension to meal-anchored Type 2 Diabetes."
+
+        if modifications:
+            cf_res = simulate_counterfactual(base_features, modifications)
+            delta_val = cf_res["delta"]
+            delta_symbol = "🔺 +" if delta_val > 0 else ("🔻 " if delta_val < 0 else "➖ ")
+            delta_color = "#d32f2f" if delta_val > 0 else "#2e7d32"
+
+            st.markdown(
+                f"""
+                <div style="background-color: white; border: 2px dashed {cf_res['risk_color']}; border-radius: 10px; padding: 18px; margin-top: 10px;">
+                    <div style="font-size: 13px; color: #666; font-weight: 700; text-transform: uppercase;">Simulated Counterfactual Outcome</div>
+                    <div style="display: flex; align-items: baseline; gap: 15px; margin: 8px 0;">
+                        <span style="font-size: 28px; font-weight: 800; color: {cf_res['risk_color']};">
+                            {cf_res['simulated_label']} ({cf_res['simulated_prob']}%)
+                        </span>
+                        <span style="font-size: 18px; font-weight: 700; color: {delta_color};">
+                            {delta_symbol}{abs(delta_val)}% Risk Delta
+                        </span>
+                    </div>
+                    <div style="font-size: 13px; color: #444; line-height: 1.4;">
+                        <b>Scenario Context:</b> {scenario_description}
+                    </div>
+                    <div style="font-size: 12px; color: #666; margin-top: 6px;">
+                        Baseline Risk: <b>{cf_res['base_prob']}%</b> ➔ Simulated Counterfactual Risk: <b>{cf_res['simulated_prob']}%</b>
+                    </div>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+        else:
+            st.info("💡 Select any scenario above to observe real-time mathematical sensitivity of the Random Forest model.")
+
+    # 7. Assessment History Log
     st.divider()
     st.subheader("📜 Previous Assessment Logs")
     assessments = get_all_user_assessments(user_id)

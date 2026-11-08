@@ -1,0 +1,1852 @@
+[
+  {
+    "id": "metformin",
+    "name": "Metformin",
+    "brand_names": [
+      "Glycomet",
+      "Glucophage",
+      "Obimet",
+      "Cetapin",
+      "Riomet"
+    ],
+    "category": "Anti-diabetic (Biguanide)",
+    "default_dosage": "500 mg",
+    "meal_timing": "Take with or immediately after meals (breakfast/dinner)",
+    "food_interactions": {
+      "avoid": [
+        "Excessive alcohol (increases risk of lactic acidosis)",
+        "Crash starvation diets"
+      ],
+      "caution": [
+        "Taking on an empty stomach frequently causes nausea, cramps, and diarrhea"
+      ],
+      "beneficial": [
+        "Vitamin B12-rich foods (milk, curd, eggs, paneer, fortified nutritional yeast) to prevent B12 depletion",
+        "High-soluble-fiber foods (oats, barley, fenugreek/methi seeds, ragi) for glycemic stabilization"
+      ]
+    },
+    "critical_alert": "Avoid alcohol consumption. If taking for over 1-2 years, monitor Vitamin B12 levels regularly.",
+    "clinical_summary": "Decreases hepatic glucose production and increases insulin sensitivity. Food slows absorption slightly but dramatically improves gastrointestinal tolerance."
+  },
+  {
+    "id": "glimepiride",
+    "name": "Glimepiride",
+    "brand_names": [
+      "Amaryl",
+      "Glimy",
+      "Zoryl",
+      "Gepride"
+    ],
+    "category": "Anti-diabetic (Sulfonylurea)",
+    "default_dosage": "1 mg or 2 mg",
+    "meal_timing": "Take immediately before or with the first substantial meal of the day (usually breakfast)",
+    "food_interactions": {
+      "avoid": [
+        "Alcohol (severely escalates risk of sudden hypoglycemia)",
+        "Skipping meals"
+      ],
+      "caution": [
+        "Never take without eating a carbohydrate-containing meal shortly after; risk of dangerous hypoglycemic drops"
+      ],
+      "beneficial": [
+        "Complex unrefined carbohydrates (millets, oats, brown rice, whole wheat) for sustained glucose release",
+        "Carry fast-acting carbohydrates (dextrose tablets, raisins, fruit juice) for emergency hypoglycemic relief"
+      ]
+    },
+    "critical_alert": "High risk of hypoglycemia if meals are skipped or delayed. Always eat within 15-30 minutes of taking.",
+    "clinical_summary": "Stimulates pancreatic beta-cells to secrete insulin. Must be synchronized with food intake to match insulin release with dietary carbohydrate absorption."
+  },
+  {
+    "id": "gliclazide",
+    "name": "Gliclazide",
+    "brand_names": [
+      "Diamicron",
+      "Reclide",
+      "Glizid",
+      "Azukon"
+    ],
+    "category": "Anti-diabetic (Sulfonylurea)",
+    "default_dosage": "40 mg or 80 mg (or 30/60 mg MR)",
+    "meal_timing": "Take with breakfast or morning meal",
+    "food_interactions": {
+      "avoid": [
+        "Alcohol",
+        "Skipping breakfast"
+      ],
+      "caution": [
+        "Do not crush or chew modified release (MR) formulations"
+      ],
+      "beneficial": [
+        "Fiber-rich breakfast (oats, sprouted moong, vegetable poha) to avoid rapid blood glucose spikes"
+      ]
+    },
+    "critical_alert": "Skipping meals while on Gliclazide can cause severe hypoglycemia.",
+    "clinical_summary": "Second-generation sulfonylurea with selective pancreatic beta cell binding; reduces post-meal glycemic excursions when taken with breakfast."
+  },
+  {
+    "id": "sitagliptin",
+    "name": "Sitagliptin",
+    "brand_names": [
+      "Januvia",
+      "Istavel",
+      "Zita"
+    ],
+    "category": "Anti-diabetic (DPP-4 Inhibitor)",
+    "default_dosage": "50 mg or 100 mg",
+    "meal_timing": "May be taken with or without food at the same time each day",
+    "food_interactions": {
+      "avoid": [
+        "High-glycemic-index sugary foods, sweetened drinks, and refined pastries"
+      ],
+      "caution": [
+        "Excessive alcohol"
+      ],
+      "beneficial": [
+        "Low-GI vegetables, legumes, and lean proteins to support GLP-1 inkretin action"
+      ]
+    },
+    "critical_alert": "Low inherent risk of hypoglycemia on its own; risk increases if combined with sulfonylureas or insulin.",
+    "clinical_summary": "Inhibits DPP-4 enzyme, prolonging endogenous active incretin hormones (GLP-1 and GIP) which stimulate glucose-dependent insulin release."
+  },
+  {
+    "id": "dapagliflozin",
+    "name": "Dapagliflozin",
+    "brand_names": [
+      "Forxiga",
+      "Oxra",
+      "Dapaone",
+      "Justo"
+    ],
+    "category": "Anti-diabetic & Cardiorenal (SGLT2 Inhibitor)",
+    "default_dosage": "5 mg or 10 mg",
+    "meal_timing": "Take in the morning with or without food",
+    "food_interactions": {
+      "avoid": [
+        "Severe dehydration, excessive alcohol (risk of ketoacidosis), very low-carbohydrate/keto diets without medical monitoring"
+      ],
+      "caution": [
+        "Diuretic effect: drink plenty of clean water throughout the day (at least 2-2.5 liters unless fluid restricted)"
+      ],
+      "beneficial": [
+        "Hydrating foods (cucumber, bottle gourd, buttermilk, clear vegetable soups)"
+      ]
+    },
+    "critical_alert": "Promotes urinary glucose excretion; maintain adequate hydration to prevent volume depletion, orthostatic hypotension, and urinary tract infections.",
+    "clinical_summary": "Inhibits sodium-glucose co-transporter 2 in proximal renal tubules, reducing blood glucose and blood pressure while conferring cardioprotective and nephroprotective benefits."
+  },
+  {
+    "id": "empagliflozin",
+    "name": "Empagliflozin",
+    "brand_names": [
+      "Jardiance",
+      "Gibtulio"
+    ],
+    "category": "Anti-diabetic & Cardiorenal (SGLT2 Inhibitor)",
+    "default_dosage": "10 mg or 25 mg",
+    "meal_timing": "Take once daily in the morning with or without food",
+    "food_interactions": {
+      "avoid": [
+        "Excessive alcohol",
+        "Extreme dehydration"
+      ],
+      "caution": [
+        "Ensure consistent daily water intake to balance mild osmotic diuresis"
+      ],
+      "beneficial": [
+        "DASH-diet foods, leafy greens, potassium-balanced vegetables"
+      ]
+    },
+    "critical_alert": "Maintain good hydration and genital hygiene to reduce risk of mycotic infections.",
+    "clinical_summary": "Selectively blocks renal glucose reabsorption. Demonstrates proven reduction in cardiovascular death and heart failure hospitalization."
+  },
+  {
+    "id": "pioglitazone",
+    "name": "Pioglitazone",
+    "brand_names": [
+      "Pio",
+      "Actos",
+      "Piosys"
+    ],
+    "category": "Anti-diabetic (Thiazolidinedione / PPAR-gamma agonist)",
+    "default_dosage": "15 mg or 30 mg",
+    "meal_timing": "Take once daily with or without food",
+    "food_interactions": {
+      "avoid": [
+        "Excessive dietary sodium (worsens fluid retention and peripheral edema)"
+      ],
+      "caution": [
+        "Watch for sudden weight gain or swelling in ankles/feet"
+      ],
+      "beneficial": [
+        "Low-sodium foods, fresh vegetables, potassium-rich foods to balance fluid equilibrium"
+      ]
+    },
+    "critical_alert": "Contraindicated in patients with symptomatic heart failure due to potential for fluid retention.",
+    "clinical_summary": "Improves target cell response to insulin without increasing pancreatic insulin secretion; promotes adipocyte glucose uptake."
+  },
+  {
+    "id": "amlodipine",
+    "name": "Amlodipine",
+    "brand_names": [
+      "Norvasc",
+      "Amlong",
+      "Amlopin",
+      "Amlovas",
+      "Stamlo"
+    ],
+    "category": "Antihypertensive (Calcium Channel Blocker - DHP)",
+    "default_dosage": "5 mg",
+    "meal_timing": "Take once daily at the same time, with or without food",
+    "food_interactions": {
+      "avoid": [
+        "Grapefruit and Grapefruit juice (inhibits CYP3A4 metabolism, causing dangerously high drug levels and severe hypotension)"
+      ],
+      "caution": [
+        "Excessive dietary sodium (counteracts antihypertensive efficacy)",
+        "High alcohol intake"
+      ],
+      "beneficial": [
+        "Potassium-rich vegetables (spinach, ridge gourd, ash gourd) to naturally support endothelial vasodilation",
+        "Garlic, hibiscus tea, and dietary nitrate foods (beetroot) for synergistic blood pressure control"
+      ]
+    },
+    "critical_alert": "STRICT WARNING: Do NOT consume grapefruit, seville oranges, or pomelo juice while taking Amlodipine.",
+    "clinical_summary": "Relaxes arterial smooth muscle by inhibiting calcium influx into vascular cells. Grapefruit blocks intestinal CYP3A4, multiplying systemic bioavailability unpredictably."
+  },
+  {
+    "id": "telmisartan",
+    "name": "Telmisartan",
+    "brand_names": [
+      "Telma",
+      "Micardis",
+      "Telpres",
+      "Creser",
+      "Telsar"
+    ],
+    "category": "Antihypertensive (Angiotensin II Receptor Blocker - ARB)",
+    "default_dosage": "40 mg or 80 mg",
+    "meal_timing": "Take once daily with or without food at the same time each day",
+    "food_interactions": {
+      "avoid": [
+        "High-potassium salt substitutes (such as Lona, potassium chloride table salt substitutes) which can lead to life-threatening hyperkalemia"
+      ],
+      "caution": [
+        "Excessive dietary licorice (can raise BP)",
+        "Excess potassium supplements without blood monitoring"
+      ],
+      "beneficial": [
+        "DASH-diet plant foods with natural minerals, unrefined grains, berries, and moderate natural potassium",
+        "Low-sodium culinary seasonings (lemon juice, cumin, coriander, mint) instead of sodium salt"
+      ]
+    },
+    "critical_alert": "Do NOT use potassium-based salt substitutes or potassium supplements without consulting your doctor (risk of hyperkalemia).",
+    "clinical_summary": "Selectively blocks AT1 receptor subtype, preventing angiotensin II-induced vasoconstriction and aldosterone secretion. Conserves potassium in renal tubules."
+  },
+  {
+    "id": "losartan",
+    "name": "Losartan",
+    "brand_names": [
+      "Cozaar",
+      "Repace",
+      "Losacar",
+      "Tozaar"
+    ],
+    "category": "Antihypertensive (Angiotensin II Receptor Blocker - ARB)",
+    "default_dosage": "50 mg",
+    "meal_timing": "Take once daily with or without food",
+    "food_interactions": {
+      "avoid": [
+        "Potassium-enriched salt substitutes",
+        "Excessive potassium dietary supplements"
+      ],
+      "caution": [
+        "Alcohol may cause dizziness or orthostatic hypotension"
+      ],
+      "beneficial": [
+        "Low-sodium dietary foods, antioxidant-rich vegetables, flaxseeds"
+      ]
+    },
+    "critical_alert": "Avoid potassium chloride salt alternatives. Monitor serum potassium and creatinine regularly.",
+    "clinical_summary": "Competitive antagonist of angiotensin II receptors. Provides renal protection in type 2 diabetic nephropathy in addition to BP control."
+  },
+  {
+    "id": "ramipril",
+    "name": "Ramipril",
+    "brand_names": [
+      "Cardace",
+      "Altace",
+      "Hopace",
+      "Ramirid"
+    ],
+    "category": "Antihypertensive (ACE Inhibitor)",
+    "default_dosage": "2.5 mg or 5 mg",
+    "meal_timing": "Take with or without food, preferably at the same time every morning",
+    "food_interactions": {
+      "avoid": [
+        "Potassium salt substitutes (KCl)",
+        "Potassium supplements unless specifically prescribed"
+      ],
+      "caution": [
+        "High intake of dried fruits or potassium-dense juices if kidney function is compromised"
+      ],
+      "beneficial": [
+        "DASH diet staples: green vegetables, oats, lentils, and fresh fruits with natural moderate potassium"
+      ]
+    },
+    "critical_alert": "ACE inhibitors reduce aldosterone, decreasing potassium excretion. Watch out for hyperkalemia.",
+    "clinical_summary": "Suppresses renin-angiotensin-aldosterone system by inhibiting ACE. Slows progression of diabetic nephropathy and post-MI ventricular remodeling."
+  },
+  {
+    "id": "enalapril",
+    "name": "Enalapril",
+    "brand_names": [
+      "Envas",
+      "Vasotec",
+      "Nuril"
+    ],
+    "category": "Antihypertensive (ACE Inhibitor)",
+    "default_dosage": "5 mg",
+    "meal_timing": "Take once or twice daily with or without food",
+    "food_interactions": {
+      "avoid": [
+        "Potassium chloride salt substitutes"
+      ],
+      "caution": [
+        "Dehydration or heavy sweating increases risk of hypotension"
+      ],
+      "beneficial": [
+        "Balanced hydration and low-sodium home cooked meals"
+      ]
+    },
+    "critical_alert": "Do not substitute normal salt with potassium-based 'low-sodium' salts without checking serum potassium.",
+    "clinical_summary": "Prodrug bioactivated to enalaprilat, decreasing systemic vascular resistance and left ventricular afterload."
+  },
+  {
+    "id": "metoprolol",
+    "name": "Metoprolol",
+    "brand_names": [
+      "Betaloc",
+      "Seloken",
+      "Metolar",
+      "Prolomet"
+    ],
+    "category": "Cardiovascular (Beta-1 Selective Blocker)",
+    "default_dosage": "25 mg or 50 mg (Succinate ER or Tartrate)",
+    "meal_timing": "Take with or immediately after a meal (food enhances bioavailability and systemic absorption)",
+    "food_interactions": {
+      "avoid": [
+        "Alcohol (may precipitate abrupt blood pressure drops and heightened dizziness)"
+      ],
+      "caution": [
+        "Caffeine and high-energy drinks (stimulants counteract bradycardic rate-control effects)"
+      ],
+      "beneficial": [
+        "Magnesium-rich foods (pumpkin seeds, almonds, spinach) to support normal cardiac rhythm"
+      ]
+    },
+    "critical_alert": "Never abruptly discontinue beta-blockers without physician supervision (risk of rebound tachycardia and hypertension).",
+    "clinical_summary": "Cardioselective beta-1 adrenergic antagonist. Food significantly increases systemic bioavailability of metoprolol tartrate by reducing first-pass hepatic extraction."
+  },
+  {
+    "id": "atenolol",
+    "name": "Atenolol",
+    "brand_names": [
+      "Tenormin",
+      "Aten",
+      "Betacard"
+    ],
+    "category": "Cardiovascular (Beta-1 Selective Blocker)",
+    "default_dosage": "50 mg",
+    "meal_timing": "Take once daily, preferably at the same time, with or without meals",
+    "food_interactions": {
+      "avoid": [
+        "Excessive alcohol",
+        "High amounts of orange juice consumed at the exact same moment (may mildly decrease absorption)"
+      ],
+      "caution": [
+        "Do not stop taking abruptly"
+      ],
+      "beneficial": [
+        "Heart-healthy Mediterranean and DASH foods, omega-3 rich walnuts and chia seeds"
+      ]
+    },
+    "critical_alert": "Do not skip doses. Monitor pulse rate before taking (hold if heart rate < 55 bpm unless cleared).",
+    "clinical_summary": "Hydrophilic beta-1 blocker that slows heart rate, decreases myocardial contractility, and lowers blood pressure."
+  },
+  {
+    "id": "furosemide",
+    "name": "Furosemide",
+    "brand_names": [
+      "Lasix",
+      "Frusenex"
+    ],
+    "category": "Diuretic (Loop Diuretic)",
+    "default_dosage": "20 mg or 40 mg",
+    "meal_timing": "Take in the morning with a meal (to avoid sleep disruption from nocturia and minimize stomach irritation)",
+    "food_interactions": {
+      "avoid": [
+        "Excessive sodium/salty snacks (negates diuretic efficacy)",
+        "Heavy alcohol"
+      ],
+      "caution": [
+        "Furosemide causes heavy urinary loss of potassium and magnesium; hypokalemia is a frequent complication"
+      ],
+      "beneficial": [
+        "Potassium-rich foods (tender coconut water, bananas, oranges, spinach, potatoes, lentils) to replenish electrolyte losses",
+        "Magnesium-rich foods (seeds, whole grains)"
+      ]
+    },
+    "critical_alert": "Depletes bodily potassium and magnesium. Consume potassium-rich natural foods or supplements as advised by your physician.",
+    "clinical_summary": "Inhibits Na-K-2Cl symporter in the thick ascending limb of the loop of Henle. Produces potent diuresis with marked excretion of sodium, chloride, potassium, and water."
+  },
+  {
+    "id": "hydrochlorothiazide",
+    "name": "Hydrochlorothiazide",
+    "brand_names": [
+      "Esidrex",
+      "Aquazide",
+      "Hydrazide"
+    ],
+    "category": "Diuretic (Thiazide)",
+    "default_dosage": "12.5 mg or 25 mg",
+    "meal_timing": "Take once daily in the morning with or without food",
+    "food_interactions": {
+      "avoid": [
+        "High sodium processed foods",
+        "Excessive black licorice (worsens hypokalemia)"
+      ],
+      "caution": [
+        "Causes mild potassium and magnesium loss; may slightly raise uric acid and blood glucose"
+      ],
+      "beneficial": [
+        "Potassium-containing fruits, vegetables, and hydrating broths"
+      ]
+    },
+    "critical_alert": "Take in the morning to prevent waking up at night to urinate. Monitor blood electrolytes periodically.",
+    "clinical_summary": "Inhibits sodium and chloride reabsorption in the distal convoluted tubules, producing modest diuresis and vasodilation."
+  },
+  {
+    "id": "atorvastatin",
+    "name": "Atorvastatin",
+    "brand_names": [
+      "Lipitor",
+      "Atorva",
+      "Storvas",
+      "Tonact",
+      "Atocor"
+    ],
+    "category": "Lipid-Lowering (HMG-CoA Reductase Inhibitor / Statin)",
+    "default_dosage": "10 mg or 20 mg",
+    "meal_timing": "Take once daily in the evening or bedtime, with or without food",
+    "food_interactions": {
+      "avoid": [
+        "Grapefruit, grapefruit juice, and Seville oranges (CYP3A4 inhibition elevates statin blood levels, drastically increasing risk of myopathy and rhabdomyolysis)",
+        "Heavy alcohol (increases hepatic strain)"
+      ],
+      "caution": [
+        "Do not take huge doses of oat bran or pectin simultaneously; space fiber supplements by 1-2 hours"
+      ],
+      "beneficial": [
+        "Soluble fiber foods (oats, isabgol/psyllium husk, fenugreek, apples, lentils) to synergistically reduce LDL-C",
+        "Omega-3 fatty acids (flaxseed, chia, walnuts, fish) and plant sterols"
+      ]
+    },
+    "critical_alert": "Avoid grapefruit and grapefruit juice. Promptly report any unexplained muscle tenderness, weakness, or dark urine.",
+    "clinical_summary": "Competitively inhibits HMG-CoA reductase, the rate-limiting enzyme in cholesterol biosynthesis. Grapefruit compounds block CYP3A4-mediated hepatic clearance."
+  },
+  {
+    "id": "rosuvastatin",
+    "name": "Rosuvastatin",
+    "brand_names": [
+      "Crestor",
+      "Rozavel",
+      "Rosuvas",
+      "Novastat"
+    ],
+    "category": "Lipid-Lowering (HMG-CoA Reductase Inhibitor / Statin)",
+    "default_dosage": "10 mg",
+    "meal_timing": "Take once daily at any time of day, with or without food",
+    "food_interactions": {
+      "avoid": [
+        "Antacids containing aluminum and magnesium hydroxide within 2 hours of dosing (decreases absorption by 50%)",
+        "Excessive alcohol"
+      ],
+      "caution": [
+        "Less CYP3A4 dependent than atorvastatin, but moderation with grapefruit is still prudent"
+      ],
+      "beneficial": [
+        "Heart-healthy monounsaturated fats (mustard oil, olive oil), soluble fiber, and antioxidant vegetables"
+      ]
+    },
+    "critical_alert": "Space antacid medications by at least 2 hours. Report unexplained muscle aches or fatigue.",
+    "clinical_summary": "Hydrophilic statin cleared primarily by CYP2C9 and biliary excretion. Demonstrates superior LDL-C lowering and HDL elevation efficacy."
+  },
+  {
+    "id": "levothyroxine",
+    "name": "Levothyroxine",
+    "brand_names": [
+      "Thyronorm",
+      "Eltroxin",
+      "Synthroid",
+      "Thyrox"
+    ],
+    "category": "Thyroid Hormone Replacement (T4)",
+    "default_dosage": "25 mcg, 50 mcg, or 100 mcg",
+    "meal_timing": "STRICT REQUIREMENT: Take first thing in the morning on an EMPTY STOMACH with a full glass of plain water, at least 30 to 60 minutes before breakfast or morning tea/coffee",
+    "food_interactions": {
+      "avoid": [
+        "Taking with milk, tea, coffee, or breakfast (absorption drops by 40-60%)",
+        "Soy products (soybean, soy milk, tofu) and walnuts within 4 hours",
+        "Calcium-fortified drinks or supplements within 4 hours",
+        "Iron supplements (ferrous sulfate) within 4 hours"
+      ],
+      "caution": [
+        "High dietary fiber meals taken immediately after can trap thyroxine in the intestinal lumen"
+      ],
+      "beneficial": [
+        "Balanced nutritious meals with adequate selenium (mushrooms, sunflower seeds) and zinc after waiting 60 minutes post-dose"
+      ]
+    },
+    "critical_alert": "Must be taken on an empty stomach with plain water. Keep a minimum 4-hour gap between Levothyroxine and Calcium, Iron, Soy, or Dairy supplements.",
+    "clinical_summary": "Synthetic crystalline L-tetraiodothyronine (T4). Bioavailability is heavily compromised by gastric pH alterations, divalent cations (Ca2+, Fe2+), caffeine, and dietary fibers."
+  },
+  {
+    "id": "pantoprazole",
+    "name": "Pantoprazole",
+    "brand_names": [
+      "Pan-40",
+      "Pantocid",
+      "Protium",
+      "Pantodac"
+    ],
+    "category": "Gastrointestinal (Proton Pump Inhibitor - PPI)",
+    "default_dosage": "40 mg",
+    "meal_timing": "Take 30 to 60 minutes BEFORE the morning meal (breakfast) on an empty stomach",
+    "food_interactions": {
+      "avoid": [
+        "Spicy, excessively greasy/fried foods, carbonated sodas, and late-night heavy meals that trigger acid reflux",
+        "Alcohol"
+      ],
+      "caution": [
+        "Long-term PPI use (>1 year) can reduce absorption of dietary Vitamin B12, Calcium, and Magnesium"
+      ],
+      "beneficial": [
+        "Soothing gut-friendly foods (plain yogurt/curd, coconut water, boiled oats, bananas, bottle gourd)",
+        "Foods rich in magnesium and calcium once meals resume"
+      ]
+    },
+    "critical_alert": "Must be swallowed whole 30-60 minutes before food so that drug peak coincides with activation of proton pumps by the meal.",
+    "clinical_summary": "Irreversibly binds the H+/K+ ATPase pump in gastric parietal cells. Food stimulates pump translocation, hence timing before food is critical for optimal acid suppression."
+  },
+  {
+    "id": "omeprazole",
+    "name": "Omeprazole",
+    "brand_names": [
+      "Omez",
+      "Prilosec",
+      "Ocid",
+      "Lokit"
+    ],
+    "category": "Gastrointestinal (Proton Pump Inhibitor - PPI)",
+    "default_dosage": "20 mg",
+    "meal_timing": "Take once daily in the morning 30-60 minutes before breakfast",
+    "food_interactions": {
+      "avoid": [
+        "Trigger foods: citrus juices, tomatoes, caffeine, chocolates, deep-fried snacks"
+      ],
+      "caution": [
+        "Do not open or crush enteric-coated capsules"
+      ],
+      "beneficial": [
+        "Non-acidic vegetables, rice porridge, stewed apples, chamomile or fennel tea"
+      ]
+    },
+    "critical_alert": "Take before your morning meal. Swallow whole with a glass of water.",
+    "clinical_summary": "Potent inhibitor of basal and stimulated gastric acid secretion. Requires acidic gastric activation followed by covalent canalicular pump binding."
+  },
+  {
+    "id": "aspirin",
+    "name": "Aspirin (Low Dose)",
+    "brand_names": [
+      "Ecosprin",
+      "Disprin",
+      "Bayer Aspirin",
+      "Delisprin"
+    ],
+    "category": "Antiplatelet / Cardiovascular",
+    "default_dosage": "75 mg or 150 mg",
+    "meal_timing": "Take WITH or immediately AFTER a meal with a full glass of water (never on an empty stomach)",
+    "food_interactions": {
+      "avoid": [
+        "Alcohol (significantly compounds gastric irritation and risk of severe upper gastrointestinal bleeding)",
+        "Massive megadoses of garlic, ginger, ginkgo biloba, or omega-3 fish oil supplements that compound antiplatelet activity"
+      ],
+      "caution": [
+        "Taking on an empty stomach frequently induces erosive gastritis and gastric mucosal ulceration"
+      ],
+      "beneficial": [
+        "Milk, curd, or a warm whole-grain meal before taking to coat the gastric mucosa"
+      ]
+    },
+    "critical_alert": "Always take with or after meals to protect your stomach lining. Do NOT consume alcohol with Aspirin.",
+    "clinical_summary": "Irreversibly acetylates COX-1 in platelets, preventing thromboxane A2 synthesis. Direct mucosal contact and systemic PG inhibition can precipitate gastric mucosal injury without food."
+  },
+  {
+    "id": "clopidogrel",
+    "name": "Clopidogrel",
+    "brand_names": [
+      "Plavix",
+      "Deplatt",
+      "Clopilet",
+      "Ceruvit"
+    ],
+    "category": "Antiplatelet (P2Y12 Inhibitor)",
+    "default_dosage": "75 mg",
+    "meal_timing": "Take once daily with or without food at the same time every day",
+    "food_interactions": {
+      "avoid": [
+        "Excessive alcohol",
+        "Concomitant high doses of natural anticoagulants (vitamin E megadoses, high-dose feverfew)"
+      ],
+      "caution": [
+        "Avoid taking with Omeprazole concurrently unless prescribed, as Omeprazole inhibits CYP2C19 activation of Clopidogrel (Pantoprazole is preferred)"
+      ],
+      "beneficial": [
+        "Balanced diet with antioxidant vegetables and moderate healthy fats"
+      ]
+    },
+    "critical_alert": "Check with doctor before taking over-the-counter pain medications or herbal blood thinners.",
+    "clinical_summary": "Thienopyridine prodrug bioactivated by CYP2C19 to inhibit ADP-induced platelet aggregation. Less gastrotoxic than aspirin, can be taken with or without food."
+  },
+  {
+    "id": "warfarin",
+    "name": "Warfarin",
+    "brand_names": [
+      "Coumadin",
+      "Uniwarfin",
+      "Warf"
+    ],
+    "category": "Anticoagulant (Vitamin K Antagonist)",
+    "default_dosage": "2 mg, 3 mg, or 5 mg (as titrated by INR)",
+    "meal_timing": "Take once daily in the evening, with or without food, at the exact same hour",
+    "food_interactions": {
+      "avoid": [
+        "Cranberry juice, pomegranate juice, and alcohol (can elevate INR dangerously)",
+        "Drastic sudden swings in dietary Vitamin K intake"
+      ],
+      "caution": [
+        "Do NOT suddenly start or stop eating large quantities of Vitamin K rich foods (spinach, kale, methi leaves, broccoli, cabbage). Keep your daily intake CONSISTENT"
+      ],
+      "beneficial": [
+        "Consistent, steady daily portions of green vegetables rather than extreme fluctuations"
+      ]
+    },
+    "critical_alert": "CRITICAL FOOD INTERACTION: Vitamin K directly opposes Warfarin. Keep your intake of green leafy vegetables steady from day to day.",
+    "clinical_summary": "Inhibits vitamin K epoxide reductase complex 1 (VKORC1), stopping gamma-carboxylation of clotting factors II, VII, IX, and X. Large fluctuations in dietary vitamin K destabilize anticoagulation."
+  },
+  {
+    "id": "montelukast",
+    "name": "Montelukast",
+    "brand_names": [
+      "Singulair",
+      "Montair",
+      "Montek",
+      "Telekast"
+    ],
+    "category": "Respiratory / Anti-asthmatic (Leukotriene Receptor Antagonist)",
+    "default_dosage": "10 mg",
+    "meal_timing": "Take once daily in the evening, with or without food",
+    "food_interactions": {
+      "avoid": [
+        "Alcohol (may increase drowsiness and sedation)"
+      ],
+      "caution": [
+        "None significant with general food"
+      ],
+      "beneficial": [
+        "Anti-inflammatory foods (turmeric/curcumin, ginger, warm soups, honey) to support bronchial health"
+      ]
+    },
+    "critical_alert": "Best taken in the evening to protect against nocturnal asthma and morning allergic rhinitis symptoms.",
+    "clinical_summary": "Selective antagonist of cysteinyl leukotriene CysLT1 receptor. Inhibits bronchoconstriction, mucosal edema, and cellular inflammation."
+  },
+  {
+    "id": "cetirizine",
+    "name": "Cetirizine",
+    "brand_names": [
+      "Cetzine",
+      "Zyrtec",
+      "Alerid",
+      "Okacet"
+    ],
+    "category": "Antihistamine (Second Generation H1 Blocker)",
+    "default_dosage": "10 mg",
+    "meal_timing": "Take in the evening or bedtime with or without food",
+    "food_interactions": {
+      "avoid": [
+        "Alcohol and CNS depressants (causes severe drowsiness and impaired reflexes)"
+      ],
+      "caution": [
+        "Food slightly delays time to peak concentration (Tmax) but does not decrease total absorption"
+      ],
+      "beneficial": [
+        "Warm herbal teas (tulsi, ginger, peppermint) to soothe airway passages"
+      ]
+    },
+    "critical_alert": "Avoid driving or operating machinery if you experience drowsiness. Do not drink alcohol.",
+    "clinical_summary": "Second-generation peripheral H1 receptor antagonist with minimal blood-brain barrier penetration, providing effective allergy relief with reduced central sedation."
+  },
+  {
+    "id": "amoxicillin_clavulanate",
+    "name": "Amoxicillin and Potassium Clavulanate",
+    "brand_names": [
+      "Augmentin",
+      "Moxikind-CV",
+      "Clavam",
+      "Mega-CV"
+    ],
+    "category": "Antibiotic (Penicillin / Beta-lactamase inhibitor)",
+    "default_dosage": "625 mg",
+    "meal_timing": "Take at the START of a meal or with food",
+    "food_interactions": {
+      "avoid": [
+        "Alcohol during antibiotic therapy",
+        "Skipping doses or stopping before full course is finished"
+      ],
+      "caution": [
+        "Clavulanic acid can cause diarrhea and nausea if taken on an empty stomach"
+      ],
+      "beneficial": [
+        "Probiotic foods (fresh homemade curd/yogurt, buttermilk) taken 2 hours apart from the antibiotic to replenish healthy gut microbiota",
+        "Hydrating fluids and easily digestible meals (khichdi, vegetable soup)"
+      ]
+    },
+    "critical_alert": "Take at the start of a meal to enhance absorption of clavulanate and prevent nausea and diarrhea. Complete full course.",
+    "clinical_summary": "Co-administration with food enhances clavulanate absorption and optimizes gastrointestinal tolerability while amoxicillin bactericidal cell wall synthesis inhibition proceeds."
+  },
+  {
+    "id": "ciprofloxacin",
+    "name": "Ciprofloxacin",
+    "brand_names": [
+      "Cifran",
+      "Cipro",
+      "Ciplox"
+    ],
+    "category": "Antibiotic (Fluoroquinolone)",
+    "default_dosage": "500 mg",
+    "meal_timing": "Take 2 hours before or 2 hours AFTER dairy products or mineral-rich meals",
+    "food_interactions": {
+      "avoid": [
+        "Taking directly with milk, yogurt, paneer, cheese, or calcium-fortified juices (calcium chelates the drug, reducing absorption by up to 90%)",
+        "Iron, zinc, or magnesium antacids/supplements taken simultaneously"
+      ],
+      "caution": [
+        "Caffeine (ciprofloxacin inhibits caffeine clearance, potentially causing tremors, palpitations, and insomnia)"
+      ],
+      "beneficial": [
+        "Plenty of water throughout the day to prevent crystalluria"
+      ]
+    },
+    "critical_alert": "DO NOT take with dairy products (milk, yogurt) or calcium/iron supplements. Keep a 2-hour window before and after.",
+    "clinical_summary": "Polyvalent cations (Ca2+, Mg2+, Fe2+, Al3+) form insoluble coordination chelates with the 4-keto and 3-carboxyl groups of fluoroquinolones, preventing intestinal absorption."
+  },
+  {
+    "id": "azithromycin",
+    "name": "Azithromycin",
+    "brand_names": [
+      "Azithral",
+      "Zithromax",
+      "Azee",
+      "Azimax"
+    ],
+    "category": "Antibiotic (Macrolide / Azalide)",
+    "default_dosage": "500 mg",
+    "meal_timing": "May be taken with or without food; taking with a light meal reduces stomach discomfort",
+    "food_interactions": {
+      "avoid": [
+        "Aluminum and magnesium antacids taken at the exact same time (reduces peak concentration)"
+      ],
+      "caution": [
+        "Avoid heavy greasy meals which may worsen nausea"
+      ],
+      "beneficial": [
+        "Yogurt/buttermilk spaced 2 hours apart to safeguard beneficial gut microflora"
+      ]
+    },
+    "critical_alert": "Take once daily at the same time. Complete full prescribed course (usually 3 to 5 days).",
+    "clinical_summary": "Reversibly binds the 50S ribosomal subunit of susceptible microorganisms. Tablets have high oral bioavailability and tissue penetration."
+  },
+  {
+    "id": "paracetamol",
+    "name": "Paracetamol (Acetaminophen)",
+    "brand_names": [
+      "Dolo 650",
+      "Calpol",
+      "Crocin",
+      "Tylenol",
+      "Pacimol"
+    ],
+    "category": "Analgesic & Antipyretic",
+    "default_dosage": "650 mg",
+    "meal_timing": "Can be taken with or without food (taking on an empty stomach acts faster; taking with food is gentler)",
+    "food_interactions": {
+      "avoid": [
+        "Alcohol (severely elevates risk of acute toxic hepatic necrosis / liver injury)"
+      ],
+      "caution": [
+        "Do not exceed maximum daily limit of 4000 mg (or 3000 mg in chronic use) across all combination products"
+      ],
+      "beneficial": [
+        "Warm hydration, light broths, electrolyte fluids, herbal teas"
+      ]
+    },
+    "critical_alert": "DO NOT drink alcohol while taking Paracetamol. Chronic alcohol consumption drastically increases liver toxicity risk.",
+    "clinical_summary": "Acts primarily on central prostaglandin synthesis with minimal peripheral anti-inflammatory action. Concomitant ethanol induces CYP2E1, shunting metabolism into toxic NAPQI."
+  },
+  {
+    "id": "ibuprofen",
+    "name": "Ibuprofen",
+    "brand_names": [
+      "Brufen",
+      "Advil",
+      "Motrin",
+      "Ibugesic"
+    ],
+    "category": "NSAID (Nonsteroidal Anti-inflammatory Drug)",
+    "default_dosage": "400 mg",
+    "meal_timing": "STRICTLY take WITH food, milk, or a meal (never on an empty stomach)",
+    "food_interactions": {
+      "avoid": [
+        "Alcohol (exponentially increases risk of stomach ulcers and GI bleeding)"
+      ],
+      "caution": [
+        "Excess sodium intake; NSAIDs can promote fluid retention and blunted BP control"
+      ],
+      "beneficial": [
+        "Warm milk, oats porridge, or a cooked meal before dose to coat gastric mucosa"
+      ]
+    },
+    "critical_alert": "Always take after food or with milk to protect your stomach lining from ulcers and erosions.",
+    "clinical_summary": "Non-selective COX inhibitor. Depletes gastroprotective prostaglandins (PGE2, PGI2) in gastric mucosa. Food reduces peak contact irritation."
+  },
+  {
+    "id": "calcium_vitamin_d3",
+    "name": "Calcium Carbonate + Vitamin D3",
+    "brand_names": [
+      "Shelcal",
+      "Calcirol",
+      "Cipcal",
+      "Ostocalcium"
+    ],
+    "category": "Mineral & Vitamin Supplement",
+    "default_dosage": "500 mg Calcium + 250/500 IU D3",
+    "meal_timing": "Take WITH meals (gastric acid produced during meals is essential to dissolve and absorb calcium carbonate)",
+    "food_interactions": {
+      "avoid": [
+        "Taking simultaneously with Levothyroxine, Ciprofloxacin, or Iron (space by at least 2 to 4 hours)",
+        "Excessive caffeine or carbonated cola beverages (increases urinary calcium excretion)"
+      ],
+      "caution": [
+        "High-oxalate foods (spinach, beet greens) eaten simultaneously can bind a portion of calcium, though overall diet is healthy"
+      ],
+      "beneficial": [
+        "Dairy products, fortified milk, sesame seeds (til), and sunlight exposure for natural vitamin D activation"
+      ]
+    },
+    "critical_alert": "Calcium carbonate REQUIRES stomach acid; take with meals. Keep a 4-hour gap from Levothyroxine and Iron supplements.",
+    "clinical_summary": "Calcium carbonate requires acidic ionization for intestinal absorption via TRPV6 channels. Divalent Ca2+ binds thyroxine and fluoroquinolones into unabsorbable complexes."
+  },
+  {
+    "id": "ferrous_ascorbate",
+    "name": "Ferrous Ascorbate / Iron Supplement",
+    "brand_names": [
+      "Orofer-XT",
+      "Fefol",
+      "Irospan",
+      "Autrin"
+    ],
+    "category": "Hematinic / Iron Supplement",
+    "default_dosage": "100 mg elemental iron",
+    "meal_timing": "Best taken on an empty stomach with a Vitamin C source (lemon water or amla juice) for maximum absorption, OR with a light snack if nausea occurs",
+    "food_interactions": {
+      "avoid": [
+        "Tea, coffee, green tea (tannins and polyphenols inhibit iron absorption by up to 75%)",
+        "Milk, cheese, yogurt, and calcium tablets (calcium competes directly for the DMT1 transporter) - space by 2 hours",
+        "High-phytate unfermented bran taken in the exact same mouthful"
+      ],
+      "caution": [
+        "Stools may turn dark green/black (harmless)"
+      ],
+      "beneficial": [
+        "Vitamin C foods (Indian gooseberry/amla, lemon, guava, sweet lime, capsicum) taken alongside iron drastically enhance bioavailability"
+      ]
+    },
+    "critical_alert": "Do NOT take iron with tea, coffee, milk, or calcium tablets. Pair with lemon water or amla for superior absorption.",
+    "clinical_summary": "Ascorbate maintains iron in the soluble ferrous (Fe2+) state, facilitating uptake via divalent metal transporter 1 (DMT1). Tannins, polyphenols, and calcium strongly inhibit uptake."
+  },
+  {
+    "id": "valsartan",
+    "name": "Valsartan",
+    "brand_names": [
+      "Diovan",
+      "Valzaar",
+      "Starval"
+    ],
+    "category": "Antihypertensive (ARB)",
+    "default_dosage": "80 mg or 160 mg",
+    "meal_timing": "Take with or without food at the same time each day",
+    "food_interactions": {
+      "avoid": [
+        "Potassium-based salt substitutes",
+        "Excessive alcohol"
+      ],
+      "caution": [
+        "High potassium intake without doctor supervision"
+      ],
+      "beneficial": [
+        "Low-sodium DASH foods, leafy greens, antioxidant fruits"
+      ]
+    },
+    "critical_alert": "Avoid potassium chloride salt alternatives. Monitor serum potassium periodically.",
+    "clinical_summary": "Angiotensin II receptor antagonist; reduces peripheral vascular resistance and preserves renal function."
+  },
+  {
+    "id": "olmesartan",
+    "name": "Olmesartan",
+    "brand_names": [
+      "Olmetime",
+      "Benicar",
+      "Olmecip"
+    ],
+    "category": "Antihypertensive (ARB)",
+    "default_dosage": "20 mg or 40 mg",
+    "meal_timing": "Take once daily with or without food",
+    "food_interactions": {
+      "avoid": [
+        "Potassium chloride salt substitutes"
+      ],
+      "caution": [
+        "Severe prolonged diarrhea requires medical review (sprue-like enteropathy)"
+      ],
+      "beneficial": [
+        "Hydrating foods, low sodium home cooking"
+      ]
+    },
+    "critical_alert": "Do not take potassium supplements without consulting your doctor.",
+    "clinical_summary": "Selective AT1 receptor blocker providing 24-hour sustained blood pressure control."
+  },
+  {
+    "id": "lisinopril",
+    "name": "Lisinopril",
+    "brand_names": [
+      "Prinivil",
+      "Zestril",
+      "Lipril"
+    ],
+    "category": "Antihypertensive (ACE Inhibitor)",
+    "default_dosage": "10 mg or 20 mg",
+    "meal_timing": "Take once daily with or without food",
+    "food_interactions": {
+      "avoid": [
+        "Potassium salt substitutes",
+        "Heavy alcohol"
+      ],
+      "caution": [
+        "High potassium diets can lead to hyperkalemia"
+      ],
+      "beneficial": [
+        "DASH diet meals with balanced natural minerals"
+      ]
+    },
+    "critical_alert": "May cause dry persistent cough. Avoid potassium salt alternatives.",
+    "clinical_summary": "Inhibits angiotensin-converting enzyme, suppressing angiotensin II formation and lowering systemic vascular resistance."
+  },
+  {
+    "id": "carvedilol",
+    "name": "Carvedilol",
+    "brand_names": [
+      "Coreg",
+      "Carvil",
+      "Cardivas"
+    ],
+    "category": "Cardiovascular (Non-selective Beta & Alpha-1 Blocker)",
+    "default_dosage": "6.25 mg or 12.5 mg twice daily",
+    "meal_timing": "Take WITH food to minimize the risk of orthostatic hypotension and dizziness",
+    "food_interactions": {
+      "avoid": [
+        "Alcohol (increases risk of orthostatic dizziness and fainting)"
+      ],
+      "caution": [
+        "Large amounts of caffeine may diminish blood pressure lowering"
+      ],
+      "beneficial": [
+        "Balanced heart-healthy meals rich in magnesium and omega-3s"
+      ]
+    },
+    "critical_alert": "Always take with food to slow absorption rate and reduce orthostatic blood pressure drops.",
+    "clinical_summary": "Dual alpha-1 and beta-adrenergic antagonist with antioxidant properties; indicated in heart failure, hypertension, and post-MI."
+  },
+  {
+    "id": "bisoprolol",
+    "name": "Bisoprolol",
+    "brand_names": [
+      "Concor",
+      "Bisoheart",
+      "Corbis"
+    ],
+    "category": "Cardiovascular (Cardioselective Beta-1 Blocker)",
+    "default_dosage": "2.5 mg or 5 mg",
+    "meal_timing": "Take once daily in the morning with or without food",
+    "food_interactions": {
+      "avoid": [
+        "Excessive alcohol"
+      ],
+      "caution": [
+        "Do not stop abruptly without doctor supervision"
+      ],
+      "beneficial": [
+        "Low-sodium meals and moderate physical activity"
+      ]
+    },
+    "critical_alert": "Do not skip doses. Check heart rate periodically before taking.",
+    "clinical_summary": "Highly selective beta-1 blocker reducing cardiac workload and myocardial oxygen consumption."
+  },
+  {
+    "id": "nebivolol",
+    "name": "Nebivolol",
+    "brand_names": [
+      "Nebicard",
+      "Bystolic",
+      "Nebilong"
+    ],
+    "category": "Cardiovascular (Third-Generation Beta-1 Blocker with Nitric Oxide Vasodilation)",
+    "default_dosage": "5 mg",
+    "meal_timing": "Take once daily with or without food",
+    "food_interactions": {
+      "avoid": [
+        "Alcohol",
+        "Energy drinks with high caffeine"
+      ],
+      "caution": [
+        "May mask hypoglycemia tremors in diabetic patients"
+      ],
+      "beneficial": [
+        "Dietary nitrate rich foods (beetroot, spinach) to support endothelial NO production"
+      ]
+    },
+    "critical_alert": "Possesses unique nitric oxide donating properties causing peripheral vasodilation.",
+    "clinical_summary": "Highly cardioselective beta-1 blocker that stimulates endothelial nitric oxide synthase (eNOS), reducing peripheral vascular resistance."
+  },
+  {
+    "id": "propranolol",
+    "name": "Propranolol",
+    "brand_names": [
+      "Inderal",
+      "Ciplar",
+      "Betacap"
+    ],
+    "category": "Cardiovascular & Neuro (Non-selective Beta Blocker)",
+    "default_dosage": "20 mg or 40 mg",
+    "meal_timing": "Take before meals or with food consistently",
+    "food_interactions": {
+      "avoid": [
+        "Alcohol",
+        "Caffeine in excess"
+      ],
+      "caution": [
+        "Protein-rich meals increase its bioavailability; keep meal composition consistent"
+      ],
+      "beneficial": [
+        "Magnesium-rich seeds and calming herbal teas"
+      ]
+    },
+    "critical_alert": "Contraindicated in asthma and severe COPD (can precipitate severe bronchospasm).",
+    "clinical_summary": "Non-selective beta-1 and beta-2 adrenergic antagonist; useful in angina, tremors, migraine prophylaxis, and portal hypertension."
+  },
+  {
+    "id": "diltiazem",
+    "name": "Diltiazem",
+    "brand_names": [
+      "Cardizem",
+      "Dilzem",
+      "Dilcontin"
+    ],
+    "category": "Cardiovascular (Non-Dihydropyridine Calcium Channel Blocker)",
+    "default_dosage": "30 mg or 60 mg (or 90/120 mg SR)",
+    "meal_timing": "Take before meals and at bedtime, or as prescribed with water",
+    "food_interactions": {
+      "avoid": [
+        "Grapefruit and grapefruit juice (potentiates diltiazem levels)",
+        "Alcohol"
+      ],
+      "caution": [
+        "Do not crush extended-release tablets"
+      ],
+      "beneficial": [
+        "Heart-healthy DASH diet meals with moderate natural minerals"
+      ]
+    },
+    "critical_alert": "Avoid grapefruit. Inhibits CYP3A4 enzyme, causing interactions with numerous cardiovascular drugs.",
+    "clinical_summary": "Benzothiazepine calcium channel blocker; slows AV node conduction, decreases heart rate, and dilates coronary and systemic arteries."
+  },
+  {
+    "id": "verapamil",
+    "name": "Verapamil",
+    "brand_names": [
+      "Calan",
+      "Isoptin",
+      "Veramil"
+    ],
+    "category": "Cardiovascular (Non-Dihydropyridine Calcium Channel Blocker)",
+    "default_dosage": "40 mg or 80 mg",
+    "meal_timing": "Take with meals or milk to avoid stomach upset",
+    "food_interactions": {
+      "avoid": [
+        "Grapefruit and grapefruit juice (massively increases verapamil concentrations)",
+        "Alcohol"
+      ],
+      "caution": [
+        "Constipation is common: increase dietary fiber and water intake"
+      ],
+      "beneficial": [
+        "High-fiber vegetables, oats, prunes, and adequate hydration"
+      ]
+    },
+    "critical_alert": "AVOID GRAPEFRUIT. Strong inhibitor of CYP3A4 and P-glycoprotein.",
+    "clinical_summary": "Phenylalkylamine CCB with pronounced negative inotropic and dromotropic actions. Highly effective in supraventricular tachycardias."
+  },
+  {
+    "id": "cilnidipine",
+    "name": "Cilnidipine",
+    "brand_names": [
+      "Cilacar",
+      "Nexsulin",
+      "Cilaheart"
+    ],
+    "category": "Antihypertensive (Dual L/N-type Calcium Channel Blocker)",
+    "default_dosage": "10 mg",
+    "meal_timing": "Take once daily in the morning with or after breakfast",
+    "food_interactions": {
+      "avoid": [
+        "Grapefruit juice",
+        "Excessive sodium"
+      ],
+      "caution": [
+        "Sudden position changes if feeling lightheaded"
+      ],
+      "beneficial": [
+        "Low-sodium meals, fresh vegetables, garlic"
+      ]
+    },
+    "critical_alert": "Dual L/N-type blocker with lower incidence of pedal edema and sympathetic activation compared to amlodipine.",
+    "clinical_summary": "Blocks both L-type and N-type voltage-dependent calcium channels, suppressing sympathetic overactivity and renal afferent/efferent arteriolar constriction."
+  },
+  {
+    "id": "spironolactone",
+    "name": "Spironolactone",
+    "brand_names": [
+      "Aldactone",
+      "Spiroctan"
+    ],
+    "category": "Diuretic (Potassium-Sparing / Aldosterone Antagonist)",
+    "default_dosage": "25 mg or 50 mg",
+    "meal_timing": "Take with food or breakfast (food enhances bioavailability and minimizes gastric irritation)",
+    "food_interactions": {
+      "avoid": [
+        "Potassium chloride salt substitutes (can cause fatal hyperkalemia)",
+        "Potassium supplements or high-dose potassium drinks without monitoring"
+      ],
+      "caution": [
+        "Excessive consumption of dried fruits, bananas, tender coconut water if serum potassium is high"
+      ],
+      "beneficial": [
+        "Low-sodium wholesome home-cooked meals"
+      ]
+    },
+    "critical_alert": "POTASSIUM-SPARING: Strictly avoid potassium salt substitutes. High risk of hyperkalemia when combined with ACEIs or ARBs.",
+    "clinical_summary": "Competitive aldosterone receptor antagonist in the distal renal tubule; increases sodium and water excretion while retaining potassium and hydrogen ions."
+  },
+  {
+    "id": "chlorthalidone",
+    "name": "Chlorthalidone",
+    "brand_names": [
+      "Hygroton",
+      "CTD",
+      "Chlortan"
+    ],
+    "category": "Diuretic (Thiazide-like Diuretic)",
+    "default_dosage": "6.25 mg or 12.5 mg",
+    "meal_timing": "Take in the morning with food",
+    "food_interactions": {
+      "avoid": [
+        "Excessive sodium snacks",
+        "Heavy alcohol"
+      ],
+      "caution": [
+        "Causes mild potassium loss; monitor serum electrolytes"
+      ],
+      "beneficial": [
+        "Potassium-balanced vegetables and fresh fruits"
+      ]
+    },
+    "critical_alert": "Long half-life (>40 hours). Preferred thiazide-like diuretic in AHA/ACC hypertension guidelines.",
+    "clinical_summary": "Inhibits sodium and chloride reabsorption in the early distal tubule; long terminal elimination half-life delivers sustained 24h BP reduction."
+  },
+  {
+    "id": "digoxin",
+    "name": "Digoxin",
+    "brand_names": [
+      "Lanoxin",
+      "Cardioxin"
+    ],
+    "category": "Cardiac Glycoside (Inotrope & Antiarrhythmic)",
+    "default_dosage": "0.125 mg or 0.25 mg",
+    "meal_timing": "Take once daily with water; meals high in bran fiber should be spaced by 2 hours",
+    "food_interactions": {
+      "avoid": [
+        "Simultaneous high-fiber meals (e.g. oat bran, psyllium husk can bind digoxin and reduce absorption)",
+        "Black licorice (glycyrrhizin induces hypokalemia, precipitating fatal digoxin toxicity)"
+      ],
+      "caution": [
+        "Hypokalemia or hypomagnesemia dramatically potentiates digitalis toxicity"
+      ],
+      "beneficial": [
+        "Consistent potassium intake to safeguard normal myocardial sensitivity"
+      ]
+    },
+    "critical_alert": "NARROW THERAPEUTIC INDEX: Hypokalemia triggers severe arrhythmias. Report nausea, visual halos, or slow irregular pulse immediately.",
+    "clinical_summary": "Inhibits myocardial Na+/K+ ATPase, increasing intracellular calcium and cardiac contractility while slowing AV nodal conduction."
+  },
+  {
+    "id": "amiodarone",
+    "name": "Amiodarone",
+    "brand_names": [
+      "Cordarone",
+      "Pacenone"
+    ],
+    "category": "Antiarrhythmic (Class III)",
+    "default_dosage": "100 mg or 200 mg",
+    "meal_timing": "Take with meals consistently (food significantly enhances oral absorption)",
+    "food_interactions": {
+      "avoid": [
+        "Grapefruit and grapefruit juice (inhibits CYP3A4 and increases amiodarone levels to toxic ranges)"
+      ],
+      "caution": [
+        "St. John's wort",
+        "High iodine seaweed supplements"
+      ],
+      "beneficial": [
+        "Heart-healthy balanced diet"
+      ]
+    },
+    "critical_alert": "EXTREME DDI RISK: Inhibits CYP3A4, CYP2C9, CYP2D6, and P-gp. Doubles blood levels of Digoxin, Warfarin, and Statins.",
+    "clinical_summary": "Multichannel blocker with predominant potassium outward rectifier inhibition (Class III); highly lipophilic with extensive tissue distribution."
+  },
+  {
+    "id": "glipizide",
+    "name": "Glipizide",
+    "brand_names": [
+      "Glucotrol",
+      "Glynase",
+      "Minidiab"
+    ],
+    "category": "Anti-diabetic (Second-generation Sulfonylurea)",
+    "default_dosage": "2.5 mg or 5 mg",
+    "meal_timing": "Take 30 minutes BEFORE the first meal of the day (breakfast)",
+    "food_interactions": {
+      "avoid": [
+        "Alcohol",
+        "Skipping or delaying meals after taking"
+      ],
+      "caution": [
+        "Always have a carbohydrate-containing meal within 30 minutes"
+      ],
+      "beneficial": [
+        "Complex carbohydrates (millets, whole oats, lentils) to avoid hypoglycemic troughs"
+      ]
+    },
+    "critical_alert": "Must be taken 30 minutes before food for optimal timing of insulin peak with food absorption.",
+    "clinical_summary": "Rapidly absorbed sulfonylurea that stimulates early phase insulin secretion from pancreatic beta cells."
+  },
+  {
+    "id": "vildagliptin",
+    "name": "Vildagliptin",
+    "brand_names": [
+      "Galvus",
+      "Jalra",
+      "Zomelis"
+    ],
+    "category": "Anti-diabetic (DPP-4 Inhibitor)",
+    "default_dosage": "50 mg once or twice daily",
+    "meal_timing": "May be taken with or without food",
+    "food_interactions": {
+      "avoid": [
+        "High-sugar confectionaries, sugar-sweetened sodas"
+      ],
+      "caution": [
+        "Excessive alcohol"
+      ],
+      "beneficial": [
+        "Low glycemic index Indian staples (ragi, sprouted moong, green leafy vegetables)"
+      ]
+    },
+    "critical_alert": "Monitor liver function tests (LFTs) periodically as per clinical guidelines.",
+    "clinical_summary": "Potent and selective dipeptidyl peptidase-4 inhibitor; enhances both alpha- and beta-cell responsiveness to glucose."
+  },
+  {
+    "id": "linagliptin",
+    "name": "Linagliptin",
+    "brand_names": [
+      "Trajenta",
+      "Ondero"
+    ],
+    "category": "Anti-diabetic (DPP-4 Inhibitor - Non-Renal Clearance)",
+    "default_dosage": "5 mg",
+    "meal_timing": "Take once daily with or without food at any time",
+    "food_interactions": {
+      "avoid": [
+        "Refined sugars and syrups"
+      ],
+      "caution": [
+        "Hypoglycemia risk if combined with insulin or sulfonylurea"
+      ],
+      "beneficial": [
+        "Balanced fiber-rich diet; safe in kidney disease without dose reduction"
+      ]
+    },
+    "critical_alert": "Does not require dose adjustment in renal impairment (cleared primarily via bile and gut).",
+    "clinical_summary": "Xanthine-based DPP-4 inhibitor with primarily non-renal route of excretion; highly convenient in diabetic kidney disease."
+  },
+  {
+    "id": "teneligliptin",
+    "name": "Teneligliptin",
+    "brand_names": [
+      "Tenglyn",
+      "Ziten",
+      "Tenelimac",
+      "Dynaglipt"
+    ],
+    "category": "Anti-diabetic (Third-generation DPP-4 Inhibitor)",
+    "default_dosage": "20 mg",
+    "meal_timing": "Take once daily with or without breakfast",
+    "food_interactions": {
+      "avoid": [
+        "Sugary sweets, jaggery in excess, packaged juices"
+      ],
+      "caution": [
+        "Alcohol"
+      ],
+      "beneficial": [
+        "Vegetable salads, methi paratha (whole wheat), curd, roasted chana"
+      ]
+    },
+    "critical_alert": "Widely prescribed cost-effective DPP-4 inhibitor in India with convenient once-daily dosing.",
+    "clinical_summary": "Features a unique J-shaped structure that anchors into the S1, S2, and S2-extensive sub-sites of DPP-4 for potent, long-lasting inhibition."
+  },
+  {
+    "id": "canagliflozin",
+    "name": "Canagliflozin",
+    "brand_names": [
+      "Invokana",
+      "Sulisent"
+    ],
+    "category": "Anti-diabetic (SGLT2 Inhibitor)",
+    "default_dosage": "100 mg or 300 mg",
+    "meal_timing": "Take once daily BEFORE the first meal of the day",
+    "food_interactions": {
+      "avoid": [
+        "Dehydration",
+        "Excess alcohol",
+        "Extreme ketogenic diet"
+      ],
+      "caution": [
+        "Maintain daily fluid intake (2-3 liters water unless fluid restricted)"
+      ],
+      "beneficial": [
+        "Hydrating foods (cucumber, bottle gourd, coconut water) and DASH diet"
+      ]
+    },
+    "critical_alert": "Dual SGLT2 and mild intestinal SGLT1 inhibition; taking before breakfast delays intestinal glucose absorption.",
+    "clinical_summary": "Inhibits SGLT2 in kidneys and SGLT1 in intestine; reduces blood glucose, HbA1c, systolic blood pressure, and body weight."
+  },
+  {
+    "id": "semaglutide",
+    "name": "Semaglutide",
+    "brand_names": [
+      "Rybelsus (Oral)",
+      "Ozempic (Injectable)",
+      "Wegovy"
+    ],
+    "category": "Anti-diabetic & Weight Management (GLP-1 Receptor Agonist)",
+    "default_dosage": "3 mg, 7 mg, or 14 mg (Oral)",
+    "meal_timing": "ORAL STRICT RULE: Take on an empty stomach upon waking with no more than 120 ml (half glass) of plain water. Wait AT LEAST 30 MINUTES before eating, drinking, or taking other oral medications",
+    "food_interactions": {
+      "avoid": [
+        "Eating or drinking anything within 30 minutes of taking oral tablet (absorption drops to near zero)",
+        "Greasy, fried, and very fatty foods which exacerbate nausea, vomiting, and delayed gastric emptying"
+      ],
+      "caution": [
+        "Eat smaller, lighter portions to avoid fullness and GI distress"
+      ],
+      "beneficial": [
+        "Small protein-rich meals, broths, and easily digestible whole foods"
+      ]
+    },
+    "critical_alert": "ORAL RYBELSUS REQUIREMENT: Swallow whole with half glass plain water. Absolutely no food, beverage, or other meds for 30 minutes.",
+    "clinical_summary": "Long-acting GLP-1 receptor agonist; stimulates glucose-dependent insulin secretion, suppresses glucagon, slows gastric emptying, and reduces appetite."
+  },
+  {
+    "id": "voglibose",
+    "name": "Voglibose",
+    "brand_names": [
+      "Volibo",
+      "Vobose",
+      "PPG",
+      "Volix"
+    ],
+    "category": "Anti-diabetic (Alpha-Glucosidase Inhibitor)",
+    "default_dosage": "0.2 mg or 0.3 mg",
+    "meal_timing": "STRICT REQUIREMENT: Take immediately with the VERY FIRST BITE of each main meal (breakfast, lunch, dinner)",
+    "food_interactions": {
+      "avoid": [
+        "Taking after a meal (ineffective once food has been digested)",
+        "Treating hypoglycemia with table sugar/sucrose (voglibose blocks sucrose digestion; MUST use pure GLUCOSE/dextrose powder or tablets)"
+      ],
+      "caution": [
+        "High-starch meals may produce mild flatulence and abdominal distension"
+      ],
+      "beneficial": [
+        "Indian carbohydrate staples (roti, rice, dal) are digested more slowly and evenly"
+      ]
+    },
+    "critical_alert": "Must be taken with the first bite of food. In case of hypoglycemia, treat ONLY with pure Glucose (Dextrose), NOT cane sugar.",
+    "clinical_summary": "Reversibly inhibits alpha-glucosidase enzymes in the small intestine brush border, delaying carbohydrate cleavage into simple monosaccharides."
+  },
+  {
+    "id": "repaglinide",
+    "name": "Repaglinide",
+    "brand_names": [
+      "Prandin",
+      "Eurepa",
+      "Rapilin"
+    ],
+    "category": "Anti-diabetic (Meglitinide / Prandial Glucose Regulator)",
+    "default_dosage": "0.5 mg, 1 mg, or 2 mg",
+    "meal_timing": "Take within 15 minutes BEFORE each main meal (Breakfast, Lunch, Dinner)",
+    "food_interactions": {
+      "avoid": [
+        "Alcohol (severe hypoglycemia)",
+        "Skipping meals (if you skip a meal, SKIP the dose!)"
+      ],
+      "caution": [
+        "Do not take if unable to eat immediately after"
+      ],
+      "beneficial": [
+        "Regular structured meals with complex carbs and protein"
+      ]
+    },
+    "critical_alert": "RULE: If a meal is skipped, skip the dose. If an extra meal is added, add a dose.",
+    "clinical_summary": "Nonsulfonylurea secretagogue; closes ATP-dependent potassium channels in beta cells with rapid onset and short duration for postprandial control."
+  },
+  {
+    "id": "insulin_glargine",
+    "name": "Insulin Glargine",
+    "brand_names": [
+      "Lantus",
+      "Basalog",
+      "Toujeo"
+    ],
+    "category": "Anti-diabetic (Long-Acting Basal Insulin Analogue)",
+    "default_dosage": "Titrated by physician (e.g. 10-20 units subcutaneously)",
+    "meal_timing": "Inject once daily subcutaneously at the EXACT same time every day, independent of meals",
+    "food_interactions": {
+      "avoid": [
+        "Alcohol (blunts counterregulatory glucose response causing delayed severe hypoglycemia)"
+      ],
+      "caution": [
+        "Keep daily carbohydrate distribution consistent"
+      ],
+      "beneficial": [
+        "Steady low-GI meal schedules"
+      ]
+    },
+    "critical_alert": "Do NOT mix with other insulins in the same syringe. Always carry fast-acting glucose for emergencies.",
+    "clinical_summary": "Recombinant human insulin analogue with glycine/arginine substitutions; micro-precipitates in subcutaneous tissue for flat, peakless 24h basal release."
+  },
+  {
+    "id": "fenofibrate",
+    "name": "Fenofibrate",
+    "brand_names": [
+      "Lipicard",
+      "TriCor",
+      "Stanlip"
+    ],
+    "category": "Lipid-Lowering (Fibric Acid Derivative / PPAR-alpha Agonist)",
+    "default_dosage": "145 mg or 160 mg",
+    "meal_timing": "Take with meals (food significantly enhances bioavailability)",
+    "food_interactions": {
+      "avoid": [
+        "Heavy alcohol (exacerbates hypertriglyceridemia and pancreatitis risk)"
+      ],
+      "caution": [
+        "Watch for muscle pain if co-administered with statins"
+      ],
+      "beneficial": [
+        "Omega-3 rich foods (walnuts, flaxseed, fish) and low-refined-sugar diet"
+      ]
+    },
+    "critical_alert": "Primary agent for severe hypertriglyceridemia (>500 mg/dL) to prevent acute pancreatitis.",
+    "clinical_summary": "Activates peroxisome proliferator-activated receptor alpha (PPAR-alpha), stimulating lipoprotein lipase and reducing apolipoprotein C-III."
+  },
+  {
+    "id": "gemfibrozil",
+    "name": "Gemfibrozil",
+    "brand_names": [
+      "Lopid"
+    ],
+    "category": "Lipid-Lowering (Fibrate)",
+    "default_dosage": "600 mg twice daily",
+    "meal_timing": "Take 30 minutes BEFORE morning and evening meals",
+    "food_interactions": {
+      "avoid": [
+        "Alcohol",
+        "Concurrent statin therapy (severely contraindicated)"
+      ],
+      "caution": [
+        "High fat meals right before dose reduce absorption"
+      ],
+      "beneficial": [
+        "Low-saturated fat, low-simple-carbohydrate diet"
+      ]
+    },
+    "critical_alert": "CONTRAINDICATED WITH STATINS: High risk of severe rhabdomyolysis and acute renal failure. Fenofibrate is preferred.",
+    "clinical_summary": "Inhibits peripheral lipolysis and hepatic triglyceride synthesis. Strongly inhibits statin glucuronidation and OATP1B1 uptake."
+  },
+  {
+    "id": "ezetimibe",
+    "name": "Ezetimibe",
+    "brand_names": [
+      "Zetia",
+      "Ezentia",
+      "Mibe"
+    ],
+    "category": "Lipid-Lowering (Cholesterol Absorption Inhibitor)",
+    "default_dosage": "10 mg",
+    "meal_timing": "Take once daily with or without food, at any time of day",
+    "food_interactions": {
+      "avoid": [
+        "High-cholesterol, high-trans-fat foods"
+      ],
+      "caution": [
+        "Bile acid sequestrants (cholestyramine) reduce absorption; space by 2-4 hours"
+      ],
+      "beneficial": [
+        "Plant sterols, oats, soluble fiber to synergistically lower LDL-C"
+      ]
+    },
+    "critical_alert": "Selectively inhibits the NPC1L1 transporter in the jejunal brush border, reducing dietary cholesterol absorption by 54%.",
+    "clinical_summary": "NPC1L1 cholesterol absorption inhibitor; produces 15-20% further LDL-C reduction when added to statin therapy."
+  },
+  {
+    "id": "esomeprazole",
+    "name": "Esomeprazole",
+    "brand_names": [
+      "Nexium",
+      "Nexpro",
+      "Esomac"
+    ],
+    "category": "Gastrointestinal (Proton Pump Inhibitor - S-enantiomer)",
+    "default_dosage": "40 mg",
+    "meal_timing": "Take at least 1 hour BEFORE eating on an empty stomach",
+    "food_interactions": {
+      "avoid": [
+        "Spicy, oily, acidic, caffeinated food and sodas",
+        "Alcohol"
+      ],
+      "caution": [
+        "Long-term use may impair B12, Magnesium, and Calcium absorption"
+      ],
+      "beneficial": [
+        "Soothing alkaline foods (curd, coconut water, bananas, boiled vegetables)"
+      ]
+    },
+    "critical_alert": "S-isomer of omeprazole with higher systemic bioavailability. Take 60 min before breakfast.",
+    "clinical_summary": "Inhibits H+/K+-ATPase in gastric parietal cells, suppressing stimulated and basal gastric acid secretion."
+  },
+  {
+    "id": "sucralfate",
+    "name": "Sucralfate",
+    "brand_names": [
+      "Sucrafil",
+      "Carafate"
+    ],
+    "category": "Gastrointestinal (Mucosal Protective Agent)",
+    "default_dosage": "1 g (tablet or 10 ml suspension)",
+    "meal_timing": "Take on an EMPTY STOMACH 1 hour before meals and at bedtime",
+    "food_interactions": {
+      "avoid": [
+        "Taking simultaneously with food (binds dietary proteins and becomes ineffective)",
+        "Taking antacids within 30 minutes before or after (needs mild acid to form protective polymer gel)"
+      ],
+      "caution": [
+        "Binds almost all oral medications; keep at least a 2-HOUR GAP between sucralfate and other drugs"
+      ],
+      "beneficial": [
+        "Bland, non-irritating diet while ulcer heals"
+      ]
+    },
+    "critical_alert": "BINDS MEDICATIONS: Keep at least a 2-hour interval between Sucralfate and any other oral prescription drugs.",
+    "clinical_summary": "Aluminum salt of sucrose octasulfate; polymerizes in acidic milieu to form a sticky viscous paste that adheres to ulcer craters."
+  },
+  {
+    "id": "escitalopram",
+    "name": "Escitalopram",
+    "brand_names": [
+      "Lexapro",
+      "Nexito",
+      "Cipralex"
+    ],
+    "category": "Neuropsychiatric (SSRI Antidepressant / Anxiolytic)",
+    "default_dosage": "10 mg",
+    "meal_timing": "Take once daily in the morning or evening, with or without food",
+    "food_interactions": {
+      "avoid": [
+        "Alcohol (exacerbates sedation, dizziness, and cognitive impairment)"
+      ],
+      "caution": [
+        "NSAID pain relievers taken concurrently increase stomach bleed risk"
+      ],
+      "beneficial": [
+        "Tryptophan-containing whole foods (bananas, oats, nuts) and calming chamomile tea"
+      ]
+    },
+    "critical_alert": "Do NOT take with Tramadol or MAOIs (risk of Serotonin Syndrome). Combines with NSAIDs to increase bleed risk.",
+    "clinical_summary": "Pure S-enantiomer of citalopram; highly selective serotonin reuptake inhibitor with minimal dopamine or norepinephrine affinity."
+  },
+  {
+    "id": "pregabalin",
+    "name": "Pregabalin",
+    "brand_names": [
+      "Lyrica",
+      "Pregalin",
+      "Pregeb"
+    ],
+    "category": "Neuropathic Pain & Anticonvulsant (Gabapentinoid)",
+    "default_dosage": "75 mg once or twice daily",
+    "meal_timing": "Take with or without food at consistent times (often at bedtime to reduce daytime dizziness)",
+    "food_interactions": {
+      "avoid": [
+        "Alcohol (massively increases drowsiness, respiratory depression, and ataxia)"
+      ],
+      "caution": [
+        "High fat meals mildly delay absorption but do not alter total bioavailability"
+      ],
+      "beneficial": [
+        "Balanced anti-inflammatory diet (turmeric, nuts, green leafy vegetables) for nerve health"
+      ]
+    },
+    "critical_alert": "First-line therapy for painful Diabetic Peripheral Neuropathy. Avoid alcohol.",
+    "clinical_summary": "Binds alpha-2-delta subunit of voltage-gated calcium channels in the CNS, reducing calcium influx and presynaptic release of excitatory neurotransmitters."
+  },
+  {
+    "id": "gabapentin",
+    "name": "Gabapentin",
+    "brand_names": [
+      "Neurontin",
+      "Gabapin"
+    ],
+    "category": "Neuropathic Pain & Anticonvulsant (Gabapentinoid)",
+    "default_dosage": "300 mg",
+    "meal_timing": "Take with water, with or without food (taking with food may decrease stomach upset)",
+    "food_interactions": {
+      "avoid": [
+        "Alcohol"
+      ],
+      "caution": [
+        "Antacids containing aluminum and magnesium reduce gabapentin absorption by 20%; space by 2 hours"
+      ],
+      "beneficial": [
+        "B-complex vitamin rich foods (curd, nuts, whole grains) for peripheral nerve support"
+      ]
+    },
+    "critical_alert": "Space antacid intake by at least 2 hours. Common for diabetic neuropathy.",
+    "clinical_summary": "Modulates calcium channels via alpha-2-delta subunit; actively transported across the gut wall by the LAT1 amino acid transporter."
+  },
+  {
+    "id": "allopurinol",
+    "name": "Allopurinol",
+    "brand_names": [
+      "Zyloric",
+      "Aloprim"
+    ],
+    "category": "Antigout / Uric Acid Lowering (Xanthine Oxidase Inhibitor)",
+    "default_dosage": "100 mg or 300 mg",
+    "meal_timing": "Take immediately AFTER meals with plenty of fluids (at least 2-2.5 liters of water daily)",
+    "food_interactions": {
+      "avoid": [
+        "Alcohol (especially beer, which is rich in purines and inhibits uric acid excretion)",
+        "High-purine foods (organ meats, red meats, sardines, shellfish, excessive yeast extracts)",
+        "High-fructose corn syrup and heavily sweetened beverages"
+      ],
+      "caution": [
+        "Adequate hydration is essential to prevent renal xanthine stones"
+      ],
+      "beneficial": [
+        "Cherries, vitamin C-rich amla and citrus, low-fat dairy products, and lots of water"
+      ]
+    },
+    "critical_alert": "Drink 2 to 3 liters of water daily. Stop and report immediately if skin rash or itchiness develops.",
+    "clinical_summary": "Purine analogue that competitively inhibits xanthine oxidase, preventing the conversion of hypoxanthine and xanthine to uric acid."
+  },
+  {
+    "id": "febuxostat",
+    "name": "Febuxostat",
+    "brand_names": [
+      "Febutaz",
+      "Uloric",
+      "Feburic"
+    ],
+    "category": "Antigout / Uric Acid Lowering (Non-purine Xanthine Oxidase Inhibitor)",
+    "default_dosage": "40 mg or 80 mg",
+    "meal_timing": "Take once daily with or without food",
+    "food_interactions": {
+      "avoid": [
+        "Beer, spirits, high-purine organ meats, sugar-sweetened sodas"
+      ],
+      "caution": [
+        "Hydrate well"
+      ],
+      "beneficial": [
+        "Alkaline vegetables, fresh fruits, curd, and adequate water intake"
+      ]
+    },
+    "critical_alert": "More potent non-purine xanthine oxidase inhibitor safe in allopurinol-sensitive individuals.",
+    "clinical_summary": "Selectively blocks both oxidized and reduced forms of xanthine oxidase, achieving profound and sustained serum urate reduction."
+  },
+  {
+    "id": "fluconazole",
+    "name": "Fluconazole",
+    "brand_names": [
+      "Diflucan",
+      "Forcan",
+      "Zocon"
+    ],
+    "category": "Antifungal (Triazole)",
+    "default_dosage": "150 mg",
+    "meal_timing": "May be taken with or without food",
+    "food_interactions": {
+      "avoid": [
+        "Alcohol"
+      ],
+      "caution": [
+        "Potent CYP2C9 and CYP3A4 inhibitor"
+      ],
+      "beneficial": [
+        "Hydrating fluids"
+      ]
+    },
+    "critical_alert": "MAJOR DDI CULPRIT: Strongly inhibits CYP2C9 and CYP3A4. Can cause severe hypoglycemia with Sulfonylureas and bleeding with Warfarin.",
+    "clinical_summary": "Inhibits fungal lanosterol 14-alpha-demethylase; concurrently inhibits mammalian cytochrome P450 enzymes CYP2C9, CYP2C19, and CYP3A4."
+  },
+  {
+    "id": "clarithromycin",
+    "name": "Clarithromycin",
+    "brand_names": [
+      "Biaxin",
+      "Claribid"
+    ],
+    "category": "Antibiotic (Macrolide)",
+    "default_dosage": "500 mg",
+    "meal_timing": "Take with or without food (taking with food reduces metallic taste and nausea)",
+    "food_interactions": {
+      "avoid": [
+        "Grapefruit juice",
+        "Alcohol"
+      ],
+      "caution": [
+        "Do not combine with statins like Atorvastatin or Simvastatin"
+      ],
+      "beneficial": [
+        "Probiotic foods spaced 2 hours apart"
+      ]
+    },
+    "critical_alert": "POTENT CYP3A4 INHIBITOR: Strictly contraindicated with Atorvastatin/Simvastatin (extreme risk of fatal rhabdomyolysis).",
+    "clinical_summary": "Binds 50S ribosomal subunit; potently inactivates CYP3A4, causing massive accumulation of co-administered CYP3A4 substrates."
+  },
+  {
+    "id": "metronidazole",
+    "name": "Metronidazole",
+    "brand_names": [
+      "Flagyl",
+      "Metrogyl"
+    ],
+    "category": "Antimicrobial & Antiprotozoal (Nitroimidazole)",
+    "default_dosage": "400 mg",
+    "meal_timing": "Take WITH or immediately after meals with plenty of water",
+    "food_interactions": {
+      "avoid": [
+        "ABSOLUTE CONTRAINDICATION: ALCOHOL in any form during therapy and for 48 hours after stopping",
+        "Alcohol-containing cough syrups or mouthwashes"
+      ],
+      "caution": [
+        "Produces severe disulfiram-like reaction (violent vomiting, flushing, tachycardia, chest pounding)"
+      ],
+      "beneficial": [
+        "Easily digestible bland meals (khichdi, curd rice)"
+      ]
+    },
+    "critical_alert": "STRICT ALCOHOL BAN: Consuming even small amounts of alcohol causes severe violent vomiting and tachycardia (disulfiram reaction).",
+    "clinical_summary": "Generates toxic reactive nitro radical intermediates in anaerobic organisms; inhibits aldehyde dehydrogenase, preventing acetaldehyde breakdown."
+  },
+  {
+    "id": "diclofenac",
+    "name": "Diclofenac",
+    "brand_names": [
+      "Voveran",
+      "Voltaren",
+      "Diclogesic"
+    ],
+    "category": "NSAID (Nonsteroidal Anti-inflammatory)",
+    "default_dosage": "50 mg",
+    "meal_timing": "Take WITH or immediately after food or with a glass of milk",
+    "food_interactions": {
+      "avoid": [
+        "Alcohol (exponentially increases gastric bleeding and ulceration risk)",
+        "Excessive sodium"
+      ],
+      "caution": [
+        "Blunts effectiveness of ACE inhibitors, ARBs, and diuretics"
+      ],
+      "beneficial": [
+        "Warm cooked meals, milk, curd to coat gastric mucosa"
+      ]
+    },
+    "critical_alert": "Always take after food. Co-administration with Aspirin, Blood thinners, or ACE inhibitors/Diuretics carries major risks.",
+    "clinical_summary": "Potent COX-1 and COX-2 inhibitor; reduces prostaglandin-mediated inflammatory pain while depleting cytoprotective gastric mucus."
+  },
+  {
+    "id": "tramadol",
+    "name": "Tramadol",
+    "brand_names": [
+      "Ultram",
+      "Tramazac",
+      "Domadol"
+    ],
+    "category": "Analgesic (Centrally Acting Opioid & SNRI)",
+    "default_dosage": "50 mg",
+    "meal_timing": "Take with or without food",
+    "food_interactions": {
+      "avoid": [
+        "Alcohol (life-threatening respiratory depression and profound sedation)"
+      ],
+      "caution": [
+        "Do not combine with antidepressants (Escitalopram) or other serotonergic drugs"
+      ],
+      "beneficial": [
+        "High-fiber foods and adequate fluids to prevent opioid-induced constipation"
+      ]
+    },
+    "critical_alert": "Avoid alcohol. Combining with SSRIs (Escitalopram) or SNRIs significantly increases risk of Seizures and Serotonin Syndrome.",
+    "clinical_summary": "Mu-opioid receptor agonist with dual inhibition of serotonin and norepinephrine reuptake; lowers seizure threshold."
+  }
+]

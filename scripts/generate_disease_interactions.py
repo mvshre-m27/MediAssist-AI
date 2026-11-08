@@ -1,0 +1,232 @@
+"""
+Generate data/disease_interactions_data.json containing evidence-based
+Drug-Disease Contraindications (DDeI).
+"""
+
+import json
+from pathlib import Path
+
+DISEASE_INTERACTIONS = [
+    # ---------- ASTHMA / COPD ----------
+    {
+        "id": "ddei_001",
+        "drug_id": "propranolol",
+        "disease_key": "asthma",
+        "disease_name": "Bronchial Asthma / COPD",
+        "severity": "Severe",
+        "title": "Severe Bronchospasm & Respiratory Arrest",
+        "mechanism": "Non-selective beta-adrenergic blockade inhibits beta-2 receptors on bronchial smooth muscle, causing profound airway constriction and bronchospasm.",
+        "clinical_effects": "Acute dyspnea, wheezing, severe hypoxemia, life-threatening asthma exacerbation.",
+        "action_plan": "Strictly contraindicated. Switch to a cardioselective beta-1 blocker (Bisoprolol/Metoprolol at low doses) or an ARB (Telmisartan) under pulmonology guidance."
+    },
+    {
+        "id": "ddei_002",
+        "drug_id": "carvedilol",
+        "disease_key": "asthma",
+        "disease_name": "Bronchial Asthma / COPD",
+        "severity": "Severe",
+        "title": "Bronchial Constriction & Airway Resistance",
+        "mechanism": "Non-selective beta-receptor antagonism blocks bronchodilation mediated by endogenous adrenaline and inhalers.",
+        "clinical_effects": "Precipitates acute bronchospasm and resistance to rescue beta-2 agonist inhalers (Salbutamol).",
+        "action_plan": "Avoid non-selective beta-blockers in patients with reactive airway disease."
+    },
+    {
+        "id": "ddei_003",
+        "drug_id": "aspirin",
+        "disease_key": "asthma",
+        "disease_name": "Bronchial Asthma / COPD",
+        "severity": "Major",
+        "title": "Aspirin-Exacerbated Respiratory Disease (AERD)",
+        "mechanism": "COX-1 inhibition shunts arachidonic acid metabolism down the 5-lipoxygenase pathway, causing massive overproduction of cysteinyl leukotrienes.",
+        "clinical_effects": "Severe acute bronchospasm, rhinorrhea, flushing within 30-120 minutes of ingestion (Samter's triad).",
+        "action_plan": "Assess patient for aspirin triad. If sensitive, substitute with non-NSAID analgesics or consult an allergist."
+    },
+
+    # ---------- CHRONIC KIDNEY DISEASE (CKD) ----------
+    {
+        "id": "ddei_004",
+        "drug_id": "ibuprofen",
+        "disease_key": "ckd",
+        "disease_name": "Chronic Kidney Disease (CKD)",
+        "severity": "Severe",
+        "title": "Acute-on-Chronic Kidney Injury",
+        "mechanism": "Inhibits renal prostaglandin synthesis (PGE2, PGI2), causing intense vasoconstriction of the afferent renal arteriole and precipitous drop in GFR.",
+        "clinical_effects": "Rapidly elevated serum creatinine, fluid retention, hyperkalemia, acceleration toward dialysis.",
+        "action_plan": "Strictly avoid oral NSAIDs in patients with established CKD. Paracetamol is the safe analgesic of choice."
+    },
+    {
+        "id": "ddei_005",
+        "drug_id": "diclofenac",
+        "disease_key": "ckd",
+        "disease_name": "Chronic Kidney Disease (CKD)",
+        "severity": "Severe",
+        "title": "Renal Papillary Necrosis & Glomerular Collapse",
+        "mechanism": "Profound suppression of vasodilatory renal prostaglandins compromises medullary blood flow in vulnerable diseased kidneys.",
+        "clinical_effects": "Oliguria, rapid deterioration of renal function, peripheral edema.",
+        "action_plan": "Contraindicated in moderate-to-severe renal impairment."
+    },
+    {
+        "id": "ddei_006",
+        "drug_id": "metformin",
+        "disease_key": "ckd",
+        "disease_name": "Chronic Kidney Disease (CKD)",
+        "severity": "Major",
+        "title": "Metformin-Associated Lactic Acidosis (MALA)",
+        "mechanism": "Metformin is excreted unchanged exclusively by the kidneys. Renal impairment causes systemic accumulation and inhibition of lactate clearance.",
+        "clinical_effects": "High-mortality metabolic lactic acidosis (nausea, deep rapid breathing, severe hypothermia, cardiovascular collapse).",
+        "action_plan": "Check eGFR: If eGFR is 30-45 mL/min, maximum dose is 1000 mg/day; if eGFR < 30 mL/min, Metformin is contraindicated."
+    },
+    {
+        "id": "ddei_007",
+        "drug_id": "spironolactone",
+        "disease_key": "ckd",
+        "disease_name": "Chronic Kidney Disease (CKD)",
+        "severity": "Severe",
+        "title": "Severe Hyperkalemia & Arrhythmic Death",
+        "mechanism": "Failing kidneys cannot eliminate potassium; mineralocorticoid blockade completely shuts down remaining distal tubular potassium secretion.",
+        "clinical_effects": "Serum potassium > 6.0 mEq/L, sine wave ECG, fatal ventricular fibrillation.",
+        "action_plan": "Avoid or use extreme caution if eGFR < 30 mL/min. Monitor serum electrolytes weekly."
+    },
+
+    # ---------- GOUT & HYPERURICEMIA ----------
+    {
+        "id": "ddei_008",
+        "drug_id": "chlorthalidone",
+        "disease_key": "gout",
+        "disease_name": "Hyperuricemia & Gout",
+        "severity": "Major",
+        "title": "Hyperuricemia & Agonizing Gout Flares",
+        "mechanism": "Thiazide-like diuretics enhance uric acid reabsorption in the proximal convoluted tubule via URAT1 activation and cause mild volume contraction.",
+        "clinical_effects": "Sharp rise in serum uric acid, triggering acute painful gouty monoarthritis (podagra).",
+        "action_plan": "Prefer Losartan as the first-line antihypertensive in gout patients (unique uricosuric effect that lowers serum uric acid)."
+    },
+    {
+        "id": "ddei_009",
+        "drug_id": "hydrochlorothiazide",
+        "disease_key": "gout",
+        "disease_name": "Hyperuricemia & Gout",
+        "severity": "Major",
+        "title": "Diuretic-Induced Hyperuricemia",
+        "mechanism": "Decreases renal tubular urate clearance, leading to urate crystal deposition in joints.",
+        "clinical_effects": "Frequent, painful gout flare-ups.",
+        "action_plan": "Evaluate replacing HCTZ with Losartan or a calcium channel blocker."
+    },
+    {
+        "id": "ddei_010",
+        "drug_id": "furosemide",
+        "disease_key": "gout",
+        "disease_name": "Hyperuricemia & Gout",
+        "severity": "Major",
+        "title": "Urate Retention & Gout Attacks",
+        "mechanism": "Loop diuretics compete directly with uric acid for renal organic anion secretory transporters (OAT1/OAT3).",
+        "clinical_effects": "Marked elevation of serum urate and precipitation of monosodium urate joint crystals.",
+        "action_plan": "Monitor uric acid levels; co-prescribe Allopurinol or Febuxostat if loop diuretic is mandatory for volume control."
+    },
+
+    # ---------- HEART FAILURE / CARDIOVASCULAR ----------
+    {
+        "id": "ddei_011",
+        "drug_id": "diltiazem",
+        "disease_key": "heart_disease",
+        "disease_name": "Heart Failure / Cardiac Disease",
+        "severity": "Severe",
+        "title": "Decompensated Systolic Heart Failure",
+        "mechanism": "Negative inotropic effect suppresses already impaired myocardial contractility, decreasing left ventricular ejection fraction.",
+        "clinical_effects": "Acute worsening of heart failure, dyspnea on exertion, pulmonary congestion, peripheral edema.",
+        "action_plan": "Contraindicated in heart failure with reduced ejection fraction (HFrEF). Use Amlodipine if a CCB is needed."
+    },
+    {
+        "id": "ddei_012",
+        "drug_id": "verapamil",
+        "disease_key": "heart_disease",
+        "disease_name": "Heart Failure / Cardiac Disease",
+        "severity": "Severe",
+        "title": "Acute Cardiogenic Pulmonary Edema",
+        "mechanism": "Strong negative inotropic and chronotropic depression blunts compensatory cardiac output.",
+        "clinical_effects": "Severe hypotension, cardiogenic shock, orthopnea.",
+        "action_plan": "Contraindicated in symptomatic heart failure."
+    },
+    {
+        "id": "ddei_013",
+        "drug_id": "pioglitazone",
+        "disease_key": "heart_disease",
+        "disease_name": "Heart Failure / Cardiac Disease",
+        "severity": "Severe",
+        "title": "Fluid Retention & Heart Failure Exacerbation",
+        "mechanism": "PPAR-gamma stimulation in the renal collecting duct markedly enhances sodium and water reabsorption via ENaC channels.",
+        "clinical_effects": "Peripheral edema, sudden weight gain, precipitation of overt congestive heart failure.",
+        "action_plan": "Contraindicated in patients with NYHA Class III or IV heart failure. Discontinue if rapid swelling occurs."
+    },
+
+    # ---------- GERD & PEPTIC ULCER DISEASE ----------
+    {
+        "id": "ddei_014",
+        "drug_id": "ibuprofen",
+        "disease_key": "gerd",
+        "disease_name": "Acid Reflux / GERD / Gastric Ulcer",
+        "severity": "Severe",
+        "title": "Gastric Ulceration & Severe Upper GI Bleeding",
+        "mechanism": "Direct acidic contact irritation plus systemic depletion of cytoprotective prostaglandins and bicarbonate secretion.",
+        "clinical_effects": "Erosive gastritis, hematemesis, melena, peptic ulcer perforation.",
+        "action_plan": "Strictly avoid. If an analgesic is needed, use Paracetamol, or co-prescribe Pantoprazole."
+    },
+    {
+        "id": "ddei_015",
+        "drug_id": "diclofenac",
+        "disease_key": "gerd",
+        "disease_name": "Acid Reflux / GERD / Gastric Ulcer",
+        "severity": "Severe",
+        "title": "Gastric Mucosal Breakdown",
+        "mechanism": "COX-1 inhibition leaves vulnerable acid-reflux damaged mucosa exposed to gastric acid.",
+        "clinical_effects": "Severe epigastric pain, ulcer recurrence, bleeding.",
+        "action_plan": "Avoid in patients with active GERD or history of peptic ulcers."
+    },
+    {
+        "id": "ddei_016",
+        "drug_id": "aspirin",
+        "disease_key": "gerd",
+        "disease_name": "Acid Reflux / GERD / Gastric Ulcer",
+        "severity": "Major",
+        "title": "Exacerbation of Reflux & Bleeding Ulcers",
+        "mechanism": "Direct mucosal toxicity and platelet impairment prevent healing of reflux-induced esophageal and gastric lesions.",
+        "clinical_effects": "Heartburn aggravation, chronic occult blood loss, anemia.",
+        "action_plan": "Take always with meals; co-prescribe a PPI (Pantoprazole)."
+    },
+
+    # ---------- LIVER DISEASE / HEPATIC IMPAIRMENT ----------
+    {
+        "id": "ddei_017",
+        "drug_id": "paracetamol",
+        "disease_key": "liver_disease",
+        "disease_name": "Fatty Liver / Hepatic Impairment",
+        "severity": "Major",
+        "title": "Hepatotoxicity at Standard Doses",
+        "mechanism": "Diseased livers have depleted glutathione stores; toxic NAPQI metabolite cannot be detoxified and binds hepatocytes.",
+        "clinical_effects": "Elevated liver enzymes (AST/ALT), potential for acute-on-chronic liver failure.",
+        "action_plan": "Strictly limit daily Paracetamol dose to maximum 2,000 mg (2 g) per day; avoid in acute liver decompensation."
+    },
+    {
+        "id": "ddei_018",
+        "drug_id": "atorvastatin",
+        "disease_key": "liver_disease",
+        "disease_name": "Fatty Liver / Hepatic Impairment",
+        "severity": "Moderate",
+        "title": "Elevated Transaminases & Statin Accumulation",
+        "mechanism": "Extensively metabolized by hepatic CYP3A4 and cleared through bile; severe hepatic impairment elevates blood levels.",
+        "clinical_effects": "Asymptomatic transaminase elevations, increased myopathy risk.",
+        "action_plan": "Safe in mild-moderate NAFLD/NASH (benefits liver histology), but contraindicated in active decompensated cirrhosis."
+    }
+]
+
+def generate():
+    out_dir = Path("data")
+    out_dir.mkdir(exist_ok=True)
+    out_file = out_dir / "disease_interactions_data.json"
+    
+    with open(out_file, "w", encoding="utf-8") as f:
+        json.dump(DISEASE_INTERACTIONS, f, indent=2, ensure_ascii=False)
+        
+    print(f"Generated {len(DISEASE_INTERACTIONS)} curated drug-disease interactions in {out_file}")
+
+if __name__ == "__main__":
+    generate()

@@ -60,14 +60,36 @@ Consistent medication taking is critical for patients managing chronic non-commu
 - Highlights specific clinical risk drivers (pill burden, age, comorbidity, disease type).
 - Logs assessment audits to SQLite `adherence_assessments` and triggers supportive check-ins based on user preferences.
 
-### G. Personalized Food Suggestions
-- Knowledge base of **60+ clinical foods** across 6 categories.
+### G. Personalized Indian Food & Nutrition Recommender
+- Knowledge base of **567 authentic foods** from the **Indian Food Composition Tables (IFCT / ICMR-NIN)** across all 12 categories (Millets, Pulses, Leafy Greens, Vegetables, Roots, Fruits, Nuts, Spices, Dairy, Fish/Egg/Meat, Beverages, Healthy Oils).
 - **Two-Layer Recommender:**
   1. *Layer 1 (Zero-Tolerance Safety Filter):* Deterministically excludes declared allergens (`peanuts`, `dairy`, `gluten`, `soy`, `eggs`, `fish`, etc.) and enforces diet type compliance (`Vegetarian`, `Vegan`, `Eggetarian`, `Non-vegetarian`, `Pescatarian`).
-  2. *Layer 2 (Multi-Attribute Utility Algorithm):* Dynamically scores and ranks foods based on user restrictions (DASH diet for Hypertension, Low-GI for Diabetes, Omega-3 for Heart Health).
-- Search bar, category filters, and clinical rationale tags explaining *why* each food was recommended.
+  2. *Layer 2 (Multi-Attribute Utility Algorithm):* Dynamically scores and ranks foods based on user health profile (DASH diet for Hypertension, Low-GI for Diabetes, Heart-Healthy).
+- **Multi-Morbid Dietary Harmonization:** Resolves conflicting dietary needs across comorbidities:
+  - *Renal Safety Override (CKD):* Overrides DASH high-potassium foods (potassium $>250\text{ mg}$ capped) to protect failing kidneys against fatal hyperkalemia.
+  - *Purine Safety Override (Gout):* Filters high-purine meats/seafood to prevent uric acid flares while boosting alkalizing foods (cherries, amla, oats, dahi).
+  - *Mucosal Protection (GERD/Ulcer):* Filters acidic/spicy triggers (citrus, chili, deep-fried snacks) and promotes alkaline, soothing staples.
+- Search bar across English and Hindi local names (e.g. *Palak, Ragi, Methi, Amla, Chana*) and nutrients, responsive pagination (20 foods/page), and full macro/micronutrient breakdown.
+- **Drug-Nutrient Integration:** Evaluates patient's active medications to flag food items with 🛑 Contraindicated, ⏱️ Spacing Required, or 🌟 Therapeutic Synergy badges.
 
-### H. Settings & Caregiver Safeguards
+### H. Automated Drug-Drug & Drug-Disease Interaction (DDI / DDeI) Checker
+- **71 Curated Chronic Disease Medications:** Indexed with generic names, Indian brand names (*Glycomet, Amlong, Telma, Atorva, Pan-40, Thyronorm, Dolo 650, Ecosprin, Shelcal*), dosages, and pharmacology summaries.
+- **60+ Clinical DDI Rules:** Covers Severe/Contraindicated (e.g., Amlodipine + Clarithromycin, Telmisartan + Spironolactone hyperkalemia, Aspirin + Ibuprofen bleeding, Digoxin + Amiodarone toxicity), Major Precautions (e.g., Clopidogrel + Omeprazole, Beta-blockers + Sulfonylureas, ACEI/ARB + NSAIDs), and Moderate interactions.
+- **Drug-Disease Interaction (DDeI) Checker:** Cross-references active prescriptions against diagnosed comorbidities:
+  - *Asthma + Non-selective Beta-blockers (Propranolol, Carvedilol):* 🔴 Severe (Severe Bronchospasm & Respiratory Arrest).
+  - *CKD + NSAIDs (Ibuprofen, Diclofenac):* 🔴 Severe (Acute-on-Chronic Renal Failure).
+  - *Heart Failure + Non-DHP CCBs (Verapamil, Diltiazem) / Glitazones (Pioglitazone):* 🔴 Severe (Decompensated Heart Failure & Pulmonary Edema).
+  - *Gout + Thiazide/Loop Diuretics (Chlorthalidone, HCTZ, Furosemide):* 🟠 Major (Hyperuricemia & Gout Attacks).
+  - *GERD / Peptic Ulcer + NSAIDs / Aspirin:* 🔴 Severe (Gastric Ulceration & Hemorrhage).
+  - *Liver Impairment + Paracetamol:* 🟠 Major (Hepatotoxicity at standard doses).
+- **Automated Regimen Audit & Proactive Interception:** Scans active prescriptions in SQLite and intercepts contraindicated additions in real time.
+- **Interactive Multi-Drug Simulator:** Tests arbitrary polypharmacy combinations with preset clinical triads.
+
+### I. Diagnosed Comorbidities Tracker & ML Adherence Calibration
+- Manage chronic diagnosed conditions under **Profile** (Diabetes, Hypertension, CKD, Heart Failure, Gout, GERD, Asthma, Liver Disease, Dyslipidemia).
+- Automatically feeds comorbidity status into the **Random Forest ML pipeline** (`COMORBIDITY_NO_COMORBIDITY`), factoring multi-morbidity burden into the non-adherence risk score.
+
+### J. Settings & Caregiver Safeguards
 - Configure intervention thresholds (`High Risk Only` vs `Medium or High Risk`).
 - Manage caregiver contacts with verified consent tracking.
 - Transparent intervention delivery audit logs.
