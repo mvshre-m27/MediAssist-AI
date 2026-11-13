@@ -10,152 +10,110 @@ import ddi_engine as ddi
 import medicine_food_integration as mfi
 
 def show_ddi_checker_page(user_id):
-    st.title("💊 Automated Drug-Drug Interaction (DDI) Checker")
-    st.caption("Evidence-Based Polypharmacy Safety Engine | Grounded in Pharmacokinetic & Pharmacodynamic Clinical Pharmacology")
-
-    # Safety Notice
-    st.info(
-        "💡 **Clinical Pharmacology Notice:** This automated engine analyzes adverse drug-drug interactions (CYP450 inhibition/induction, "
-        "renal clearance competition, additive bleeding, arrhythmias, and electrolyte shifts). "
-        "It supports informed decision-making but does NOT replace clinical judgment by your treating physician."
-    )
+    st.markdown("""
+    <div style='margin-bottom: 16px;'>
+        <h1 style='font-size: 26px; margin: 0;'>🛡️ Clinical Drug Interaction & Safety Checker</h1>
+        <p style='color: #64748b; margin: 4px 0 0 0; font-size: 14px;'>Automated Pharmacokinetic (CYP450) & Pharmacodynamic Polypharmacy Risk Engine</p>
+    </div>
+    """, unsafe_allow_html=True)
 
     tab1, tab2 = st.tabs([
-        "🛡️ My Active Regimen Safety Audit",
-        "🔍 Multi-Drug Interaction Checker"
+        "🛡️ Active Regimen Safety Audit",
+        "🔍 Multi-Drug Simulator"
     ])
 
     # =====================================================================
     # TAB 1: MY ACTIVE REGIMEN SAFETY AUDIT
     # =====================================================================
     with tab1:
-        st.subheader("Active Prescription Safety Audit")
-        st.caption("Automated all-pairs scan of your currently saved medications in MediAssist.")
-
         regimen_result = ddi.check_patient_regimen_interactions(user_id)
         med_count = regimen_result["active_med_count"]
 
         if med_count == 0:
-            st.info("No active medications found in your profile. Add your prescriptions in the **Medicines** tab to run an automated safety audit.")
+            st.info("No active medications found in your profile. Add your prescriptions in the **Medicines** tab.")
         else:
-            # Summary Metrics Bar
-            m_col1, m_col2, m_col3, m_col4 = st.columns(4)
-            with m_col1:
-                st.metric("Prescribed Meds", med_count)
-            with m_col2:
+            with st.container(border=True):
+                m_col1, m_col2, m_col3, m_col4 = st.columns(4)
+                m_col1.metric("Active Meds", med_count)
                 severe_c = regimen_result["severe_count"]
-                st.metric("Severe (Contraindicated)", severe_c, delta=None if severe_c == 0 else f"{severe_c} Alert", delta_color="inverse")
-            with m_col3:
+                m_col2.metric("Severe Alerts", severe_c)
                 major_c = regimen_result["major_count"]
-                st.metric("Major Precautions", major_c, delta=None if major_c == 0 else f"{major_c} Caution", delta_color="inverse")
-            with m_col4:
-                mod_c = regimen_result["moderate_count"]
-                st.metric("Moderate / Synergies", mod_c)
-
-            st.divider()
+                m_col3.metric("Major Precautions", major_c)
+                m_col4.metric("Moderate / Synergies", regimen_result["moderate_count"])
 
             if not regimen_result["has_interactions"]:
-                st.success(
-                    "✅ **Regimen Clear:** No adverse drug-drug interactions detected among your currently prescribed medications. "
-                    "Always notify your physician before starting any new over-the-counter drugs or supplements."
-                )
+                st.success("✅ **Regimen Clear:** No adverse drug-drug interactions detected among your currently prescribed medications.")
             else:
-                st.markdown(f"#### ⚠️ Identified Interactions ({regimen_result['total_interactions']} Found)")
+                st.markdown(f"#### ⚠️ Identified Regimen Interactions ({regimen_result['total_interactions']})")
 
-                for idx, inter in enumerate(regimen_result["interactions"]):
+                for inter in regimen_result["interactions"]:
                     sev = inter["severity"]
-
                     if sev == "Severe":
-                        border_color = "#d32f2f"
-                        badge_bg = "#ffebee"
-                        badge_color = "#c62828"
+                        border_color = "#ef4444"
+                        bg_color = "#fef2f2"
+                        badge_cls = "badge-red"
                         icon = "🔴"
                     elif sev == "Major":
-                        border_color = "#ed6c02"
-                        badge_bg = "#fff3e0"
-                        badge_color = "#e65100"
+                        border_color = "#f59e0b"
+                        bg_color = "#fffbeb"
+                        badge_cls = "badge-amber"
                         icon = "🟠"
-                    elif sev == "Moderate":
-                        border_color = "#0288d1"
-                        badge_bg = "#e1f5fe"
-                        badge_color = "#01579b"
-                        icon = "🟡"
                     else:
-                        border_color = "#757575"
-                        badge_bg = "#f5f5f5"
-                        badge_color = "#424242"
-                        icon = "🔵"
+                        border_color = "#0284c7"
+                        bg_color = "#f0f9ff"
+                        badge_cls = "badge-blue"
+                        icon = "🟡"
 
                     with st.container(border=True):
-                        col_hdr1, col_hdr2 = st.columns([3, 1])
-                        with col_hdr1:
-                            st.markdown(
-                                f"### {icon} {inter['drug_1_name']} + {inter['drug_2_name']}"
-                            )
-                            st.markdown(f"**Clinical Issue:** `{inter['title']}`")
-                        with col_hdr2:
-                            st.markdown(
-                                f"<div style='text-align: right;'><span style='background-color: {badge_bg}; color: {badge_color}; "
-                                f"padding: 4px 12px; border-radius: 12px; font-weight: bold; font-size: 13px; text-transform: uppercase;'>"
-                                f"{sev}</span></div>",
-                                unsafe_allow_html=True
-                            )
+                        hdr1, hdr2 = st.columns([3, 1])
+                        with hdr1:
+                            st.markdown(f"<div style='font-size: 16px; font-weight: 700; color: #0f172a;'>{icon} {inter['drug_1_name']} + {inter['drug_2_name']}</div>", unsafe_allow_html=True)
+                            st.caption(f"**Issue:** {inter['title']}")
+                        with hdr2:
+                            st.markdown(f"<div style='text-align: right;'><span class='badge-pill {badge_cls}'>{sev}</span></div>", unsafe_allow_html=True)
 
-                        st.markdown(f"**🔬 Mechanism:** {inter['mechanism']}")
-                        st.markdown(f"**⚠️ Clinical Consequences:** {inter['clinical_effects']}")
+                        st.markdown(f"**Mechanism:** <span style='font-size: 13px; color: #334155;'>{inter['mechanism']}</span>", unsafe_allow_html=True)
+                        st.markdown(f"**Clinical Consequences:** <span style='font-size: 13px; color: #334155;'>{inter['clinical_effects']}</span>", unsafe_allow_html=True)
 
                         st.markdown(
                             f"""
-                            <div style='background-color: #f8f9fa; border-left: 4px solid {border_color}; padding: 10px 14px; border-radius: 4px; margin-top: 10px;'>
-                                <strong style='color: #212529;'>📋 Actionable Clinical Recommendation:</strong><br>
-                                <span style='color: #333;'>{inter['recommendation']}</span>
+                            <div style='background-color: {bg_color}; border-left: 3px solid {border_color}; padding: 8px 12px; border-radius: 4px; margin-top: 8px; font-size: 13px; color: #1e293b;'>
+                                <b>Actionable Recommendation:</b> {inter['recommendation']}
                             </div>
                             """,
                             unsafe_allow_html=True
                         )
 
-            st.divider()
-
             # -------------------------------------------------------------
             # DRUG-DISEASE CONTRAINDICATIONS (DDeI)
             # -------------------------------------------------------------
-            st.subheader("🏥 Drug-Disease & Comorbidity Contraindications")
-            st.caption("Checks whether any prescribed medications contradict your diagnosed chronic medical conditions.")
+            st.markdown("#### 🏥 Drug-Disease & Comorbidity Contraindications")
 
             ddei_res = ddi.check_patient_drug_disease_interactions(user_id)
             if not ddei_res["has_interactions"]:
-                st.success(
-                    "✅ **No Drug-Disease Contraindications:** None of your active medications contradict your recorded chronic health conditions."
-                )
+                st.success("✅ **No Disease Clashes:** None of your active medications contradict your recorded chronic health conditions.")
             else:
-                st.markdown(f"#### ⚠️ Identified Disease Clashes ({ddei_res['total_interactions']} Found)")
                 for clash in ddei_res["interactions"]:
                     c_sev = clash["severity"]
+                    c_border = "#ef4444" if c_sev == "Severe" else "#f59e0b"
+                    c_bg = "#fef2f2" if c_sev == "Severe" else "#fffbeb"
+                    c_badge = "badge-red" if c_sev == "Severe" else "badge-amber"
                     c_icon = "🔴" if c_sev == "Severe" else "🟠"
-                    c_border = "#d32f2f" if c_sev == "Severe" else "#ed6c02"
-                    c_bg = "#ffebee" if c_sev == "Severe" else "#fff3e0"
-                    c_color = "#c62828" if c_sev == "Severe" else "#e65100"
 
                     with st.container(border=True):
-                        hdr_col1, hdr_col2 = st.columns([3, 1])
-                        with hdr_col1:
-                            st.markdown(f"### {c_icon} {clash['matched_drug_name']} ⚡ {clash['disease_name']}")
-                            st.markdown(f"**Contraindication:** `{clash['title']}`")
-                        with hdr_col2:
-                            st.markdown(
-                                f"<div style='text-align: right;'><span style='background-color: {c_bg}; color: {c_color}; "
-                                f"padding: 4px 12px; border-radius: 12px; font-weight: bold; font-size: 13px; text-transform: uppercase;'>"
-                                f"{c_sev}</span></div>",
-                                unsafe_allow_html=True
-                            )
+                        hdr1, hdr2 = st.columns([3, 1])
+                        with hdr1:
+                            st.markdown(f"<div style='font-size: 16px; font-weight: 700; color: #0f172a;'>{c_icon} {clash['matched_drug_name']} ⚡ {clash['disease_name']}</div>", unsafe_allow_html=True)
+                            st.caption(f"**Contraindication:** {clash['title']}")
+                        with hdr2:
+                            st.markdown(f"<div style='text-align: right;'><span class='badge-pill {c_badge}'>{c_sev}</span></div>", unsafe_allow_html=True)
 
-                        st.markdown(f"**🔬 Pharmacological Mechanism:** {clash['mechanism']}")
-                        st.markdown(f"**⚠️ Clinical Impact on Disease:** {clash['clinical_effects']}")
+                        st.markdown(f"**Mechanism:** <span style='font-size: 13px; color: #334155;'>{clash['mechanism']}</span>", unsafe_allow_html=True)
+                        st.markdown(f"**Clinical Impact:** <span style='font-size: 13px; color: #334155;'>{clash['clinical_effects']}</span>", unsafe_allow_html=True)
                         st.markdown(
                             f"""
-                            <div style='background-color: #f8f9fa; border-left: 4px solid {c_border}; padding: 10px 14px; border-radius: 4px; margin-top: 10px;'>
-                                <strong style='color: #212529;'>📋 Clinical Physician Action Plan:</strong><br>
-                                <span style='color: #333;'>{clash['action_plan']}</span>
+                            <div style='background-color: {c_bg}; border-left: 3px solid {c_border}; padding: 8px 12px; border-radius: 4px; margin-top: 8px; font-size: 13px; color: #1e293b;'>
+                                <b>Physician Action Plan:</b> {clash['action_plan']}
                             </div>
                             """,
                             unsafe_allow_html=True
@@ -165,127 +123,78 @@ def show_ddi_checker_page(user_id):
     # TAB 2: MULTI-DRUG INTERACTION CHECKER (CUSTOM)
     # =====================================================================
     with tab2:
-        st.subheader("Interactive Multi-Drug Interaction Checker")
-        st.caption("Select any two or more medications to analyze potential polypharmacy interactions.")
-
         all_known = mfi.get_all_known_medicine_names()
 
-        # Preset test buttons for quick demo
-        st.markdown("**Quick Clinical Presets for Testing:**")
-        preset_cols = st.columns(3)
-
-        with preset_cols[0]:
+        # Preset test buttons
+        st.markdown("**Quick Clinical Demo Presets:**")
+        p1, p2, p3 = st.columns(3)
+        with p1:
             if st.button("🔴 Amlodipine + Clarithromycin", use_container_width=True):
                 st.session_state["ddi_custom_selection"] = ["Amlodipine", "Clarithromycin"]
-        with preset_cols[1]:
+        with p2:
             if st.button("🔴 Telmisartan + Spironolactone", use_container_width=True):
                 st.session_state["ddi_custom_selection"] = ["Telmisartan", "Spironolactone"]
-        with preset_cols[2]:
+        with p3:
             if st.button("🟠 Aspirin + Ibuprofen", use_container_width=True):
                 st.session_state["ddi_custom_selection"] = ["Aspirin (Low Dose)", "Ibuprofen"]
 
-        preset_cols2 = st.columns(3)
-        with preset_cols2[0]:
-            if st.button("🟠 Clopidogrel + Omeprazole", use_container_width=True):
-                st.session_state["ddi_custom_selection"] = ["Clopidogrel", "Omeprazole"]
-        with preset_cols2[1]:
-            if st.button("🔴 Digoxin + Amiodarone", use_container_width=True):
-                st.session_state["ddi_custom_selection"] = ["Digoxin", "Amiodarone"]
-        with preset_cols2[2]:
-            if st.button("🟠 Levothyroxine + Calcium", use_container_width=True):
-                st.session_state["ddi_custom_selection"] = ["Levothyroxine", "Calcium Carbonate + Vitamin D3"]
-
         default_select = st.session_state.get("ddi_custom_selection", ["Amlodipine", "Atorvastatin"])
-
-        # Filter default selection to valid items in all_known
-        valid_defaults = []
-        for d in default_select:
-            matched = False
-            for k in all_known:
-                if d.lower() in k.lower():
-                    valid_defaults.append(k)
-                    matched = True
-                    break
-            if not matched and d in all_known:
-                valid_defaults.append(d)
+        valid_defaults = [k for k in all_known if any(d.lower() in k.lower() for d in default_select)]
 
         selected_meds = st.multiselect(
             "Select Medications to Test:",
             options=all_known,
             default=valid_defaults,
-            placeholder="Search or pick medications (e.g., Metformin, Amlodipine, Telmisartan, Aspirin, Ibuprofen, Clarithromycin...)"
+            placeholder="Search or pick medications..."
         )
 
-        custom_extra = st.text_input("Or type additional medicine names (comma-separated):", placeholder="e.g. Warfarin, Escitalopram")
-
-        if st.button("🔍 Run Comprehensive Safety Check", type="primary", use_container_width=True):
-            combined_list = list(selected_meds)
-            if custom_extra and custom_extra.strip():
-                for item in custom_extra.split(","):
-                    if item.strip():
-                        combined_list.append(item.strip())
-
-            if len(combined_list) < 2:
-                st.warning("Please select or enter at least **2 medications** to check for interactions.")
+        if st.button("🔍 Check Interactions", type="primary", use_container_width=True):
+            if len(selected_meds) < 2:
+                st.warning("Please select at least **2 medications** to test for pairwise interactions.")
             else:
-                analysis = ddi.analyze_custom_medication_list(combined_list)
+                analysis = ddi.analyze_custom_medication_list(list(selected_meds))
 
-                st.write(f"Analyzed **{analysis['total_drugs_checked']} medications** across all pairwise combinations:")
-
-                s_c = analysis["severe_count"]
-                m_c = analysis["major_count"]
-                mod_c = analysis["moderate_count"]
-
-                r_col1, r_col2, r_col3 = st.columns(3)
-                with r_col1:
-                    st.metric("🔴 Severe Interactions", s_c)
-                with r_col2:
-                    st.metric("🟠 Major Precautions", m_c)
-                with r_col3:
-                    st.metric("🟡 Moderate / Notes", mod_c)
-
-                st.divider()
+                with st.container(border=True):
+                    r1, r2, r3 = st.columns(3)
+                    r1.metric("🔴 Severe Alerts", analysis["severe_count"])
+                    r2.metric("🟠 Major Precautions", analysis["major_count"])
+                    r3.metric("🟡 Moderate / Notes", analysis["moderate_count"])
 
                 if analysis["total_interactions"] == 0:
-                    st.success("✅ **No Interactions Found:** The selected medications have no documented major adverse drug-drug interactions in our clinical database.")
+                    st.success("✅ **No Interactions Found:** The selected medications have no documented adverse drug-drug interactions in our database.")
                 else:
                     for inter in analysis["interactions"]:
                         sev = inter["severity"]
                         if sev == "Severe":
                             icon = "🔴"
-                            b_bg = "#ffebee"
-                            b_c = "#c62828"
-                            b_line = "#d32f2f"
+                            b_cls = "badge-red"
+                            b_line = "#ef4444"
+                            b_bg = "#fef2f2"
                         elif sev == "Major":
                             icon = "🟠"
-                            b_bg = "#fff3e0"
-                            b_c = "#e65100"
-                            b_line = "#ed6c02"
+                            b_cls = "badge-amber"
+                            b_line = "#f59e0b"
+                            b_bg = "#fffbeb"
                         else:
                             icon = "🟡"
-                            b_bg = "#e1f5fe"
-                            b_c = "#01579b"
-                            b_line = "#0288d1"
+                            b_cls = "badge-blue"
+                            b_line = "#0284c7"
+                            b_bg = "#f0f9ff"
 
                         with st.container(border=True):
                             hdr1, hdr2 = st.columns([3, 1])
                             with hdr1:
-                                st.markdown(f"#### {icon} {inter['drug_1_name']} + {inter['drug_2_name']}")
-                                st.markdown(f"**Issue:** `{inter['title']}`")
+                                st.markdown(f"<div style='font-size: 16px; font-weight: 700; color: #0f172a;'>{icon} {inter['drug_1_name']} + {inter['drug_2_name']}</div>", unsafe_allow_html=True)
+                                st.caption(f"**Issue:** {inter['title']}")
                             with hdr2:
-                                st.markdown(
-                                    f"<div style='text-align: right;'><span style='background-color: {b_bg}; color: {b_c}; "
-                                    f"padding: 4px 10px; border-radius: 12px; font-weight: bold; font-size: 12px; text-transform: uppercase;'>"
-                                    f"{sev}</span></div>",
-                                    unsafe_allow_html=True
-                                )
+                                st.markdown(f"<div style='text-align: right;'><span class='badge-pill {b_cls}'>{sev}</span></div>", unsafe_allow_html=True)
 
-                            st.markdown(f"**Mechanism:** {inter['mechanism']}")
-                            st.markdown(f"**Clinical Impact:** {inter['clinical_effects']}")
+                            st.markdown(f"**Mechanism:** <span style='font-size: 13px; color: #334155;'>{inter['mechanism']}</span>", unsafe_allow_html=True)
+                            st.markdown(f"**Clinical Impact:** <span style='font-size: 13px; color: #334155;'>{inter['clinical_effects']}</span>", unsafe_allow_html=True)
                             st.markdown(
                                 f"""
-                                <div style='background-color: #f8f9fa; border-left: 4px solid {b_line}; padding: 8px 12px; border-radius: 4px; margin-top: 8px;'>
-                                    <strong style='color: #212529;'>Clinical Guidance:</strong> {inter['recommendation']}
+                                <div style='background-color: {b_bg}; border-left: 3px solid {b_line}; padding: 8px 12px; border-radius: 4px; margin-top: 8px; font-size: 13px; color: #1e293b;'>
+                                    <b>Clinical Guidance:</b> {inter['recommendation']}
                                 </div>
                                 """,
                                 unsafe_allow_html=True

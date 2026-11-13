@@ -1,4 +1,4 @@
-﻿
+
 import streamlit as st
 from datetime import date, datetime
 from database import get_connection
@@ -19,10 +19,14 @@ def get_today_doses(user_id):
                 m.id AS medicine_id,
                 m.medicine_name,
                 m.dosage,
+                m.instructions,
                 m.start_date,
                 m.end_date,
                 m.remaining_stock,
-                dr.status
+                m.total_stock,
+                m.refill_threshold,
+                dr.status,
+                dr.taken_at
             FROM dose_schedules ds
             JOIN medicines m
                 ON ds.medicine_id = m.id
@@ -36,7 +40,7 @@ def get_today_doses(user_id):
             ORDER BY ds.dose_time
         """, (today, user_id, today, today)).fetchall()
 
-    return doses
+    return [dict(d) for d in doses]
 
 
 def save_dose_status(schedule_id, status, user_id):
@@ -179,113 +183,146 @@ def reset_dose_status(schedule_id, user_id):
 # -------------------- DOSE TRACKING UI --------------------
 
 def show_dose_tracking(user_id):
-
-    st.title("💊 Daily Dose Tracking")
-    st.write("Track your daily medicine intake.")
+    today_display = date.today().strftime("%A, %d %B %Y")
+    
+    st.markdown(f"""
+    <div style='margin-bottom: 16px;'>
+        <h1 style='font-size: 26px; margin: 0;'>💊 Daily Dose Tracking</h1>
+        <p style='color: #64748b; margin: 4px 0 0 0; font-size: 14px;'>{today_display} &bull; Confirm intake and track remaining inventory</p>
+    </div>
+    """, unsafe_allow_html=True)
 
     doses = get_today_doses(user_id)
 
     if not doses:
-        st.info("No medicine doses scheduled for today.")
+        st.info("No medicine doses scheduled for today. Add active medicines in the **Medicines** tab.")
         return
 
-    today_display = date.today().strftime("%d %B %Y")
-    st.subheader(f"Today's Schedule - {today_display}")
+    # Aggregate counts
+    total_doses = len(doses)
+    taken_doses = sum(1 for d in doses if d["status"] == "taken")
+    missed_doses = sum(1 for d in doses if d["status"] == "missed")
+    pending_doses = total_doses - (taken_doses + missed_doses)
+    progress_pct = (taken_doses / total_doses * 100) if total_doses > 0 else 100
 
-    for dose in doses:
+    # Header Progress Banner
+    with st.container(border=True):
+        m1, m2, m3, m4 = st.columns(4)
+        m1.metric("Total Scheduled", total_doses)
+        m2.metric("Confirmed Taken", taken_doses)
+        m3.metric("Missed", missed_doses)
+        m4.metric("Pending / Due", pending_doses)
 
-        schedule_id = dose["schedule_id"]
-        status = dose["status"] or "unconfirmed"
-        remaining_stock = dose["remaining_stock"]
+        st.progress(progress_pct / 100)
+        
+        if total_doses > 0 and taken_doses == total_doses:
+            st.success("🎉 All scheduled doses for today have been confirmed! Excellent consistency.")
+            if st.session_state.get("_trigger_balloons"):
+                st.balloons()
+                st.session_state["_trigger_balloons"] = False
 
-        with st.container(border=True):
+    # Filter Tabs
+    tab_all, tab_pending, tab_taken, tab_missed = st.tabs([
+        f"All Doses ({total_doses})",
+        f"Pending ({pending_doses})",
+        f"Taken ({taken_doses})",
+        f"Missed ({missed_doses})"
+    ])
 
-            st.write(f"**{dose['medicine_name']}**")
-            st.write(
-                f"Dosage: {dose['dosage'] or 'Not specified'}"
-            )
-            st.write(f"Scheduled Time: {dose['dose_time']}")
-            st.write(f"Remaining Stock: {remaining_stock}")
+    tab_map = {
+        "all": (tab_all, doses),
+        "pending": (tab_pending, [d for d in doses if (d["status"] or "unconfirmed") == "unconfirmed"]),
+        "taken": (tab_taken, [d for d in doses if d["status"] == "taken"]),
+        "missed": (tab_missed, [d for d in doses if d["status"] == "missed"])
+    }
 
-            if status == "taken":
-                st.success("Dose Taken")
+    for key, (tab_obj, tab_doses) in tab_map.items():
+        with tab_obj:
+            if not tab_doses:
+                st.caption(f"No doses in this category.")
+                continue
 
-            elif status == "missed":
-                st.error("Dose Missed")
+            for dose in tab_doses:
+                schedule_id = dose["schedule_id"]
+                status = dose["status"] or "unconfirmed"
+                remaining_stock = dose["remaining_stock"]
+                total_stock = dose.get("total_stock", 30) or 30
+                refill_thresh = dose.get("refill_threshold", 7) or 7
+                dose_time_str = dose["dose_time"]
 
-            else:
-                st.info("Dose Unconfirmed")
-
-            if remaining_stock <= 0 and status != "taken":
-                st.warning(
-                    "No stock available. Update your medicine stock "
-                    "before marking this dose as taken."
-                )
-
-            col1, col2, col3 = st.columns(3)
-
-            # -------------------- TAKEN --------------------
-
-            with col1:
-
-                if st.button(
-                    "Taken",
-                    key=f"taken_{schedule_id}",
-                    disabled=(
-                        status == "taken" or remaining_stock <= 0
-                    )
-                ):
-
-                    success = save_dose_status(
-                        schedule_id,
-                        "taken",
-                        user_id
-                    )
-
-                    if success:
-                        st.rerun()
+                # Determine time-of-day slot
+                try:
+                    hour_val = int(dose_time_str.split(":")[0])
+                    if hour_val < 12:
+                        slot_label = f"🌅 Morning ({dose_time_str})"
+                        slot_class = "badge-blue"
+                    elif hour_val < 17:
+                        slot_label = f"☀️ Afternoon ({dose_time_str})"
+                        slot_class = "badge-amber"
+                    elif hour_val < 21:
+                        slot_label = f"🌆 Evening ({dose_time_str})"
+                        slot_class = "badge-purple"
                     else:
-                        st.error(
-                            "Unable to update dose. Please check stock."
-                        )
+                        slot_label = f"🌙 Bedtime ({dose_time_str})"
+                        slot_class = "badge-slate"
+                except Exception:
+                    slot_label = f"⏰ {dose_time_str}"
+                    slot_class = "badge-slate"
 
-            # -------------------- MISSED --------------------
+                # Status Pill
+                if status == "taken":
+                    time_taken_str = f" at {dose['taken_at'].split('T')[-1][:5]}" if dose.get("taken_at") else ""
+                    status_pill = f"<span class='badge-pill badge-green'>✓ Taken{time_taken_str}</span>"
+                elif status == "missed":
+                    status_pill = "<span class='badge-pill badge-red'>✕ Missed</span>"
+                else:
+                    status_pill = "<span class='badge-pill badge-amber'>⏳ Due / Pending</span>"
 
-            with col2:
+                # Stock Pill
+                if remaining_stock <= refill_thresh:
+                    stock_pill = f"<span class='badge-pill badge-red'>⚠️ Low Stock ({remaining_stock} left)</span>"
+                else:
+                    stock_pill = f"<span class='badge-pill badge-slate'>📦 Stock: {remaining_stock}</span>"
 
-                if st.button(
-                    "Missed",
-                    key=f"missed_{schedule_id}",
-                    disabled=status == "missed"
-                ):
+                with st.container(border=True):
+                    # Card Header
+                    hdr_col1, hdr_col2 = st.columns([3, 2])
+                    with hdr_col1:
+                        dosage_text = f" &bull; {dose['dosage']}" if dose.get("dosage") else ""
+                        st.markdown(f"<div style='font-size: 16px; font-weight: 700; color: #0f172a;'>💊 {dose['medicine_name']} <span style='font-size: 13px; font-weight: 500; color: #64748b;'>{dosage_text}</span></div>", unsafe_allow_html=True)
+                        if dose.get("instructions"):
+                            st.caption(f"🍽️ {dose['instructions']}")
+                    with hdr_col2:
+                        st.markdown(f"<div style='text-align: right; display: flex; gap: 6px; justify-content: flex-end; align-items: center; flex-wrap: wrap;'><span class='badge-pill {slot_class}'>{slot_label}</span> {stock_pill} {status_pill}</div>", unsafe_allow_html=True)
 
-                    success = save_dose_status(
-                        schedule_id,
-                        "missed",
-                        user_id
-                    )
+                    if remaining_stock <= 0 and status != "taken":
+                        st.warning("⚠️ Zero stock available. Please update medication inventory to confirm this dose.")
 
-                    if success:
-                        st.rerun()
-                    else:
-                        st.error("Unable to update dose status.")
+                    # Action Buttons
+                    b1, b2, b3 = st.columns([1.2, 1.2, 1])
 
-            # -------------------- RESET --------------------
+                    with b1:
+                        if st.button("Mark Taken", key=f"taken_{schedule_id}_{key}", type="primary" if status != "taken" else "secondary", disabled=(status == "taken" or remaining_stock <= 0), use_container_width=True):
+                            success = save_dose_status(schedule_id, "taken", user_id)
+                            if success:
+                                if (taken_doses + 1) == total_doses:
+                                    st.session_state["_trigger_balloons"] = True
+                                st.rerun()
+                            else:
+                                st.error("Stock depleted. Unable to mark taken.")
 
-            with col3:
+                    with b2:
+                        if st.button("Mark Missed", key=f"missed_{schedule_id}_{key}", disabled=(status == "missed"), use_container_width=True):
+                            success = save_dose_status(schedule_id, "missed", user_id)
+                            if success:
+                                st.rerun()
+                            else:
+                                st.error("Unable to update dose.")
 
-                if st.button(
-                    "Reset",
-                    key=f"reset_{schedule_id}",
-                    disabled=status == "unconfirmed"
-                ):
-
-                    success = reset_dose_status(
-                        schedule_id,
-                        user_id
-                    )
-
-                    if success:
-                        st.rerun()
-                    else:
-                        st.error("Unable to reset this dose.")
+                    with b3:
+                        if st.button("Reset", key=f"reset_{schedule_id}_{key}", disabled=(status == "unconfirmed"), use_container_width=True):
+                            success = reset_dose_status(schedule_id, user_id)
+                            if success:
+                                st.rerun()
+                            else:
+                                st.error("Unable to reset.")

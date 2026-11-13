@@ -297,231 +297,219 @@ def filter_and_rank_foods(
 # =====================================================================
 
 def show_food_suggestions_page(user_id):
-    st.title("🥗 Personalized Indian Food & Nutrition Recommender")
-    st.caption("Grounded in ICMR-NIN Indian Food Composition Tables (500+ Foods) & Evidence-Based Drug-Nutrient Interactions")
+    from dietary_chatbot import render_dietary_chat_interface
+    st.markdown("""
+    <div style='margin-bottom: 16px;'>
+        <h1 style='font-size: 26px; margin: 0;'>🥗 Personalized Indian Nutrition & AI Consultation</h1>
+        <p style='color: #64748b; margin: 4px 0 0 0; font-size: 14px;'>ICMR-NIN Indian Food Composition Tables (500+ Foods), Conversational Dietary Planning & Evidence-Based Drug-Nutrient Synergy</p>
+    </div>
+    """, unsafe_allow_html=True)
 
-    # Safety Notice
-    st.info(
-        "💡 **Clinical Guidance Notice:** Suggestions provided here are evidence-based general nutritional guidelines. "
-        "They complement medical treatment but do NOT replace direct consultation with a registered clinical dietitian or your physician."
-    )
+    tab_chat, tab_browse = st.tabs([
+        "💬 AI Dietary Consultation Chatbot",
+        "🥗 ICMR-NIN Food Explorer (500+ Foods)"
+    ])
 
-    profile = get_user_dietary_profile(user_id)
-    analysis = mfi.analyze_user_food_drug_interactions(user_id)
-    active_profiles = analysis["active_profiles"]
+    with tab_chat:
+        render_dietary_chat_interface(user_id)
 
-    # Section 1: User Profile Pill
-    with st.container(border=True):
-        st.markdown(f"#### 👤 Nutrition Profile for **{profile['full_name']}**")
-        col_p1, col_p2, col_p3 = st.columns(3)
-        with col_p1:
-            st.markdown(f"**Diet Type:** `{profile['diet_type']}`")
-        with col_p2:
-            allergies_display = profile['allergies_raw'] if profile['allergies_raw'] else "None declared"
-            st.markdown(f"**Excluded Allergens:** `{allergies_display}`")
-        with col_p3:
-            restr_display = profile['restrictions_raw'] if profile['restrictions_raw'] else "General wellness"
-            st.markdown(f"**Health Restrictions:** `{restr_display}`")
+    with tab_browse:
+        profile = get_user_dietary_profile(user_id)
+        analysis = mfi.analyze_user_food_drug_interactions(user_id)
+        active_profiles = analysis["active_profiles"]
 
-        # Comorbidities display
-        comorb_names = profile.get("comorbidity_names", [])
-        if comorb_names:
-            st.markdown(f"**🏥 Diagnosed Conditions:** " + " • ".join([f"`{c}`" for c in comorb_names]))
-        else:
-            st.markdown(f"**🏥 Diagnosed Conditions:** `None recorded (General wellness)`")
-
-        # Multi-Condition Harmonization Callout if conflicting conditions exist
-        comorb_set = set(profile.get("comorbidities", []))
-        if "hypertension" in comorb_set and "ckd" in comorb_set:
-            st.warning(
-                "💡 **Clinical Harmonization Alert (Hypertension + CKD):** For hypertension, DASH guidelines normally promote high potassium. "
-                "However, because **Chronic Kidney Disease (CKD)** is also diagnosed, high-potassium foods (>250mg) have been restricted to protect against life-threatening hyperkalemia."
-            )
-        elif "diabetes" in comorb_set and "gout" in comorb_set:
-            st.info(
-                "💡 **Clinical Harmonization Alert (Diabetes + Gout):** The recommendation engine has prioritized low-purine, low-GI foods "
-                "to stabilize blood glucose while avoiding uric acid crystal precipitation."
-            )
-        elif "gerd" in comorb_set:
-            st.info(
-                "💡 **Mucosal Protection Active (GERD / Gastric Ulcer):** Acidic juices, extreme spices, and deep-fried irritants have been filtered."
-            )
-
-        st.caption("To update your diet type, allergies, or restrictions, navigate to the **Profile** tab in the sidebar.")
-
-    # Section 2: Prescription Drug-Nutrient Advisories (If active medications exist)
-    if active_profiles:
+        # Section 1: User Profile Pill
         with st.container(border=True):
-            st.markdown(f"### 💊 Active Medication Food & Nutrition Advisories")
-            st.caption(f"Personalized clinical advisories generated for **{len(active_profiles)} active medications** in your regimen:")
+            col_p1, col_p2, col_p3 = st.columns(3)
+            with col_p1:
+                st.markdown(f"**Diet Type:** `{profile['diet_type']}`")
+            with col_p2:
+                allergies_display = profile['allergies_raw'] if profile['allergies_raw'] else "None declared"
+                st.markdown(f"**Allergens:** `{allergies_display}`")
+            with col_p3:
+                restr_display = profile['restrictions_raw'] if profile['restrictions_raw'] else "General wellness"
+                st.markdown(f"**Restrictions:** `{restr_display}`")
 
-            # Critical alerts
-            if analysis["critical_alerts"]:
-                for alert in analysis["critical_alerts"]:
-                    st.error(f"⚠️ **{alert['medicine']} Safety Precaution:** {alert['alert']}")
+            # Comorbidities display
+            comorb_names = profile.get("comorbidity_names", [])
+            if comorb_names:
+                st.markdown(f"**Diagnosed Conditions:** " + " &bull; ".join([f"`{c}`" for c in comorb_names]))
 
-            # Meal timing guidance
-            if analysis["meal_timing_guidance"]:
-                st.markdown("##### 🍽️ Meal & Administration Timing")
-                t_cols = st.columns(min(len(analysis["meal_timing_guidance"]), 3))
-                for idx, guide in enumerate(analysis["meal_timing_guidance"]):
-                    col_target = t_cols[idx % len(t_cols)]
-                    with col_target:
-                        st.markdown(f"**{guide['medicine']}**\n\n*{guide['timing']}*")
+            # Multi-Condition Harmonization Callout if conflicting conditions exist
+            comorb_set = set(profile.get("comorbidities", []))
+            if "hypertension" in comorb_set and "ckd" in comorb_set:
+                st.warning("⚠️ **Renal Safety Override Active (Hypertension + CKD):** High-potassium DASH foods (>250mg) capped to protect against hyperkalemia.")
+            elif "diabetes" in comorb_set and "gout" in comorb_set:
+                st.info("💡 **Harmonization Active (Diabetes + Gout):** Low-purine, low-GI foods prioritized.")
 
-            # Avoid vs Beneficial Tabs / Columns
-            adv_col1, adv_col2 = st.columns(2)
-            with adv_col1:
-                if analysis["avoid_items"]:
-                    with st.expander("🚫 Foods & Substances to Avoid or Space Out", expanded=True):
-                        for item in analysis["avoid_items"]:
-                            st.markdown(f"- {item}")
-            with adv_col2:
-                if analysis["beneficial_items"]:
-                    with st.expander("🌟 Beneficial Dietary Synergies", expanded=True):
-                        for item in analysis["beneficial_items"]:
-                            st.markdown(f"- {item}")
+        # Section 2: Prescription Drug-Nutrient Advisories (If active medications exist)
+        if active_profiles:
+            with st.container(border=True):
+                st.markdown(f"**💊 Active Medication Food & Nutrition Advisories ({len(active_profiles)} Prescriptions)**")
 
-    st.divider()
+                # Critical alerts
+                if analysis["critical_alerts"]:
+                    for alert in analysis["critical_alerts"]:
+                        st.error(f"⚠️ **{alert['medicine']}:** {alert['alert']}")
 
-    # Section 3: Interactive Search, Category & Condition Controls
-    ctrl_col1, ctrl_col2, ctrl_col3 = st.columns([1.5, 1.4, 1.2])
+                # Meal timing guidance
+                if analysis["meal_timing_guidance"]:
+                    st.caption("🍽️ **Meal & Administration Timing:**")
+                    t_cols = st.columns(min(len(analysis["meal_timing_guidance"]), 3))
+                    for idx, guide in enumerate(analysis["meal_timing_guidance"]):
+                        col_target = t_cols[idx % len(t_cols)]
+                        with col_target:
+                            st.markdown(f"&bull; **{guide['medicine']}:** *{guide['timing']}*")
 
-    with ctrl_col1:
-        search_query = st.text_input("🔍 Search Food, Local Name, or Nutrient", placeholder="e.g. Ragi, Methi, Palak, Potassium, Fiber, Fish...")
+                # Avoid vs Beneficial
+                adv_col1, adv_col2 = st.columns(2)
+                with adv_col1:
+                    if analysis["avoid_items"]:
+                        with st.expander("🚫 Foods/Substances to Space Out", expanded=False):
+                            for item in analysis["avoid_items"]:
+                                st.markdown(f"- {item}")
+                with adv_col2:
+                    if analysis["beneficial_items"]:
+                        with st.expander("🌟 Beneficial Dietary Synergies", expanded=False):
+                            for item in analysis["beneficial_items"]:
+                                st.markdown(f"- {item}")
 
-    with ctrl_col2:
-        categories = [
-            "All Categories",
-            "Cereals and Millets",
-            "Grain Legumes & Pulses",
-            "Green Leafy Vegetables",
-            "Other Vegetables",
-            "Roots and Tubers",
-            "Fruits",
-            "Nuts and Oilseeds",
-            "Spices, Herbs & Condiments",
-            "Milk & Dairy Products",
-            "Egg, Poultry, Fish & Meat",
-            "Beverages & Herbal Infusions",
-            "Healthy Fats & Culinary Oils"
-        ]
-        selected_category = st.selectbox("ICMR-NIN Food Category", categories)
+        # Section 3: Interactive Search, Category & Condition Controls
+        ctrl_col1, ctrl_col2, ctrl_col3 = st.columns([1.5, 1.4, 1.2])
 
-    with ctrl_col3:
-        condition_options = {
-            "All Recommended Foods": None,
-            "Hypertension-Friendly (DASH)": "hypertension",
-            "Diabetic-Friendly (Low-GI)": "diabetes",
-            "Heart-Healthy & Cholesterol": "heart"
-        }
-        cond_choice = st.selectbox("Clinical Focus Priority", list(condition_options.keys()))
-        condition_filter = condition_options[cond_choice]
+        with ctrl_col1:
+            search_query = st.text_input("Search Food, Local Name, or Nutrient", placeholder="e.g. Ragi, Methi, Palak, Fiber...", label_visibility="collapsed")
 
-    # Get Recommendations
-    foods = filter_and_rank_foods(
-        profile,
-        active_profiles=active_profiles,
-        selected_category=selected_category,
-        condition_filter=condition_filter,
-        search_query=search_query
-    )
+        with ctrl_col2:
+            categories = [
+                "All Categories",
+                "Cereals and Millets",
+                "Grain Legumes & Pulses",
+                "Green Leafy Vegetables",
+                "Other Vegetables",
+                "Roots and Tubers",
+                "Fruits",
+                "Nuts and Oilseeds",
+                "Spices, Herbs & Condiments",
+                "Milk & Dairy Products",
+                "Egg, Poultry, Fish & Meat",
+                "Beverages & Herbal Infusions",
+                "Healthy Fats & Culinary Oils"
+            ]
+            selected_category = st.selectbox("Category", categories, label_visibility="collapsed")
 
-    total_matches = len(foods)
-    st.write(f"Showing **{total_matches}** verified authentic Indian foods matching your filters:")
+        with ctrl_col3:
+            condition_options = {
+                "All Recommended": None,
+                "Hypertension (DASH)": "hypertension",
+                "Diabetic (Low-GI)": "diabetes",
+                "Heart-Healthy": "heart"
+            }
+            cond_choice = st.selectbox("Clinical Focus", list(condition_options.keys()), label_visibility="collapsed")
+            condition_filter = condition_options[cond_choice]
 
-    if not foods:
-        st.warning("No foods matched your current search and allergen filters. Try adjusting your search query or loosening restrictions in your Profile.")
-        return
+        # Get Recommendations
+        foods = filter_and_rank_foods(
+            profile,
+            active_profiles=active_profiles,
+            selected_category=selected_category,
+            condition_filter=condition_filter,
+            search_query=search_query
+        )
 
-    # Pagination controls to ensure smooth UI performance across 500+ items
-    page_size = 20
-    total_pages = max(1, (total_matches + page_size - 1) // page_size)
+        total_matches = len(foods)
+        st.caption(f"Showing **{total_matches}** verified authentic Indian foods matching your filters:")
 
-    if total_pages > 1:
-        pag_col1, pag_col2, pag_col3 = st.columns([1, 2, 1])
-        with pag_col2:
-            current_page = st.number_input(
-                f"Page (1 to {total_pages})",
-                min_value=1,
-                max_value=total_pages,
-                value=1,
-                step=1,
-                key="food_pagination"
-            )
-        start_idx = (current_page - 1) * page_size
-        end_idx = min(start_idx + page_size, total_matches)
-        displayed_foods = foods[start_idx:end_idx]
-        st.caption(f"Displaying foods **{start_idx + 1}** to **{end_idx}** of **{total_matches}**")
-    else:
-        displayed_foods = foods
+        if not foods:
+            st.warning("No foods matched your current search and allergen filters. Try adjusting your search query.")
+        else:
+            # Pagination controls
+            page_size = 12
+            total_pages = max(1, (total_matches + page_size - 1) // page_size)
 
-    # Section 4: Render Food Cards in a 2-Column Responsive Layout
-    for i in range(0, len(displayed_foods), 2):
-        col1, col2 = st.columns(2)
-        row_foods = [displayed_foods[i]]
-        if i + 1 < len(displayed_foods):
-            row_foods.append(displayed_foods[i + 1])
-
-        for col, food in zip([col1, col2], row_foods):
-            with col:
-                with st.container(border=True):
-                    # Category Badge + Food Name + Local Name
-                    cat_name = food.get('category', '').upper()
-                    st.markdown(
-                        f"<div style='display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;'>"
-                        f"<span style='font-size: 11px; background-color: #e0f2f1; color: #00695c; padding: 3px 8px; border-radius: 12px; font-weight: 600;'>{cat_name}</span>"
-                        f"</div>",
-                        unsafe_allow_html=True
+            if total_pages > 1:
+                pag_col1, pag_col2, pag_col3 = st.columns([1, 1.5, 1])
+                with pag_col2:
+                    current_page = st.number_input(
+                        f"Page (1 to {total_pages})",
+                        min_value=1,
+                        max_value=total_pages,
+                        value=1,
+                        step=1,
+                        key="food_pagination"
                     )
-                    st.subheader(food["name"])
+                start_idx = (current_page - 1) * page_size
+                end_idx = min(start_idx + page_size, total_matches)
+                displayed_foods = foods[start_idx:end_idx]
+            else:
+                displayed_foods = foods
 
-                    # Drug interaction flags (if any)
-                    for dflag in food.get("drug_flags", []):
-                        if dflag["level"] == "danger":
-                            st.error(f"{dflag['title']}\n\n*{dflag['detail']}*")
-                        elif dflag["level"] == "warning":
-                            st.warning(f"{dflag['title']}\n\n*{dflag['detail']}*")
-                        elif dflag["level"] == "synergy":
-                            st.success(f"{dflag['title']}\n\n*{dflag['detail']}*")
+            # Section 4: Render Food Cards in a 2-Column Responsive Layout
+            for i in range(0, len(displayed_foods), 2):
+                col1, col2 = st.columns(2)
+                row_foods = [displayed_foods[i]]
+                if i + 1 < len(displayed_foods):
+                    row_foods.append(displayed_foods[i + 1])
 
-                    # Key Metrics: GI & Allergens
-                    m_col1, m_col2 = st.columns(2)
-                    with m_col1:
-                        gi_val = food.get("glycemic_index", "N/A")
-                        gi_badge = "Low-GI" if isinstance(gi_val, (int, float)) and gi_val <= 55 else ("Medium-GI" if isinstance(gi_val, (int, float)) and gi_val <= 69 else "GI")
-                        st.markdown(f"**Glycemic Index:** `{gi_val}` ({gi_badge})")
-                    with m_col2:
-                        allergens_tag = ", ".join(food.get("allergens", [])).title() if food.get("allergens") else "None (Hypoallergenic)"
-                        st.markdown(f"**Allergens:** `{allergens_tag}`")
+                for col, food in zip([col1, col2], row_foods):
+                    with col:
+                        with st.container(border=True):
+                            # Category Badge + Food Name
+                            cat_name = food.get('category', '').upper()
+                            st.markdown(
+                                f"<div style='display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;'>"
+                                f"<span style='font-size: 15px; font-weight: 700; color: #0f172a;'>{food['name']}</span>"
+                                f"<span class='badge-pill badge-green'>{cat_name}</span>"
+                                f"</div>",
+                                unsafe_allow_html=True
+                            )
 
-                    # Nutrients & Action
-                    st.markdown(f"**Key Nutrients:** *{food.get('key_nutrients', 'Nutrient-rich staple')}*")
-                    st.markdown(f"**Health Action:** {food.get('health_benefit', 'Promotes nutritional wellness.')}")
+                            # Drug interaction flags (if any)
+                            for dflag in food.get("drug_flags", []):
+                                if dflag["level"] == "danger":
+                                    st.error(f"🛑 {dflag['title']}: {dflag['detail']}")
+                                elif dflag["level"] == "warning":
+                                    st.warning(f"⚠️ {dflag['title']}: {dflag['detail']}")
+                                elif dflag["level"] == "synergy":
+                                    st.success(f"🌟 {dflag['title']}: {dflag['detail']}")
 
-                    # Detailed Macro/Micronutrient Breakdown Expander
-                    with st.expander("📊 Complete Nutritional Breakdown (per 100g)", expanded=False):
-                        n_c1, n_c2 = st.columns(2)
-                        with n_c1:
-                            st.markdown(f"- **Energy:** `{food.get('energy_kcal', 'N/A')} kcal`")
-                            st.markdown(f"- **Protein:** `{food.get('protein_g', 'N/A')} g`")
-                            st.markdown(f"- **Carbohydrates:** `{food.get('carbohydrates_g', 'N/A')} g`")
-                            st.markdown(f"- **Dietary Fiber:** `{food.get('dietary_fiber_g', 'N/A')} g`")
-                            st.markdown(f"- **Total Fat:** `{food.get('fat_g', 'N/A')} g`")
-                        with n_c2:
-                            st.markdown(f"- **Potassium:** `{food.get('potassium_mg', 'N/A')} mg`")
-                            st.markdown(f"- **Sodium:** `{food.get('sodium_mg', 'N/A')} mg`")
-                            st.markdown(f"- **Calcium:** `{food.get('calcium_mg', 'N/A')} mg`")
-                            st.markdown(f"- **Iron:** `{food.get('iron_mg', 'N/A')} mg`")
+                            # Key Metrics Badges
+                            gi_val = food.get("glycemic_index", "N/A")
+                            gi_pill = f"<span class='badge-pill badge-blue'>GI: {gi_val}</span>" if isinstance(gi_val, (int, float)) else ""
+                            prot = food.get('protein_g', '-')
+                            fib = food.get('dietary_fiber_g', '-')
+                            kcal = food.get('energy_kcal', '-')
 
-                    # Algorithmic Rationale Box
-                    st.markdown(
-                        f"""
-                        <div style='background-color: #f1f8e9; border-left: 4px solid #558b2f; padding: 8px 12px; border-radius: 4px; margin-top: 8px;'>
-                            <small style='color: #33691e; font-weight: 700;'>WHY IT'S RECOMMENDED FOR YOU:</small><br>
-                            <small style='color: #2e7d32;'>{' • '.join(food.get('reasons', []))}</small><br>
-                            <small style='color: #555;'><em>{food.get('rationale', 'ICMR-NIN Indian Food Composition Table guideline.')}</em></small>
-                        </div>
-                        """,
-                        unsafe_allow_html=True
-                    )
+                            st.markdown(
+                                f"<div style='display: flex; gap: 6px; flex-wrap: wrap; margin: 8px 0;'>"
+                                f"{gi_pill}"
+                                f"<span class='badge-pill badge-slate'>{kcal} kcal</span>"
+                                f"<span class='badge-pill badge-slate'>Protein: {prot}g</span>"
+                                f"<span class='badge-pill badge-slate'>Fiber: {fib}g</span>"
+                                f"</div>",
+                                unsafe_allow_html=True
+                            )
+
+                            st.markdown(f"**Health Action:** <span style='font-size: 13px; color: #334155;'>{food.get('health_benefit', 'Nutrient-rich staple.')}</span>", unsafe_allow_html=True)
+
+                            # Nutrients expander
+                            with st.expander("📊 Complete Nutritional Profile (per 100g)", expanded=False):
+                                n_c1, n_c2 = st.columns(2)
+                                with n_c1:
+                                    st.markdown(f"&bull; Energy: `{food.get('energy_kcal', '-')} kcal`")
+                                    st.markdown(f"&bull; Carbohydrates: `{food.get('carbohydrates_g', '-')} g`")
+                                    st.markdown(f"&bull; Total Fat: `{food.get('fat_g', '-')} g`")
+                                with n_c2:
+                                    st.markdown(f"&bull; Potassium: `{food.get('potassium_mg', '-')} mg`")
+                                    st.markdown(f"&bull; Sodium: `{food.get('sodium_mg', '-')} mg`")
+                                    st.markdown(f"&bull; Calcium: `{food.get('calcium_mg', '-')} mg`")
+
+                            # Algorithmic Rationale Box
+                            st.markdown(
+                                f"""
+                                <div style='background-color: #f0fdf4; border-left: 3px solid #10b981; padding: 6px 10px; border-radius: 4px; margin-top: 6px; font-size: 12px; color: #166534;'>
+                                    <b>Why Recommended:</b> {' &bull; '.join(food.get('reasons', []))}
+                                </div>
+                                """,
+                                unsafe_allow_html=True
+                            )

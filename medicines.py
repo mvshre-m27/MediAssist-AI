@@ -304,21 +304,33 @@ def delete_medicine(medicine_id, user_id):
     return cursor.rowcount > 0
 
 
+def refill_medicine_stock(medicine_id, user_id, amount=30):
+    """Convenience 1-click helper to add stock units."""
+    with get_connection() as conn:
+        conn.execute("""
+            UPDATE medicines
+            SET remaining_stock = remaining_stock + ?,
+                total_stock = total_stock + ?
+            WHERE id = ? AND user_id = ?
+        """, (amount, amount, medicine_id, user_id))
+    return True
+
+
 # ============================================================
 # MEDICINE MANAGEMENT UI
 # ============================================================
 
 def show_medicines(user_id):
-
-    st.title("💊 Medicine Management")
-
-    st.write(
-        "Add and manage your regular and temporary medicines."
-    )
+    st.markdown("""
+    <div style='margin-bottom: 16px;'>
+        <h1 style='font-size: 26px; margin: 0;'>💊 Prescription & Medicine Management</h1>
+        <p style='color: #64748b; margin: 4px 0 0 0; font-size: 14px;'>Manage active regimens, daily dose timings, and automated inventory sync</p>
+    </div>
+    """, unsafe_allow_html=True)
 
     tab1, tab2 = st.tabs([
-        "Add Medicine",
-        "My Medicines"
+        "➕ Add Medicine",
+        "📋 My Prescriptions"
     ])
 
     # ========================================================
@@ -570,66 +582,35 @@ def show_medicines(user_id):
             st.info("No medicines added yet.")
 
         else:
-
             for medicine in medicines:
-
                 medicine_id = medicine["id"]
+                medicine_label = "Regular" if medicine["medicine_type"] == "regular" else "Temporary"
+                rem_stock = medicine["remaining_stock"]
+                tot_stock = medicine["total_stock"]
+                thresh = medicine["refill_threshold"]
 
-                medicine_label = (
-                    "Regular"
-                    if medicine["medicine_type"] == "regular"
-                    else "Temporary"
-                )
+                if rem_stock <= thresh:
+                    stock_tag = f"<span class='badge-pill badge-red'>⚠️ Low Stock ({rem_stock}/{tot_stock})</span>"
+                else:
+                    stock_tag = f"<span class='badge-pill badge-slate'>📦 {rem_stock}/{tot_stock} Units</span>"
 
-                with st.expander(
-                    f"💊 {medicine['medicine_name']} ({medicine_label})"
-                ):
+                dose_times = get_dose_times(medicine_id, user_id)
+                time_badges = " ".join([f"<span class='badge-pill badge-blue'>⏰ {t}</span>" for t in dose_times]) if dose_times else "<span class='badge-pill badge-slate'>No schedule</span>"
 
-                    st.write(
-                        f"**Dosage:** "
-                        f"{medicine['dosage'] or 'Not specified'}"
-                    )
-
-                    st.write(
-                        f"**Instructions:** "
-                        f"{medicine['instructions'] or 'None'}"
-                    )
-
-                    st.write(
-                        f"**Start Date:** {medicine['start_date']}"
-                    )
-
-                    st.write(
-                        f"**End Date:** "
-                        f"{medicine['end_date'] or 'Ongoing'}"
-                    )
-
-                    dose_times = get_dose_times(
-                        medicine_id,
-                        user_id
-                    )
-
-                    st.write(
-                        "**Dose Timings:** "
-                        + (
-                            ", ".join(dose_times)
-                            if dose_times else "None"
-                        )
-                    )
-
-                    st.write(
-                        f"**Remaining Stock:** "
-                        f"{medicine['remaining_stock']}"
-                    )
-
-                    if (
-                        medicine["remaining_stock"]
-                        <= medicine["refill_threshold"]
-                    ):
-
-                        st.warning(
-                            "Stock is low. Consider checking your refill."
-                        )
+                with st.expander(f"💊 {medicine['medicine_name']} ({medicine_label}) — {rem_stock} units left"):
+                    col_m1, col_m2 = st.columns([2.5, 1])
+                    with col_m1:
+                        st.markdown(f"**Dosage:** `{medicine['dosage'] or 'Standard dose'}`")
+                        if medicine["instructions"]:
+                            st.caption(f"🍽️ Instructions: {medicine['instructions']}")
+                        st.markdown(f"**Schedule Timings:** {time_badges}", unsafe_allow_html=True)
+                        st.caption(f"Duration: **{medicine['start_date']}** to **{medicine['end_date'] or 'Ongoing'}**")
+                    with col_m2:
+                        st.markdown(f"<div style='text-align: right; margin-bottom: 8px;'>{stock_tag}</div>", unsafe_allow_html=True)
+                        if st.button("➕ Quick Refill (+30)", key=f"quick_refill_{medicine_id}", use_container_width=True):
+                            refill_medicine_stock(medicine_id, user_id, 30)
+                            st.success(f"Added +30 units to {medicine['medicine_name']}!")
+                            st.rerun()
 
                     # Food & Nutrition Guidance Expander
                     med_profile = mfi.match_medicine_profile(medicine["medicine_name"])
